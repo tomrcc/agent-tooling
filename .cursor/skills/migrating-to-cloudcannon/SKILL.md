@@ -72,6 +72,10 @@ See [build.md](build.md) for detailed guidance.
 
 Deterministic migration steps are automated as scripts in [scripts/](scripts/). Run these before or during the relevant phase to save time and tokens. New scripts should be added as repetitive patterns emerge.
 
+## Migration output
+
+Store each template's migration data in `templates/<name>/migration/`, with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in this skill directory contain only generic guidance -- template-specific findings go in the template's migration directory.
+
 ## Notes
 
 - Not every site will need all phases. Small sites may skip Phase 3 entirely if content is already well-structured.

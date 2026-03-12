@@ -97,6 +97,11 @@ const { title, meta_title, description, image, noindex, canonical } =
 
     <ClientRouter />
 
+    <!-- CloudCannon Visual Editor -->
+    <script>
+      import "@cloudcannon/editable-regions/internal/components";
+    </script>
+
     <!-- author from config.json -->
     <meta name="author" content={config.metadata.meta_author} />
 
