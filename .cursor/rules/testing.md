@@ -1,0 +1,9 @@
+---
+description: Describes what AI agents should test, and what humans should test.
+alwaysApply: true
+---
+
+- We have a tool called Fog Machine for testing CloudCannon locally. It is not suitable for AI agents.
+- We can use Fog Machine to test how things will look in CloudCannon's visual editor, before we push our changes to GitHub and CloudCannon.
+- Where possible (like last in a chain of todos), prompt the user to test the results of any changes manually, rather than the agent trying to start a dev serv er. Keep automatic tests at the end of prompts to a minimum - run basic builds, tests, greps, etc. instead of larger end-to-end type testing. 
+- If the prompt, or question requires more advanced testing by an agent, that is acceptable -  just try to minimize the time and tokens spent doing it. This can especially be the case if we're near the beginning of a long chain of to-dos and its impractical to stop the prompt just for manual testing.
