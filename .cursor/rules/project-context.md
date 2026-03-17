@@ -9,7 +9,7 @@ This repo develops agent tooling (skills, rules, scripts) that helps customers o
 
 ## How we work
 
-We pick existing site templates that have no knowledge of CloudCannon, use agents to migrate them, and refine our skills/rules/scripts along the way. Migrated templates accumulate in `templates/`.
+We pick existing site templates that have no knowledge of CloudCannon, use agents to migrate them, and refine our skills/rules/scripts along the way. Each template lives in `templates/<name>/` with two subdirectories: `pristine/` (the untouched original, never modified) and `migrated/` (where agents work). Always run migrations against `migrated/`, which starts as a copy of `pristine/`.
 
 **Scripts first**: Use scripts for any migration step that is deterministic and repetitive. Reserve AI agents for judgment calls. The fewer places we need an agent, the better -- it saves tokens and improves consistency.
 

@@ -1,0 +1,8 @@
+astroplate:
+  ssg: astro
+  collections:
+    - pages
+    - blog
+    - authors
+  build_command_contains: "astro build"
+  output_path: dist

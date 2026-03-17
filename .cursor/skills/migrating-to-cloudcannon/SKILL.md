@@ -73,7 +73,9 @@ Deterministic migration steps are automated as scripts in [scripts/](scripts/). 
 
 ## Migration output
 
-Store each template's migration data in `templates/<name>/migration/`, with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in this skill directory contain only generic guidance -- template-specific findings go in the template's migration directory.
+Each template has two directories: `templates/<name>/pristine/` (the untouched original -- never modify this) and `templates/<name>/migrated/` (where the agent works). Always run migrations against `migrated/`, which starts as a copy of `pristine/`.
+
+Store migration notes in `templates/<name>/migrated/migration/`, with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in this skill directory contain only generic guidance -- template-specific findings go in the template's migration directory.
 
 ## Notes
 

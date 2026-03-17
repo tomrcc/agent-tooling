@@ -9,9 +9,10 @@ This repo contains Cursor skills, rules, and scripts that teach AI agents how to
 We develop the tooling by working through real site templates:
 
 1. Pick an existing SSG template that has no CloudCannon knowledge
-2. Use an AI agent (armed with our skills and rules) to migrate it to CloudCannon
-3. Refine the skills, rules, and scripts based on what we learn
-4. Keep the migrated template as a reference
+2. Add the untouched template to `templates/<name>/pristine/` and copy it to `templates/<name>/migrated/`
+3. Use an AI agent (armed with our skills and rules) to migrate `migrated/`
+4. Run evals against `migrated/` to grade the result
+5. Refine the skills, rules, and scripts based on what we learn
 
 The skills and rules are **living documents** -- agents are expected to update them as they discover new patterns, edge cases, or better approaches.
 
@@ -38,8 +39,15 @@ The skills and rules are **living documents** -- agents are expected to update t
       editable-regions-integrations.md # Reference: Astro and Eleventy integrations
       scripts/                        # Deterministic migration scripts (TBD)
 
+evals/                                  # Skill evaluation system
+  run-grader.ts                       # CLI entry point
+  graders/                            # Deterministic graders per phase
+  tasks/                              # Eval task definitions (prompt + expectations)
+
 templates/
-  astroplate/                         # Astro template (first migration target)
+  astroplate/
+    pristine/                         # Untouched original (never modify)
+    migrated/                         # Agent works here, graders grade here
 ```
 
 ## Key principles
@@ -62,10 +70,12 @@ templates/
 
 ### Working on a template
 
-1. Add a new template to `templates/` (or work on an existing one)
-2. Open the repo in Cursor
-3. Ask the agent to migrate the template to CloudCannon -- it will pick up the `migrating-to-cloudcannon` skill automatically
-4. As the agent works, review its changes and prompt it to update skills/rules if it discovers something new
+1. Add the untouched template to `templates/<name>/pristine/`
+2. Copy `pristine/` to `migrated/` (this is where the agent works)
+3. Open the repo in Cursor and ask the agent to migrate `migrated/` -- it will pick up the `migrating-to-cloudcannon` skill automatically
+4. Run evals: `cd evals && npx tsx run-grader.ts config-generation ../templates/<name>/migrated`
+5. As the agent works, review its changes and prompt it to update skills/rules if it discovers something new
+6. To start fresh, delete `migrated/` and copy `pristine/` again
 
 ### Updating the tooling directly
 
@@ -75,8 +85,8 @@ The files in `.cursor/rules/` and `.cursor/skills/` are the primary output of th
 
 | Template | SSG | Status |
 |----------|-----|--------|
-| [astroplate](templates/astroplate/) | Astro | Not yet migrated |
+| [astroplate](templates/astroplate/) | Astro | Ready for migration |
 
 ## Current state
 
-The tooling scaffolding is in place. The migration skill has its 5-phase structure with stub reference docs that will be filled in as we work through the first template (astroplate). No migration scripts have been written yet -- they'll emerge from real migrations.
+The tooling scaffolding is in place: migration skill with 5 phases, eval system with a config-generation grader, and Gadget CLI integration. Astroplate's `pristine/` directory needs to be populated, then `migrated/` gets a copy to work on.
