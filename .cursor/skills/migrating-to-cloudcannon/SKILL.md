@@ -26,15 +26,14 @@ See [audit.md](audit.md) for detailed guidance.
 
 ## Phase 2: Configuration
 
-Create or update `cloudcannon.config.yml` based on the audit.
+Generate a baseline `cloudcannon.config.yml` and `.cloudcannon/initial-site-settings.json` using the Gadget CLI, then customize based on the audit.
 
-- Define collections (map existing content directories)
-- Configure inputs (field types, labels, comments)
-- Set up structures (reusable component schemas for array-based page building)
-- Define schemas (templates for new content files)
+- Run `gadget generate --auto --init-settings` from the project root to produce baseline config files
+- Review the generated config against Phase 1 audit findings
+- Customize: define `_inputs`, `_structures`, `collection_groups`, schemas, and `_snippets_imports` based on the site's content model
 - Configure the build command and paths
 
-See [configuration.md](configuration.md) for detailed guidance.
+See [configuration.md](configuration.md) for the full workflow, and [gadget-guide.md](gadget-guide.md) for the Gadget CLI reference.
 
 ## Phase 3: Content
 
