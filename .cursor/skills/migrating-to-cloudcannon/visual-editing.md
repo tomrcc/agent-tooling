@@ -10,6 +10,8 @@ Detailed documentation on the `@cloudcannon/editable-regions` library is split a
 - [editable-regions-lifecycle.md](editable-regions-lifecycle.md) -- Full lifecycle trace, core internals, data flow diagram
 - [editable-regions-integrations.md](editable-regions-integrations.md) -- Astro and Eleventy/Liquid framework integrations
 
+For deeper dives into library internals, the JavaScript API, or debugging unexpected behaviour, see the [deep-dive docs index](../../docs/README.md). Only consult those when the skill-level docs above aren't enough.
+
 ## Setup steps (Astro)
 
 ### 1. Install the package

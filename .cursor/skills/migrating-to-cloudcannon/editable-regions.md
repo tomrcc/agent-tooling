@@ -10,6 +10,7 @@ The framework integrations (Astro, Eleventy) are **only needed for component re-
 
 For the full lifecycle trace and core internals, see [editable-regions-lifecycle.md](editable-regions-lifecycle.md).
 For framework-specific integration details, see [editable-regions-integrations.md](editable-regions-integrations.md).
+For deeper dives into library internals, the JavaScript API, or debugging, see the [deep-dive docs index](../../docs/README.md).
 
 ---
 

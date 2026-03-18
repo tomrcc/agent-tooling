@@ -1,6 +1,8 @@
 # Editable Regions — Framework Integrations
 
-How the Astro and Eleventy/Liquid integrations provide component re-rendering in the browser for CloudCannon's Visual Editor. See [editable-regions.md](editable-regions.md) for the overview. For deeper integration internals, see the [deep-dive docs](../../docs/README.md).
+How the Astro and Eleventy/Liquid integrations provide component re-rendering in the browser for CloudCannon's Visual Editor.
+
+For the high-level overview, see [editable-regions-overview.md](editable-regions-overview.md).
 
 ---
 
@@ -50,7 +52,7 @@ Without this, Astro components that import from `astro:content` or `astro:assets
 
 The wrapper is stored in `window.cc_components[key]` where `EditableComponent` can find it.
 
-**Usage** — in the Astro page, a `<script>` tag imports a module that registers components:
+**Usage** — in `src/cloudcannon/registerComponents.ts`:
 
 ```typescript
 import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
