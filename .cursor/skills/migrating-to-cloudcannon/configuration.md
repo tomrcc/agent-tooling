@@ -75,6 +75,21 @@ Gadget produces a structural baseline. The following customizations are almost a
 
 The full set of configuration keys is defined in the [CloudCannon Configuration JSON Schema](https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json). Generated files include a schema reference that provides IDE autocomplete and validation -- preserve these references when editing.
 
+## Verification checklist
+
+After generating and customizing the config, work through these checks before moving to the next phase:
+
+- [ ] `cloudcannon.config.yml` exists and is valid YAML
+- [ ] `.cloudcannon/initial-site-settings.json` exists and is valid JSON
+- [ ] `collections_config` is present with entries for every collection identified in the audit
+- [ ] No non-content directories leaked into `collections_config` (e.g. `lib`, `source`, `migration`)
+- [ ] `collection_groups` organise collections into logical sidebar groups
+- [ ] `_inputs` is configured for common field types (images, dates, dropdowns, hidden fields)
+- [ ] Collections that produce pages have a `url` pattern defined
+- [ ] `paths.uploads` is set correctly for the SSG's static asset directory
+- [ ] `initial-site-settings.json` has the correct `ssg`, `build_command`, and `output_path`
+- [ ] `.cloudcannon/prebuild` script exists if pre-build steps are needed
+
 ## Patterns and gotchas
 
 This section will grow as we complete more migrations. Document template-specific configuration findings in the template's own `migration/configuration.md`, not here.

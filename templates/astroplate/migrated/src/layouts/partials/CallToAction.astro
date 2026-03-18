@@ -10,7 +10,11 @@ const { call_to_action } = Astro.props;
       <div class="container">
         <div class="rounded-xl bg-light px-4 py-16 dark:bg-darkmode-light xl:p-20">
           <div class="row items-center justify-between">
-            <div class="mb-10 md:col-5 lg:col-4 md:order-2 md:mb-0">
+            <div
+              class="mb-10 md:col-5 lg:col-4 md:order-2 md:mb-0"
+              data-editable="image"
+              data-prop="@file[src/content/sections/call-to-action.md].image"
+            >
               <ImageMod
                 class="w-full"
                 src={call_to_action.data.image}
@@ -24,17 +28,26 @@ const { call_to_action } = Astro.props;
               <h2
                 set:html={markdownify(call_to_action.data.title)}
                 class="mb-2"
+                data-editable="text"
+                data-prop="@file[src/content/sections/call-to-action.md].title"
               />
               <p
                 set:html={markdownify(call_to_action.data.description)}
                 class="mb-6"
+                data-editable="text"
+                data-prop="@file[src/content/sections/call-to-action.md].description"
               />
               {call_to_action.data.button.enable && (
                 <a
                   class="btn btn-primary"
                   href={call_to_action.data.button.link}
                 >
-                  {call_to_action.data.button.label}
+                  <span
+                    data-editable="text"
+                    data-prop="@file[src/content/sections/call-to-action.md].button.label"
+                  >
+                    {call_to_action.data.button.label}
+                  </span>
                 </a>
               )}
             </div>

@@ -10,7 +10,7 @@ Guidance for validating a migration works end-to-end.
 
 3. **Verify editable attributes in output HTML** -- spot-check key pages to confirm `data-editable` attributes survived the build. Count occurrences on the homepage (should be the highest) and a content page.
 
-4. **Verify the hydration script is bundled** -- check that the built JS assets contain the editable-regions hydration code. In Astro, this ends up in a `Base.astro_astro_type_script_*` file.
+4. **Verify the registerComponents script is bundled** -- check that the built JS assets contain the editable-regions code from `src/cloudcannon/registerComponents.ts`. In Astro, this ends up in a `Base.astro_astro_type_script_*` file.
 
 5. **Prompt user to test in Fog Machine** -- agents should not attempt this. Provide the user with what to verify:
    - Inline text editing works on the homepage banner
@@ -47,11 +47,7 @@ Older Astro integration packages may not list Astro 6 as a supported peer. Use `
 
 ### Style injection
 
-The editable-regions library injects its own styles at runtime via `createElement("style")`. Each web component manages its own styles. You do **not** need to import a separate CSS file -- just import the components entry point:
-
-```javascript
-import "@cloudcannon/editable-regions/internal/components";
-```
+The editable-regions library injects its own styles at runtime via `createElement("style")`. Each web component manages its own styles. You do **not** need to import a separate CSS file.
 
 ### `is:inline` style imports don't work
 

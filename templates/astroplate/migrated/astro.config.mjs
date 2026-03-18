@@ -1,3 +1,4 @@
+import editableRegions from "@cloudcannon/editable-regions/astro-integration";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
@@ -67,6 +68,7 @@ export default defineConfig({
       ],
     }),
     mdx(),
+    editableRegions(),
   ],
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],

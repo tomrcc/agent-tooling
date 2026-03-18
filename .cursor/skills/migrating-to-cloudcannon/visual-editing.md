@@ -41,28 +41,36 @@ export default defineConfig({
 
 This registers a Vite plugin that enables client-side rendering of Astro components (needed for `EditableComponent` regions).
 
-### 3. Add the hydration entry point
+### 3. Create the `registerComponents` script
 
-In the base layout (loaded on every page), add a `<script>` tag:
+Create `src/cloudcannon/registerComponents.ts`. This is where Astro components are registered for live re-rendering in the Visual Editor. Initially it contains only commented-out examples -- uncomment and add registrations as components are wired up.
+
+```typescript
+// Register Astro components for live re-rendering in the Visual Editor.
+// Import each component and call registerAstroComponent() to enable
+// EditableComponent regions to re-render when data changes.
+//
+// import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
+// import CallToAction from "@/layouts/partials/CallToAction.astro";
+// registerAstroComponent("call-to-action", CallToAction);
+```
+
+Then import it from the base layout (loaded on every page):
 
 ```astro
 <script>
-  import "@cloudcannon/editable-regions/internal/components";
+  import "@/cloudcannon/registerComponents";
 </script>
 ```
 
-This scans the DOM for `[data-editable]` elements, instantiates the appropriate `Editable` nodes, and starts a `MutationObserver` for dynamic content.
-
-Styles are self-injected at runtime by the web components -- no separate CSS import needed.
+This keeps component registrations in one place rather than scattering them across individual pages.
 
 ### Package exports reference
 
 | Import path | Purpose |
 |---|---|
-| `@cloudcannon/editable-regions/internal/components` | Core hydration entry point (runs on page load) |
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
-| `@cloudcannon/editable-regions/internal/styles` | Style injection (usually not needed -- components self-inject) |
 
 ## Adding editable regions
 
@@ -198,13 +206,13 @@ Not everything benefits from visual editing. Guidelines:
 
 For full live preview (not just text/image), components need to be registered with the Astro integration. This enables `EditableComponent` to re-render the component in the browser when data changes.
 
-```astro
-<script>
-  import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
-  import CallToAction from "@/partials/CallToAction.astro";
+Add registrations to `src/cloudcannon/registerComponents.ts`:
 
-  registerAstroComponent("call-to-action", CallToAction);
-</script>
+```typescript
+import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
+import CallToAction from "@/layouts/partials/CallToAction.astro";
+
+registerAstroComponent("call-to-action", CallToAction);
 ```
 
 The component wrapper element needs:
@@ -219,6 +227,15 @@ The component wrapper element needs:
 - Components must be self-contained -- external data fetching won't work client-side
 
 This was not implemented in the astroplate migration (Phase 4). Text/image editable regions provide the most value with the least complexity. Component registration is the next step for templates where full live preview is a priority.
+
+## Verification checklist
+
+After adding editable regions, work through these checks before moving to the build phase:
+
+- [ ] `@cloudcannon/editable-regions` is in `package.json` dependencies
+- [ ] The Astro integration (`@cloudcannon/editable-regions/astro-integration`) is registered in `astro.config.mjs`
+- [ ] `src/cloudcannon/registerComponents.ts` exists and is imported from the base layout
+- [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
 
 ---
 

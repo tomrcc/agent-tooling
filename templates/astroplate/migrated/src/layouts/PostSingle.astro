@@ -25,7 +25,7 @@ const { title, description, author, categories, image, date, tags } = post.data;
       <article class="lg:col-10">
         {
           image && (
-            <div class="mb-10">
+            <div class="mb-10" data-editable="image" data-prop="image">
               <ImageMod
                 src={image}
                 height={500}
@@ -37,7 +37,12 @@ const { title, description, author, categories, image, date, tags } = post.data;
             </div>
           )
         }
-        <h1 set:html={markdownify(title)} class="h2 mb-4" />
+        <h1
+          set:html={markdownify(title)}
+          class="h2 mb-4"
+          data-editable="text"
+          data-prop="title"
+        />
         <ul class="mb-4">
           <li class="mr-4 inline-block">
             <a href={`/authors/${slugify(author)}`}>
@@ -61,7 +66,12 @@ const { title, description, author, categories, image, date, tags } = post.data;
             {dateFormat(date)}
           </li>
         </ul>
-        <div class="content mb-10">
+        <div
+          class="content mb-10"
+          data-editable="text"
+          data-type="block"
+          data-prop="@content"
+        >
           <Content />
         </div>
         <div class="row items-start justify-between">

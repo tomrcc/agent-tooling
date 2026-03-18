@@ -1,0 +1,169 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+paths:
+  static: public
+  uploads: public/images
+timezone: Pacific/Auckland
+
+collection_groups:
+  - heading: Pages
+    collections:
+      - pages
+      - about
+      - contact
+      - homepage
+  - heading: Blogging
+    collections:
+      - blog
+      - authors
+  - heading: Sections
+    collections:
+      - sections
+  - heading: Site Settings
+    collections:
+      - config
+
+collections_config:
+  pages:
+    path: src/content/pages
+    url: "/[slug]"
+    icon: wysiwyg
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+  blog:
+    path: src/content/blog
+    url: "/blog/[slug]"
+    icon: event_available
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+    _inputs:
+      author:
+        type: select
+        options:
+          values: collections.authors
+          value_key: title
+      categories:
+        type: multiselect
+        options:
+          allow_create: true
+      tags:
+        type: multiselect
+        options:
+          allow_create: true
+  authors:
+    path: src/content/authors
+    url: "/authors/[slug]"
+    icon: person
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+    _inputs:
+      icon:
+        type: text
+        comment: React Icons component name (e.g. FaGithub)
+  about:
+    path: src/content/about
+    url: "/about"
+    icon: info
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+  contact:
+    path: src/content/contact
+    url: "/contact"
+    icon: contacts
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+  homepage:
+    path: src/content/homepage
+    url: "/"
+    icon: home
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - visual
+      - data
+  sections:
+    path: src/content/sections
+    icon: view_agenda
+    glob:
+      - "**/*.{md,mdx}"
+    _enabled_editors:
+      - data
+    _inputs:
+      designation:
+        type: text
+      avatar:
+        type: image
+  config:
+    path: src/config
+    icon: settings
+    glob:
+      - "**/*.json"
+    _enabled_editors:
+      - data
+
+_inputs:
+  title:
+    type: text
+  meta_title:
+    type: text
+    comment: Override the page title for SEO. Leave blank to use the title field.
+  description:
+    type: textarea
+  image:
+    type: image
+  date:
+    type: datetime
+    instance_value: now
+  draft:
+    type: switch
+    comment: Draft posts are not included in the build output.
+  enable:
+    type: switch
+  content:
+    type: textarea
+  link:
+    type: url
+  label:
+    type: text
+  name:
+    type: text
+
+_structures:
+  social:
+    values:
+      - value:
+          name:
+          icon:
+          link:
+  features:
+    values:
+      - value:
+          title:
+          image:
+          content:
+          bulletpoints: []
+          button:
+            enable: true
+            label:
+            link:
+  testimonials:
+    values:
+      - value:
+          name:
+          avatar:
+          designation:
+          content:

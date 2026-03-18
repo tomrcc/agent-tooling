@@ -155,6 +155,9 @@ const { title, meta_title, description, image, noindex, canonical } =
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    <script>
+      import "@/cloudcannon/registerComponents";
+    </script>
     {/* google tag manager noscript */}
     {
       config.google_tag_manager.enable && (

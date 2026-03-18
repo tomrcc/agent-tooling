@@ -41,8 +41,17 @@ const swiperOptions: SwiperOptions = {
       <div class="container">
         <div class="row">
           <div class="mx-auto mb-12 text-center md:col-10 lg:col-8 xl:col-6">
-            <h2 set:html={markdownify(testimonial.data.title)} class="mb-4" />
-            <p set:html={markdownify(testimonial.data.description)} />
+            <h2
+              set:html={markdownify(testimonial.data.title)}
+              class="mb-4"
+              data-editable="text"
+              data-prop="@file[src/content/sections/testimonial.md].title"
+            />
+            <p
+              set:html={markdownify(testimonial.data.description)}
+              data-editable="text"
+              data-prop="@file[src/content/sections/testimonial.md].description"
+            />
           </div>
           <div class="col-12">
             <Swiper options={swiperOptions} class="testimonial-slider">

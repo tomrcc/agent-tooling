@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+node scripts/themeGenerator.js
+node scripts/jsonGenerator.js
