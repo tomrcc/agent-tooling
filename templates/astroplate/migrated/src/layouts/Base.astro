@@ -12,6 +12,7 @@ import {
 } from "@digi4care/astro-google-tagmanager";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
+import announcementData from "@/data/announcement.json";
 import Announcement from "./helpers/Announcement";
 import SearchModal from "./helpers/SearchModal";
 
@@ -166,7 +167,12 @@ const { title, meta_title, description, image, noindex, canonical } =
     }
 
     <TwSizeIndicator />
-    <Announcement client:load />
+    <editable-component
+      data-component="announcement"
+      data-prop="@data[announcement]"
+    >
+      <Announcement client:load {...announcementData} />
+    </editable-component>
     <Header />
     <SearchModal client:load />
     <main id="main-content">

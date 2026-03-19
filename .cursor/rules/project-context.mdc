@@ -13,7 +13,7 @@ We pick existing site templates that have no knowledge of CloudCannon, use agent
 
 **Scripts first**: Use scripts for any migration step that is deterministic and repetitive. Reserve AI agents for judgment calls. The fewer places we need an agent, the better -- it saves tokens and improves consistency.
 
-**Living documents**: Skills, rules, and reference docs are actively maintained. Don't treat them as read-only. Before marking a migration task complete, check whether any skill or rule docs should be updated. If the task introduced a new pattern, changed an existing recommendation, or uncovered an edge case, update the relevant docs as part of the same task -- not as a separate follow-up.
+**Living documents**: Skills, rules, and reference docs are actively maintained. Don't treat them as read-only. Every plan must include a final todo for reviewing and updating skill/rule docs -- this is not optional. If the task introduced a new pattern, changed an existing recommendation, or uncovered an edge case, update the relevant docs as part of the same task -- not as a separate follow-up. Aim to add any general learnings to these general skills, rules, and docs so that they can help *all* future migrations -- while project-specific things can be added in the migration directory for record keeping.
 
 ## Skills vs. rules vs. scripts
 

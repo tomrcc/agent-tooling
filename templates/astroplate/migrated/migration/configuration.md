@@ -44,7 +44,7 @@ Visual editor is listed first in `_enabled_editors` for all content collections 
 
 ### collection_groups
 
-Organized into: Pages (pages, about, contact, homepage), Blogging (blog, authors), Sections (sections), Site Settings (config).
+Organized into: Pages (pages), Data (data), Blogging (blog, authors), Site Settings (config).
 
 ### _inputs (scoped)
 

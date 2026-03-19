@@ -5,6 +5,8 @@ paths:
 timezone: Pacific/Auckland
 
 data_config:
+  announcement:
+    path: src/data/announcement.json
   call-to-action:
     path: src/data/call-to-action.json
   testimonial:
@@ -45,6 +47,11 @@ collections_config:
       contact:
         path: .cloudcannon/schemas/contact.md
         name: Contact
+    _inputs:
+      features:
+        type: array
+        options:
+          structures: _structures.features
   blog:
     path: src/content/blog
     url: "/blog/[slug]/"
@@ -95,6 +102,25 @@ collections_config:
       icon:
         type: text
         comment: React Icons component name (e.g. FaGithub)
+      social:
+        type: array
+        options:
+          structures: _structures.social
+  data:
+    path: src/data
+    icon: inventory_2
+    glob:
+      - "**/*.json"
+    _enabled_editors:
+      - data
+    _inputs:
+      testimonials:
+        type: array
+        options:
+          structures: _structures.testimonials
+      expire_days:
+        type: number
+        comment: Days before the announcement auto-dismisses
   config:
     path: src/config
     icon: settings
@@ -133,17 +159,59 @@ _inputs:
     type: text
   avatar:
     type: image
+  button:
+    type: object
+    options:
+      preview:
+        icon: smart_button
 
 _structures:
   social:
     values:
-      - value:
+      - label: Social Link
+        picker_preview:
+          text: Social Link
+          icon: share
+        preview:
+          text:
+            - key: name
+          subtext:
+            - key: link
+          icon:
+            - share
+        _inputs:
+          name:
+            type: text
+          icon:
+            type: text
+            comment: React Icons component name (e.g. FaGithub, FaTwitter, FaLinkedin)
+          link:
+            type: url
+        value:
           name:
           icon:
           link:
   features:
     values:
-      - value:
+      - label: Feature
+        picker_preview:
+          text: Feature
+          icon: star
+        preview:
+          text:
+            - key: title
+          image:
+            - key: image
+        _inputs:
+          title:
+            type: text
+          image:
+            type: image
+          content:
+            type: textarea
+          bulletpoints:
+            type: array
+        value:
           title:
           image:
           content:
@@ -154,8 +222,193 @@ _structures:
             link:
   testimonials:
     values:
-      - value:
+      - label: Testimonial
+        picker_preview:
+          text: Testimonial
+          icon: format_quote
+        preview:
+          text:
+            - key: name
+          subtext:
+            - key: designation
+          icon:
+            - format_quote
+          image:
+            - key: avatar
+        _inputs:
+          avatar:
+            type: image
+          content:
+            type: textarea
+          name:
+            type: text
+          designation:
+            type: text
+        value:
           name:
           avatar:
           designation:
           content:
+  nav_items:
+    values:
+      - label: Link
+        picker_preview:
+          text: Link
+          icon: link
+        preview:
+          text:
+            - key: name
+          subtext:
+            - key: url
+        value:
+          name:
+          url:
+      - label: Dropdown
+        picker_preview:
+          text: Dropdown
+          icon: arrow_drop_down
+        preview:
+          text:
+            - key: name
+        value:
+          name:
+          url:
+          hasChildren: true
+          children: []
+  nav_items_children:
+    values:
+      - label: Link
+        picker_preview:
+          text: Link
+          icon: link
+        preview:
+          text:
+            - key: name
+          subtext:
+            - key: url
+        value:
+          name:
+          url:
+
+file_config:
+  - glob: src/config/menu.json
+    _inputs:
+      main:
+        type: array
+        options:
+          structures: _structures.nav_items
+      footer:
+        type: array
+        options:
+          structures: _structures.nav_items
+      children:
+        type: array
+        options:
+          structures: _structures.nav_items_children
+  - glob: src/config/social.json
+    _inputs:
+      main:
+        type: array
+        options:
+          structures: _structures.social
+  - glob: src/config/config.json
+    _inputs:
+      base_url:
+        type: url
+      base_path:
+        type: text
+      trailing_slash:
+        type: switch
+      favicon:
+        type: image
+      logo:
+        type: image
+      logo_darkmode:
+        type: image
+      logo_width:
+        type: text
+        comment: Width in pixels
+      logo_height:
+        type: text
+        comment: Height in pixels
+      logo_text:
+        type: text
+      search:
+        type: switch
+      sticky_header:
+        type: switch
+      theme_switcher:
+        type: switch
+      default_theme:
+        type: select
+        options:
+          values:
+            - system
+            - light
+            - dark
+      pagination:
+        type: number
+      summary_length:
+        type: number
+      blog_folder:
+        type: text
+      contact_form_action:
+        type: text
+        comment: Form action URL or endpoint
+      copyright:
+        type: text
+        comment: Supports inline markdown links
+      gtm_id:
+        type: text
+      shortname:
+        type: text
+      meta_author:
+        type: text
+      meta_image:
+        type: image
+      meta_description:
+        type: textarea
+  - glob: src/config/theme.json
+    _inputs:
+      theme_color.primary:
+        type: color
+      body:
+        type: color
+      border:
+        type: color
+      light:
+        type: color
+      dark:
+        type: color
+      text:
+        type: color
+      text_dark:
+        type: color
+      text_light:
+        type: color
+      font_family.primary:
+        type: text
+        comment: Google Fonts family and weights
+      secondary:
+        type: text
+        comment: Google Fonts family and weights
+      primary_type:
+        type: select
+        options:
+          values:
+            - serif
+            - sans-serif
+            - monospace
+      secondary_type:
+        type: select
+        options:
+          values:
+            - serif
+            - sans-serif
+            - monospace
+      base:
+        type: number
+        comment: Base font size in pixels
+      scale:
+        type: number
+        comment: Type scale ratio

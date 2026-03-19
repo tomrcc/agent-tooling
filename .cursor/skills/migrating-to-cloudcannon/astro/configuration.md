@@ -68,6 +68,17 @@ Gadget produces a structural baseline. The following customizations are almost a
 - **`_snippets_imports`** -- add snippet support for Astro component syntax. Use `"astro"` as the import key.
 - **`_select_data`** -- define shared dropdown options for fields used across collections.
 - **Schemas** -- define templates for creating new content files, based on the content patterns found in the audit.
+- **`file_config`** -- a root-level key that targets specific files via glob and scopes `_inputs` to them. Use it when key names would collide at broader scopes, or to configure inputs for settings/data files. Supports `$` to reference the root of the file or structure. Example:
+
+```yaml
+file_config:
+  - glob: src/config/theme.json
+    _inputs:
+      theme_color.primary:
+        type: color
+      font_family.primary:
+        type: text
+```
 
 The full set of configuration keys is defined in the [CloudCannon Configuration JSON Schema](https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json). Generated files include a schema reference that provides IDE autocomplete and validation -- preserve these references when editing.
 
@@ -233,10 +244,47 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
+- [ ] `file_config` entries exist for files with inputs not covered by global or collection-level config
+- [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures` (don't rely on naming conventions)
+- [ ] Structure previews have `icon` fallbacks where `image` may be empty
 
 ## Patterns and gotchas
 
 This section grows as we complete more migrations. Document template-specific findings in the template's own `migration/configuration.md`, not here.
+
+### `collection_groups` requires matching `collections_config` entries
+
+`collection_groups` only organizes collections that are already defined in `collections_config` -- it does not create them. If you reference a collection name in `collection_groups` that has no `collections_config` entry, it silently does nothing. A common case: data files handled via `data_config` still need a separate collection in `collections_config` if you want them to appear as a browsable group in the sidebar. `data_config` controls `@data` references for visual editing; `collections_config` controls what appears in the sidebar.
+
+### Always link arrays to structures explicitly
+
+Don't rely on CC's naming-convention heuristic (where an array key `foo` auto-matches `_structures.foo`). Use `type: array` with `options.structures` to make the link visible and intentional. This avoids mystery for editors and ensures arrays work even if a structure gets renamed.
+
+### Add preview icon fallbacks on structures
+
+When a structure preview uses `image` from a field that may be empty (e.g. `avatar`), add an `icon` entry so CC shows a meaningful fallback instead of the default generic icon:
+
+```yaml
+preview:
+  text:
+    - key: name
+  icon:
+    - format_quote
+  image:
+    - key: avatar
+```
+
+### `_inputs` key collision across nesting levels
+
+`_inputs` matches by key name regardless of nesting depth. If the same key (e.g. `primary`) appears with different types in different nested objects, use dot syntax to disambiguate: `parent_object.primary` targets only the `primary` key inside `parent_object`.
+
+```yaml
+_inputs:
+  theme_color.primary:
+    type: color
+  font_family.primary:
+    type: text
+```
 
 > **Note:** Commands use `gadget` directly (via `npm link` during development). Once the package is published, these become `npx @cloudcannon/gadget` instead.
 

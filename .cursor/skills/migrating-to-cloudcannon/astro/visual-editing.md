@@ -57,6 +57,7 @@ This keeps component registrations in one place rather than scattering them acro
 |---|---|
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
+| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for React component re-rendering |
 
 ## Adding editable regions
 
@@ -233,7 +234,9 @@ Not everything benefits from visual editing. Guidelines:
 
 ## Component re-rendering
 
-For full live preview (not just text/image), components need to be registered with the Astro integration. This enables `EditableComponent` to re-render the component in the browser when data changes.
+For full live preview (not just text/image), components need to be registered so `EditableComponent` can re-render them in the browser when data changes.
+
+### Astro components
 
 Add registrations to `src/cloudcannon/registerComponents.ts`:
 
@@ -244,11 +247,32 @@ import CallToAction from "@/layouts/partials/CallToAction.astro";
 registerAstroComponent("call-to-action", CallToAction);
 ```
 
-The component wrapper element needs:
+### React components
 
-```html
-<div data-editable="component" data-component="call-to-action" data-prop="...">
+Use `registerReactComponent` from the React integration. The renderer uses `flushSync` to produce HTML synchronously -- `useEffect` never fires, so the registered component must produce visible output without hooks. Export a separate pure display function if the live component uses hooks for interactivity (e.g. cookie-based dismiss, animations):
+
+```typescript
+import { registerReactComponent } from "@cloudcannon/editable-regions/react";
+import { AnnouncementDisplay } from "@/layouts/helpers/Announcement";
+
+registerReactComponent("announcement", AnnouncementDisplay);
 ```
+
+The display component receives the resolved data object as props and returns the visual output. The interactive version (default export) handles hooks and is rendered on the live site via `client:load`.
+
+### Wrapping with web components
+
+Component editable regions need a wrapper element with `data-component` and `data-prop` attributes. When there is no suitable existing container element, use the `<editable-component>` web component provided by the library rather than adding an unnecessary `<div>`:
+
+```astro
+<editable-component data-component="announcement" data-prop="@data[announcement]">
+  <Announcement client:load {...announcementData} />
+</editable-component>
+```
+
+The `<editable-component>` custom element self-hydrates via `connectedCallback`/`disconnectedCallback` -- no `data-editable="component"` attribute is needed since the tag itself identifies the region type. The same principle applies to other region types: prefer `<editable-text>`, `<editable-image>`, etc. over wrapper `<div>`s with `data-editable` when no suitable container exists.
+
+If a suitable container already exists in the markup (e.g. a `<section>` wrapping the component output), add `data-editable="component"` directly to that element instead.
 
 **Caveats:**
 - Astro components that use `astro:content` or `astro:assets` imports need the integration's Vite plugin (which shims these modules for client-side rendering)
