@@ -27,15 +27,17 @@ The skills and rules are **living documents** -- agents are expected to update t
     astro.md                          # Astro-specific patterns (applyIntelligently)
   skills/
     migrating-to-cloudcannon/         # Main migration workflow skill
-      SKILL.md                        # Orchestrator -- 5-phase migration checklist
-      audit.md                        # Phase 1: Analyze the site
-      configuration.md                # Phase 2: cloudcannon.config.yml
-      content.md                      # Phase 3: Restructure content
-      visual-editing.md               # Phase 4: Visual editor support
-      build.md                        # Phase 5: Build and validate
-      editable-regions.md             # Reference: editable regions overview
-      editable-regions-lifecycle.md   # Reference: lifecycle and core internals
-      editable-regions-integrations.md # Reference: Astro and Eleventy integrations
+      SKILL.md                        # Entry point -- detects SSG, routes to SSG guide
+      gadget-guide.md                 # Core reference: Gadget CLI
+      editable-regions.md             # Core reference: editable region types and API
+      editable-regions-lifecycle.md   # Core reference: lifecycle and internals
+      astro/                          # Astro-specific migration guide
+        overview.md                   # Astro entry point with phase links
+        audit.md                      # Phase 1: Analyze the Astro site
+        configuration.md              # Phase 2: cloudcannon.config.yml for Astro
+        content.md                    # Phase 3: Content review for Astro
+        visual-editing.md             # Phase 4: Visual editor setup for Astro
+        build.md                      # Phase 5: Build and validate for Astro
       scripts/                        # Deterministic migration scripts (TBD)
 
 templates/

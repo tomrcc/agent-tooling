@@ -1,29 +1,13 @@
-# Visual Editing
+# Visual Editing (Astro)
 
-Guidance for adding CloudCannon Visual Editor support using `@cloudcannon/editable-regions`.
+Guidance for adding CloudCannon Visual Editor support to an Astro site using `@cloudcannon/editable-regions`. For the full editable regions reference (region types, path syntax, API actions), see [../editable-regions.md](../editable-regions.md).
 
-## Editable regions reference
-
-Detailed documentation on the `@cloudcannon/editable-regions` library is split across three files:
-
-- [editable-regions.md](editable-regions.md) -- Overview, region types, path syntax, API actions, file map
-- [editable-regions-lifecycle.md](editable-regions-lifecycle.md) -- Full lifecycle trace, core internals, data flow diagram
-- [editable-regions-integrations.md](editable-regions-integrations.md) -- Astro and Eleventy/Liquid framework integrations
-
-For deeper dives into library internals, the JavaScript API, or debugging unexpected behaviour, see the [deep-dive docs index](../../docs/README.md). Only consult those when the skill-level docs above aren't enough.
-
-## Setup steps (Astro)
+## Setup steps
 
 ### 1. Install the package
 
 ```bash
 npm install @cloudcannon/editable-regions --legacy-peer-deps
-```
-
-Also install `js-beautify` which is a required but not automatically resolved dependency:
-
-```bash
-npm install js-beautify --legacy-peer-deps
 ```
 
 ### 2. Add the Astro integration
@@ -101,13 +85,29 @@ The `@content` path targets the file's markdown body (not frontmatter).
 
 ### Image editing
 
-Wrap an image with `data-editable="image"` and `data-prop="<path>"`. The editable region looks for a child `<img>` element:
+Wrap an image with `data-editable="image"` and a data path attribute. The editable region looks for a child `<img>` element. There are two binding modes depending on the shape of the data:
+
+**String image path** (most common -- the frontmatter field is a plain string like `"/images/hero.jpg"`):
+
+Use `data-prop-src` to bind the image `src`. Optionally add `data-prop-alt` or `data-prop-title` if alt/title are stored in separate fields:
 
 ```astro
-<div data-editable="image" data-prop="image">
+<div data-editable="image" data-prop-src="image">
   <ImageMod src={image} width={1200} height={600} alt={title} format="webp" />
 </div>
 ```
+
+**Object image field** (the frontmatter field is an object with `src`, `alt`, and `title` properties):
+
+Use `data-prop` to bind the entire object at once:
+
+```astro
+<div data-editable="image" data-prop="hero_image">
+  <img src={hero_image.src} alt={hero_image.alt} />
+</div>
+```
+
+Most Astro templates store images as simple string paths, so `data-prop-src` is the correct choice in the majority of cases. Using `data-prop` on a string field will not work -- it expects an object.
 
 When the user clicks the image in the visual editor, CloudCannon opens the image picker. The `<img>` src is updated live.
 
@@ -132,7 +132,7 @@ Wrap the container with `data-editable="array"` and each item with `data-editabl
   {features.map((feature) => (
     <section data-editable="array-item">
       <h2 data-editable="text" data-prop="title">{feature.title}</h2>
-      <div data-editable="image" data-prop="image">
+      <div data-editable="image" data-prop-src="image">
         <ImageMod src={feature.image} ... />
       </div>
       <p data-editable="text" data-prop="content">{feature.content}</p>
@@ -150,9 +150,9 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 When the editable region is on the same page as the file being edited, use simple relative paths:
 
 ```
-data-prop="title"           → frontmatter.title
-data-prop="banner.title"    → frontmatter.banner.title
-data-prop="@content"        → file content body (markdown)
+data-prop="title"           -> frontmatter.title
+data-prop="banner.title"    -> frontmatter.banner.title
+data-prop="@content"        -> file content body (markdown)
 ```
 
 ### Absolute file paths (cross-file editing)
@@ -172,9 +172,9 @@ File paths are relative to the repository root.
 Within an `EditableArrayItem`, paths are relative to the current array element:
 
 ```
-data-prop="title"    → features[N].title
-data-prop="image"    → features[N].image
-data-prop="content"  → features[N].content
+data-prop="title"    -> features[N].title
+data-prop="image"    -> features[N].image
+data-prop="content"  -> features[N].content
 ```
 
 ## What to make editable vs. what to leave for the sidebar
@@ -197,14 +197,14 @@ Not everything benefits from visual editing. Guidelines:
 - URL/link fields
 - Taxonomy arrays (categories, tags)
 
-**Provide visual editing fallbacks with `ENV_CLIENT`**
+**Provide visual editing fallbacks with `ENV_CLIENT`:**
 - Components with complex DOM management (Swiper carousels, etc.) -- their JavaScript conflicts with editable region DOM manipulation, and often are hard to edit if functioning like they do on prod.
 
 **Skip visual editing entirely:**
 - MDX content with shortcodes -- shortcodes won't render in the visual editor
 - Header/footer (too many moving parts, better in data editor)
 
-## Component re-rendering (advanced)
+## Component re-rendering
 
 For full live preview (not just text/image), components need to be registered with the Astro integration. This enables `EditableComponent` to re-render the component in the browser when data changes.
 
@@ -228,17 +228,47 @@ The component wrapper element needs:
 - React islands within components work via `addFrameworkRenderer()`
 - Components must be self-contained -- external data fetching won't work client-side
 
-This was not implemented in the astroplate migration (Phase 4). Text/image editable regions provide the most value with the least complexity. Component registration is the next step for templates where full live preview is a priority.
+Text/image editable regions provide the most value with the least complexity. Component registration is the next step for templates where full live preview is a priority.
+
+## How the Astro integration works
+
+Understanding the integration internals helps when debugging unexpected behavior.
+
+**Build-time** (`@cloudcannon/editable-regions/astro-integration`):
+
+An Astro integration that registers a Vite plugin for the client build. The plugin:
+
+1. Sets `ENV_CLIENT = true` for tree-shaking server-only code
+2. Patches Astro's `astro:build` Vite plugin to force SSR transforms on client code -- this is what makes `renderToString()` work in the browser
+3. Adds `vite-plugin-editable-regions` which intercepts `astro:*` virtual module imports and resolves them to local shims:
+   - `astro:content` -> client-side shim
+   - `astro:assets` -> client-side shim
+   - `astro:env/server` -> client-side shim
+
+Without this, Astro components that import from `astro:content` or `astro:assets` would fail to bundle for the client.
+
+**Runtime** (`@cloudcannon/editable-regions/astro`):
+
+`registerAstroComponent(key, AstroComponent)` creates a wrapper function that:
+
+1. Constructs a fake Astro `SSRResult` (with renderers, metadata, crypto key for server islands, slot handling, etc.)
+2. Calls Astro's `renderToString()` in the browser with the new props
+3. Parses the resulting HTML into a document fragment
+4. Triggers any queued client-side renders (e.g. React islands use `data-editable-region-csr-id`)
+5. Strips Astro scaffolding (`<astro-island>`, `<link>`, server island metadata)
+6. Returns the clean HTML element
+
+The wrapper is stored in `window.cc_components[key]` where `EditableComponent` can find it.
 
 ## Verification checklist
 
 After adding editable regions, work through these checks before moving to the build phase:
 
 - [ ] `@cloudcannon/editable-regions` is in `package.json` dependencies
-- [ ] The Astro integration (`@cloudcannon/editable-regions/astro-integration`) is registered in `astro.config.mjs`
+- [ ] The Astro integration is registered in `astro.config.mjs`
 - [ ] `src/cloudcannon/registerComponents.ts` exists and is imported from the base layout
 - [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
 
 ---
 
-**Example:** See `templates/astroplate/migration/visual-editing.md` for a completed visual editing implementation summary.
+**Example:** See `templates/astroplate/migrated/migration/visual-editing.md` for a completed visual editing implementation summary.

@@ -1,0 +1,16 @@
+{
+  "name": "agent-tooling",
+  "version": "1.0.0",
+  "description": "AI agent tooling for migrating existing SSG sites to [CloudCannon](https://cloudcannon.com) -- a git-based CMS.",
+  "scripts": {
+    "fog-template": "node run-test-site.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tomrcc/agent-tooling.git"
+  },
+  "keywords": [],
+  "author": "Tom Richardson",
+  "license": "ISC",
+  "type": "commonjs"
+}

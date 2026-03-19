@@ -32,4 +32,6 @@ Reference docs inside a skill directory should be promoted to standalone skills 
 
 ## SSG-specific knowledge
 
-Start with inline sections within phase docs (e.g. "For Astro: ..."). Graduate to separate reference files when a second SSG is added or sections become crowded.
+Each supported SSG has its own directory under the migration skill (e.g. `astro/`). SSG directories contain phase docs (audit, configuration, content, visual-editing, build) tailored to that SSG. Core CloudCannon reference docs (editable regions, Gadget CLI) stay at the skill root since they apply across all SSGs.
+
+When adding a new SSG, create a new directory with the same file structure as `astro/` and add it to the supported SSGs table in `SKILL.md`.

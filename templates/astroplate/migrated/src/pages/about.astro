@@ -5,7 +5,7 @@ import { getListPage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import { render } from "astro:content";
 
-const aboutIndex = await getListPage("about", "-index");
+const aboutIndex = await getListPage("pages", "about");
 const { Content } = await render(aboutIndex);
 const { title, description, meta_title, image } = aboutIndex.data;
 

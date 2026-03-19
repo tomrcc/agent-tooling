@@ -8,16 +8,11 @@ collection_groups:
   - heading: Pages
     collections:
       - pages
-      - about
-      - contact
       - homepage
   - heading: Blogging
     collections:
       - blog
       - authors
-  - heading: Sections
-    collections:
-      - sections
   - heading: Site Settings
     collections:
       - config
@@ -25,7 +20,7 @@ collection_groups:
 collections_config:
   pages:
     path: src/content/pages
-    url: "/[slug]"
+    url: "/[slug]/"
     icon: wysiwyg
     glob:
       - "**/*.{md,mdx}"
@@ -34,13 +29,20 @@ collections_config:
       - data
   blog:
     path: src/content/blog
-    url: "/blog/[slug]"
+    url: "/blog/[slug]/"
     icon: event_available
     glob:
       - "**/*.{md,mdx}"
     _enabled_editors:
       - visual
       - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/post.md
+        name: Blog Post
+      blog_index:
+        path: .cloudcannon/schemas/blog-index.md
+        name: Blog Index
     _inputs:
       author:
         type: select
@@ -57,35 +59,24 @@ collections_config:
           allow_create: true
   authors:
     path: src/content/authors
-    url: "/authors/[slug]"
+    url: "/authors/[slug]/"
     icon: person
     glob:
       - "**/*.{md,mdx}"
     _enabled_editors:
       - visual
       - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/author.md
+        name: Author
+      authors_index:
+        path: .cloudcannon/schemas/authors-index.md
+        name: Authors Index
     _inputs:
       icon:
         type: text
         comment: React Icons component name (e.g. FaGithub)
-  about:
-    path: src/content/about
-    url: "/about"
-    icon: info
-    glob:
-      - "**/*.{md,mdx}"
-    _enabled_editors:
-      - visual
-      - data
-  contact:
-    path: src/content/contact
-    url: "/contact"
-    icon: contacts
-    glob:
-      - "**/*.{md,mdx}"
-    _enabled_editors:
-      - visual
-      - data
   homepage:
     path: src/content/homepage
     url: "/"
@@ -94,13 +85,6 @@ collections_config:
       - "**/*.{md,mdx}"
     _enabled_editors:
       - visual
-      - data
-  sections:
-    path: src/content/sections
-    icon: view_agenda
-    glob:
-      - "**/*.{md,mdx}"
-    _enabled_editors:
       - data
     _inputs:
       designation:

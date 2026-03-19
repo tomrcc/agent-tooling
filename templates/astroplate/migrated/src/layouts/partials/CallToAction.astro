@@ -13,7 +13,7 @@ const { call_to_action } = Astro.props;
             <div
               class="mb-10 md:col-5 lg:col-4 md:order-2 md:mb-0"
               data-editable="image"
-              data-prop="@file[src/content/sections/call-to-action.md].image"
+              data-prop-src="@file[src/content/homepage/call-to-action.md].image"
             >
               <ImageMod
                 class="w-full"
@@ -29,13 +29,13 @@ const { call_to_action } = Astro.props;
                 set:html={markdownify(call_to_action.data.title)}
                 class="mb-2"
                 data-editable="text"
-                data-prop="@file[src/content/sections/call-to-action.md].title"
+                data-prop="@file[src/content/homepage/call-to-action.md].title"
               />
               <p
                 set:html={markdownify(call_to_action.data.description)}
                 class="mb-6"
                 data-editable="text"
-                data-prop="@file[src/content/sections/call-to-action.md].description"
+                data-prop="@file[src/content/homepage/call-to-action.md].description"
               />
               {call_to_action.data.button.enable && (
                 <a
@@ -44,7 +44,7 @@ const { call_to_action } = Astro.props;
                 >
                   <span
                     data-editable="text"
-                    data-prop="@file[src/content/sections/call-to-action.md].button.label"
+                    data-prop="@file[src/content/homepage/call-to-action.md].button.label"
                   >
                     {call_to_action.data.button.label}
                   </span>

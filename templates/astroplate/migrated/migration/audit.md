@@ -21,7 +21,7 @@ All content lives in `src/content/` as `.md` or `.mdx` files. Collections are de
 
 | Collection | Directory | Glob | Description |
 |------------|-----------|------|-------------|
-| homepage | `src/content/homepage/` | `**/-*.{md,mdx}` | Banner + features for the homepage |
+| homepage | `src/content/homepage/` | `index.{md,mdx}` | Banner + features for the homepage |
 | blog | `src/content/blog/` | `**/*.{md,mdx}` | Blog posts |
 | authors | `src/content/authors/` | `**/*.{md,mdx}` | Author profiles |
 | pages | `src/content/pages/` | `**/*.{md,mdx}` | Static pages (privacy policy, elements) |
@@ -71,17 +71,17 @@ All content lives in `src/content/` as `.md` or `.mdx` files. Collections are de
 
 | Collection | Files |
 |------------|-------|
-| homepage | `-index.md` |
-| blog | `-index.md`, `post-1.md`, `post-2.md`, `post-3.md`, `post-4.md` |
-| authors | `-index.md`, `john-doe.md`, `sam-wilson.md`, `william-jacob.md` |
+| homepage | `index.md` (renamed from `-index.md`) |
+| blog | `index.md` (renamed from `-index.md`), `post-1.md`, `post-2.md`, `post-3.md`, `post-4.md` |
+| authors | `index.md` (renamed from `-index.md`), `john-doe.md`, `sam-wilson.md`, `william-jacob.md` |
 | pages | `privacy-policy.md`, `elements.mdx` |
-| about | `-index.md` |
-| contact | `-index.md` |
+| about | `-index.md` (merged into pages as `about.md`) |
+| contact | `-index.md` (merged into pages as `contact.md`) |
 | sections | `call-to-action.md`, `testimonial.md` |
 
-### `-index.md` Convention
+### `index.md` Convention (originally `-index.md`)
 
-Files prefixed with `-` serve as listing/index pages for their collection. The homepage glob (`**/-*.{md,mdx}`) specifically targets these. Other collections use them as the collection "landing" content (e.g. blog index header, authors index header). These are fetched via `getListPage(collection, "-index")`.
+Files named `index.md` (renamed from `-index.md` during the content phase) serve as listing/index pages for their collection. The homepage glob (`index.{md,mdx}`) specifically targets this file. Other collections include it alongside regular items and filter it out via `id === "index"` in `getSinglePage()`. These are fetched via `getListPage(collection, "index")`. CloudCannon's `[slug]` collapses `index` to an empty string, so the URL resolves correctly (e.g. `/blog/` for `blog/index.md`).
 
 ## Data Files (outside content/)
 
@@ -194,14 +194,14 @@ themeGenerator.js → jsonGenerator.js → astro build
 ```
 
 1. `themeGenerator.js` -- reads `theme.json`, writes `src/styles/generated-theme.css` (Tailwind v4 `@theme` block with color and font variables)
-2. `jsonGenerator.js` -- reads `src/content/blog/*.md`, writes `.json/posts.json` and `.json/search.json` (excludes drafts and `-index` files)
+2. `jsonGenerator.js` -- reads `src/content/blog/*.md`, writes `.json/posts.json` and `.json/search.json` (excludes drafts and `index` files)
 3. `astro build` -- full static build to `dist/`
 
 Output directory: `dist`
 
 ## Flags and Special Patterns
 
-1. **`-index.md` convention**: Files starting with `-` are used as collection index/listing pages. The homepage glob explicitly targets them. Other collections use `getListPage(collection, "-index")` to fetch them. CloudCannon will need to handle these carefully -- either as separate collections or with filters.
+1. **`index.md` convention** (originally `-index.md`): Files named `index.md` serve as collection listing pages. Renamed from `-index.md` during the content phase so that CloudCannon's `[slug]` collapses them to the correct listing URL. Each collection with an index file uses a separate schema in the CloudCannon config.
 
 2. **String-based author references**: Blog posts reference authors by name string (`author: "John Doe"`), not by collection ID. The authors page matches posts by slugifying the author title. No content edits needed, but CloudCannon should configure a select input for the author field.
 
@@ -220,7 +220,7 @@ Output directory: `dist`
 ## Visual Editing Candidates
 
 **Strong candidates** (structured content with text, images, CTAs):
-- Homepage banner and features (from `homepage/-index.md`)
+- Homepage banner and features (from `homepage/index.md`)
 - `CallToAction.astro` (from `sections/call-to-action.md`)
 - `Testimonial.astro` (from `sections/testimonial.md`)
 - `PageHeader.astro` (title + breadcrumbs)

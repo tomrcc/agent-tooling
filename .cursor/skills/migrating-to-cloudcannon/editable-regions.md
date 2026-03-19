@@ -9,7 +9,7 @@
 The framework integrations (Astro, Eleventy) are **only needed for component re-rendering** — they provide a way to re-run a template/component in the browser when its data changes. Simpler editable region types like text and image work purely with the shared core, no integration required.
 
 For the full lifecycle trace and core internals, see [editable-regions-lifecycle.md](editable-regions-lifecycle.md).
-For framework-specific integration details, see [editable-regions-integrations.md](editable-regions-integrations.md).
+For SSG-specific integration details (how component re-rendering works for a particular framework), see the visual-editing doc in the relevant SSG directory (e.g. [astro/visual-editing.md](astro/visual-editing.md)).
 For deeper dives into library internals, the JavaScript API, or debugging, see the [deep-dive docs index](../../docs/README.md).
 
 ---

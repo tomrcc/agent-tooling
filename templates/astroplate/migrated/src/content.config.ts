@@ -57,25 +57,9 @@ const pagesCollection = defineCollection({
   }),
 });
 
-// about collection schema
-const aboutCollection = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/about" }),
-  schema: z.object({
-    ...commonFields,
-  }),
-});
-
-// contact collection schema
-const contactCollection = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/contact" }),
-  schema: z.object({
-    ...commonFields,
-  }),
-});
-
 // Homepage collection schema
 const homepageCollection = defineCollection({
-  loader: glob({ pattern: "**/-*.{md,mdx}", base: "src/content/homepage" }),
+  loader: glob({ pattern: "index.{md,mdx}", base: "src/content/homepage" }),
   schema: z.object({
     banner: z.object({
       title: z.string(),
@@ -103,11 +87,11 @@ const homepageCollection = defineCollection({
   }),
 });
 
-// Call to Action collection schema
+// Call to Action section (homepage)
 const ctaSectionCollection = defineCollection({
   loader: glob({
     pattern: "call-to-action.{md,mdx}",
-    base: "src/content/sections",
+    base: "src/content/homepage",
   }),
   schema: z.object({
     enable: z.boolean(),
@@ -122,11 +106,11 @@ const ctaSectionCollection = defineCollection({
   }),
 });
 
-// Testimonials Section collection schema
+// Testimonials section (homepage)
 const testimonialSectionCollection = defineCollection({
   loader: glob({
     pattern: "testimonial.{md,mdx}",
-    base: "src/content/sections",
+    base: "src/content/homepage",
   }),
   schema: z.object({
     enable: z.boolean(),
@@ -145,15 +129,12 @@ const testimonialSectionCollection = defineCollection({
 
 // Export collections
 export const collections = {
-  // Pages
+  pages: pagesCollection,
   homepage: homepageCollection,
   blog: blogCollection,
   authors: authorsCollection,
-  pages: pagesCollection,
-  about: aboutCollection,
-  contact: contactCollection,
 
-  // sections
+  // Homepage sections (separate Astro collections for type safety, same directory)
   ctaSection: ctaSectionCollection,
   testimonialSection: testimonialSectionCollection,
 };

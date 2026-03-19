@@ -4,7 +4,7 @@ import Base from "@/layouts/Base.astro";
 import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
 import PageHeader from "@/partials/PageHeader.astro";
 
-const authorIndex = await getListPage("authors", "-index");
+const authorIndex = await getListPage("authors", "index");
 
 if (authorIndex.data.draft) {
   return Astro.redirect("/404");

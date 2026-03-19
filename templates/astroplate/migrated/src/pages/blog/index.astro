@@ -11,7 +11,7 @@ import PostSidebar from "@/partials/PostSidebar.astro";
 
 const BLOG_FOLDER = "blog";
 
-const postIndex = await getListPage(BLOG_FOLDER, "-index");
+const postIndex = await getListPage(BLOG_FOLDER, "index");
 if (postIndex.data.draft) {
   return Astro.redirect("/404");
 }

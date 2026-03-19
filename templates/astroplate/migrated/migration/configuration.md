@@ -55,6 +55,15 @@ Collection-specific inputs are scoped to their collection's `_inputs`:
 
 Global inputs cover fields used across multiple collections: `title`, `meta_title`, `description`, `image`, `date`, `draft`, `enable`, `content`, `link`, `label`, `name`.
 
+### Schemas for index pages
+
+Collections with `index.md` files have separate schemas to differentiate the index page from regular items:
+
+- **blog**: `default` (Blog Post) and `blog_index` (Blog Index) schemas in `.cloudcannon/schemas/`
+- **authors**: `default` (Author) and `authors_index` (Authors Index) schemas in `.cloudcannon/schemas/`
+
+The `[slug]` URL pattern collapses `index` to an empty string, so `blog/index.md` resolves to `/blog/` and `authors/index.md` resolves to `/authors/` without any special URL handling.
+
 ### _structures
 
 Global structures for: `social` (author social links), `features` (homepage feature blocks), `testimonials` (testimonial entries).

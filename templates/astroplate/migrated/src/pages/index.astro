@@ -7,7 +7,7 @@ import CallToAction from "@/partials/CallToAction.astro";
 import Testimonial from "@/partials/Testimonial.astro";
 import { FaCheck } from "react-icons/fa";
 
-const homepage = await getListPage("homepage", "-index");
+const homepage = await getListPage("homepage", "index");
 const call_to_action = await getListPage("ctaSection", "call-to-action");
 const testimonial = await getListPage("testimonialSection", "testimonial");
 
@@ -51,7 +51,7 @@ const { banner, features } = homepage.data;
         </div>
         {
           banner.image && (
-            <div class="col-12" data-editable="image" data-prop="banner.image">
+            <div class="col-12" data-editable="image" data-prop-src="banner.image">
               <ImageMod
                 src={banner.image}
                 height={380}
@@ -80,7 +80,7 @@ const { banner, features } = homepage.data;
               <div
                 class={`mb:md-0 mb-6 md:col-5 ${index % 2 !== 0 && "md:order-2"}`}
                 data-editable="image"
-                data-prop="image"
+                data-prop-src="image"
               >
                 <ImageMod
                   src={feature.image}

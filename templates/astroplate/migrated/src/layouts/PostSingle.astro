@@ -25,7 +25,7 @@ const { title, description, author, categories, image, date, tags } = post.data;
       <article class="lg:col-10">
         {
           image && (
-            <div class="mb-10" data-editable="image" data-prop="image">
+            <div class="mb-10" data-editable="image" data-prop-src="image">
               <ImageMod
                 src={image}
                 height={500}

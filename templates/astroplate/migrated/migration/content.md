@@ -8,9 +8,9 @@ Content is well-structured overall. All field names use `snake_case`, dates use 
 
 ### Blog
 
-All 4 posts and the `-index.md` have consistent frontmatter with all expected fields. `draft: false` is present in every file. Dates are ISO 8601 (`2022-04-04T05:00:00Z`). Image paths are absolute (`/images/image-placeholder.png`). No issues.
+All 4 posts and `index.md` have consistent frontmatter with all expected fields. `draft: false` is present in every file. Dates are ISO 8601 (`2022-04-04T05:00:00Z`). Image paths are absolute (`/images/image-placeholder.png`). No issues.
 
-The `-index.md` has `meta_title: ""` and `image: ""` (empty strings rather than omitted). These work fine but result in empty fields visible in the editor.
+The `index.md` (renamed from `-index.md`) has `meta_title: ""` and `image: ""` (empty strings rather than omitted). These work fine but result in empty fields visible in the editor.
 
 ### Authors
 
@@ -18,7 +18,7 @@ Individual author files (`john-doe.md`, `sam-wilson.md`, `william-jacob.md`) are
 
 Authors also have an `email` field in frontmatter that is **not in the Zod schema**. Astro's content layer silently drops unrecognized fields at build time, so this data is unused. The email appears to be leftover from a previous setup. No content change needed -- if email is desired, it should be added to the schema in `content.config.ts`.
 
-The `-index.md` has all expected fields including `draft: false`.
+The `index.md` (renamed from `-index.md`) has all expected fields including `draft: false`.
 
 ### Pages
 
@@ -26,11 +26,11 @@ Both `privacy-policy.md` and `elements.mdx` have consistent frontmatter with `dr
 
 ### About, Contact
 
-Both `-index.md` files have consistent frontmatter with `draft: false`. No issues.
+Both files (originally `-index.md`, now merged into `pages` collection as `about.md` and `contact.md`) have consistent frontmatter with `draft: false`. No issues.
 
 ### Homepage
 
-`-index.md` has the expected `banner` and `features` structure. No `draft` field, which is correct -- the homepage schema doesn't define one.
+`index.md` (renamed from `-index.md`) has the expected `banner` and `features` structure. No `draft` field, which is correct -- the homepage schema doesn't define one.
 
 ### Sections
 
@@ -40,9 +40,9 @@ Both `-index.md` files have consistent frontmatter with `draft: false`. No issue
 
 All frontmatter keys use `snake_case` consistently (`meta_title`, `build_command`, etc.). No CloudCannon reserved key collisions (`_inputs`, `_structures`, `_schema`).
 
-## Index Files (`-index.md`)
+## Index Files (renamed from `-index.md` to `index.md`)
 
-Present in: blog, authors, about, contact, homepage. These serve as listing page metadata and are fetched via `getListPage(collection, "-index")`. No changes needed to the files. The `-index.md` convention is handled in the CloudCannon config via collection setup.
+Present in: blog, authors, homepage. (About and contact were merged into the `pages` collection.) These serve as listing page metadata and are fetched via `getListPage(collection, "index")`. Renamed from `-index.md` to `index.md` so that CloudCannon's `[slug]` collapse resolves them to the correct listing URL (e.g. `/blog/` for `blog/index.md`). The `getSinglePage()` helper was updated to filter on `id === "index"` instead of `id.startsWith("-")`. Each collection with an index file has a separate schema in the CloudCannon config to differentiate index pages from regular items.
 
 ## Content References (String-Based)
 
@@ -73,6 +73,7 @@ Blog posts reference authors by name string (`author: "John Doe"`). Matching is 
 ## Changes Made
 
 1. **Added `draft: false`** to `john-doe.md`, `sam-wilson.md`, `william-jacob.md` so the toggle is visible in CloudCannon's editor.
+2. **Renamed `-index.md` to `index.md`** in blog, authors, and homepage collections. Updated `getSinglePage()` to filter on `id === "index"` and all `getListPage()` callers to use `"index"`. Updated the homepage collection glob from `**/-*.{md,mdx}` to `index.{md,mdx}`.
 
 ## Changes Not Made (Document Only)
 

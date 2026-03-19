@@ -10,13 +10,13 @@
 
 ### Homepage (`src/pages/index.astro`)
 
-**Banner** (data from `homepage/-index.md`):
+**Banner** (data from `homepage/index.md`):
 - `banner.title` -- text editable on `<h1>`
 - `banner.content` -- text editable on `<p>`
 - `banner.image` -- image editable wrapping `<ImageMod>`
 - `banner.button.label` -- text editable on `<span>` inside the CTA link
 
-**Features** (array from `homepage/-index.md`):
+**Features** (array from `homepage/index.md`):
 - `features` -- array editable on container `<div>`
 - Each feature is an `array-item` with:
   - `title` -- text editable on `<h2>`

@@ -19,14 +19,14 @@ export const getSinglePage = async <C extends CollectionKey>(
 ): Promise<CollectionEntry<C>[]> => {
   const allPages = await getCollection(
     collectionName,
-    ({ data, id }) => !(data as PageData)?.draft && !id.startsWith("-")
+    ({ data, id }) => !(data as PageData)?.draft && id !== "index"
   );
   return allPages;
 };
 
 export const getListPage = async <C extends CollectionKey>(
   collectionName: C,
-  documentId: "-index" | string
+  documentId: "index" | string
 ): Promise<CollectionEntry<C>> => {
   const data = (await getEntry(
     collectionName,
