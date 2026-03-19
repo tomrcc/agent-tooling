@@ -6,9 +6,20 @@ import PageHeader from "@/partials/PageHeader.astro";
 
 const contactIndex = await getListPage("pages", "contact");
 const { contact_form_action }: { contact_form_action: string } = config.params;
-const { title, description, meta_title, image } = contactIndex.data;
+const data = contactIndex.data;
+if (!("name_label" in data)) throw new Error("Expected contact page schema");
+const {
+  title,
+  description,
+  meta_title,
+  image,
+  name_label,
+  email_label,
+  message_label,
+  submit_label,
+} = data;
 
-if (contactIndex.data.draft) {
+if (data.draft) {
   return Astro.redirect("/404");
 }
 ---
@@ -27,7 +38,8 @@ if (contactIndex.data.draft) {
           <form action={contact_form_action} method="POST">
             <div class="mb-6">
               <label for="name" class="form-label">
-                Full Name <span class="text-red-500">*</span>
+                <span data-editable="text" data-prop="name_label">{name_label}</span>
+                <span class="text-red-500">*</span>
               </label>
               <input
                 id="name"
@@ -40,7 +52,8 @@ if (contactIndex.data.draft) {
             </div>
             <div class="mb-6">
               <label for="email" class="form-label">
-                Working Mail <span class="text-red-500">*</span>
+                <span data-editable="text" data-prop="email_label">{email_label}</span>
+                <span class="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -53,7 +66,8 @@ if (contactIndex.data.draft) {
             </div>
             <div class="mb-6">
               <label for="message" class="form-label">
-                Anything else? <span class="text-red-500">*</span>
+                <span data-editable="text" data-prop="message_label">{message_label}</span>
+                <span class="text-red-500">*</span>
               </label>
               <textarea
                 id="message"
@@ -63,7 +77,9 @@ if (contactIndex.data.draft) {
                 required
                 rows="8"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">
+              <span data-editable="text" data-prop="submit_label">{submit_label}</span>
+            </button>
           </form>
         </div>
       </div>

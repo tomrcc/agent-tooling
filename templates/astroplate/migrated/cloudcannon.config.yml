@@ -4,11 +4,19 @@ paths:
   uploads: public/images
 timezone: Pacific/Auckland
 
+data_config:
+  call-to-action:
+    path: src/data/call-to-action.json
+  testimonial:
+    path: src/data/testimonial.json
+
 collection_groups:
   - heading: Pages
     collections:
       - pages
-      - homepage
+  - heading: Data
+    collections:
+      - data
   - heading: Blogging
     collections:
       - blog
@@ -27,6 +35,16 @@ collections_config:
     _enabled_editors:
       - visual
       - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/page.md
+        name: Page
+      homepage:
+        path: .cloudcannon/schemas/homepage.md
+        name: Homepage
+      contact:
+        path: .cloudcannon/schemas/contact.md
+        name: Contact
   blog:
     path: src/content/blog
     url: "/blog/[slug]/"
@@ -77,20 +95,6 @@ collections_config:
       icon:
         type: text
         comment: React Icons component name (e.g. FaGithub)
-  homepage:
-    path: src/content/homepage
-    url: "/"
-    icon: home
-    glob:
-      - "**/*.{md,mdx}"
-    _enabled_editors:
-      - visual
-      - data
-    _inputs:
-      designation:
-        type: text
-      avatar:
-        type: image
   config:
     path: src/config
     icon: settings
@@ -125,6 +129,10 @@ _inputs:
     type: text
   name:
     type: text
+  designation:
+    type: text
+  avatar:
+    type: image
 
 _structures:
   social:

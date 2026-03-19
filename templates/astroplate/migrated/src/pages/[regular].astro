@@ -35,7 +35,12 @@ const { Content } = await render(page);
     <div class="container">
       <div class="row justify-center">
         <div class="lg:col-10">
-          <div class="content">
+          <div
+            class="content"
+            data-editable="text"
+            data-type="block"
+            data-prop="@content"
+          >
             <Content />
           </div>
         </div>

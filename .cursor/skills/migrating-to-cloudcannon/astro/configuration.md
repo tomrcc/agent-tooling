@@ -84,25 +84,74 @@ If a single-file collection uses the same schema as `pages` (e.g. an `about` or 
 - Update the page's rendering template in `src/pages/` to fetch from the `pages` collection instead
 - The page still uses its own rendering template for routing
 
-### Strategy B: Group related files into a meaningful collection
+### Strategy B: Use `data_config` for reusable section data
 
-If a page has a unique schema that justifies its own collection (e.g. a homepage with structured `banner`/`features` data), check whether it has related data files -- sections, partials, or other content files -- that are only used on that page. If so, group them together:
+If a page has section data (CTA, testimonials, etc.) that is separate from the page's own content, extract it into JSON data files and configure `data_config` rather than creating extra collections:
 
-- Move the related files into the same directory as the page (e.g. `src/content/sections/call-to-action.md` -> `src/content/homepage/call-to-action.md`)
-- In `content.config.ts`, keep separate collection definitions for type safety (different Zod schemas) but point them at the same base directory with file-specific glob patterns
-- In CloudCannon, configure a single collection covering the whole directory
-- Set the collection `url` to the page's URL (e.g. `"/"` for homepage) -- clicking "open" on any file in the collection navigates to the page where all sections are visible
+- Move section data from `.md` frontmatter into `src/data/*.json` files
+- Add `data_config` entries in `cloudcannon.config.yml` pointing to each JSON file
+- Import the JSON directly in Astro components (no collection needed)
+- Use `@data[key].path` editable regions for visual editing
 
-Only group files that are exclusive to one page. Shared data files stay in their own collection.
+This avoids the `@file` limitation where CloudCannon resolves the file's URL from its collection's `url` pattern and navigates away from the current page. Data files don't have URL patterns, so `@data` editables work correctly on any page.
 
-### Fallback: Merge unique pages into `pages` with multiple schemas
+For pages with unique schemas (e.g. a homepage with `banner`/`features`), merge the page into the `pages` collection using a `z.union` in the Zod schema and CC schemas for the correct editor fields (see Fallback below).
+
+### Fallback: Merge unique pages into `pages` with a z.union
 
 If a page has a unique schema but doesn't have related files that would make the collection more than one file, merge it into the `pages` collection instead of leaving it as a singleton:
 
-- Add a `type` discriminator field to the frontmatter (e.g. `type: "homepage"` vs `type: "page"`)
-- In `content.config.ts`, use a Zod discriminated union on `type` so both schemas are type-safe within the same collection
+- Define separate named Zod schemas for each page type (e.g. `pageSchema`, `contactPageSchema`, `homepageSchema`), each spreading `commonFields` plus their own required fields
+- Combine them with `z.union([mostSpecific, ..., leastSpecific])` -- Zod tries each member in order and returns the first that validates, so ordering most-specific first ensures correct discrimination without a discriminator field
 - In CloudCannon, define multiple schemas for the `pages` collection so editors get the correct fields for each page type
+- In templates, narrow the union type with an `in` check (e.g. `if (!("banner" in data)) throw new Error(...)`) before accessing schema-specific fields
 - The page still uses its own rendering template in `src/pages/` -- routing is independent of collection structure
+
+```typescript
+const pageSchema = z.object({ ...commonFields });
+const contactPageSchema = z.object({ ...commonFields, name_label: z.string(), /* ... */ });
+const homepageSchema = z.object({ ...commonFields, banner: z.object({ /* ... */ }), features: z.array(/* ... */) });
+
+const pagesCollection = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/pages" }),
+  schema: z.union([homepageSchema, contactPageSchema, pageSchema]),
+});
+```
+
+No discriminator field is needed -- the required fields themselves differentiate each schema. Homepage requires `banner`/`features`, contact requires form labels, and the default page is the fallback with just common fields.
+
+Every Zod schema in the union should have a matching CC schema in `.cloudcannon/schemas/` and a corresponding entry under the collection's `schemas` key in `cloudcannon.config.yml`. Add `_schema: <key>` to each content file's frontmatter so CloudCannon matches it explicitly rather than guessing from the frontmatter shape. The Zod schemas control build-time validation; the CC schemas control which fields editors see in the CMS.
+
+## Data config for shared data
+
+Use `data_config` when you have reusable data (CTAs, testimonials, site settings) that doesn't belong in a content collection. Data files are edited in the CloudCannon data editor and referenced from templates via JSON import.
+
+```yaml
+data_config:
+  call-to-action:
+    path: src/data/call-to-action.json
+  testimonial:
+    path: src/data/testimonial.json
+```
+
+In Astro templates, import the JSON directly:
+
+```astro
+---
+import callToActionData from "@/data/call-to-action.json";
+---
+<CallToAction call_to_action={callToActionData} />
+```
+
+For visual editing, use `@data[key].path` syntax in editable regions:
+
+```astro
+<h2 data-editable="text" data-prop="@data[call-to-action].title">
+  {call_to_action.title}
+</h2>
+```
+
+Data files appear in the sidebar under their own collection group (typically "Data"). Configure `_inputs` and `_structures` globally since data files don't have collection-scoped config.
 
 ## Collection URLs
 

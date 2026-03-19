@@ -49,54 +49,24 @@ const authorsCollection = defineCollection({
   }),
 });
 
-// Pages collection schema
-const pagesCollection = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/pages" }),
-  schema: z.object({
-    ...commonFields,
-  }),
+// Page schemas — z.union tries most-specific first
+const pageSchema = z.object({
+  ...commonFields,
 });
 
-// Homepage collection schema
-const homepageCollection = defineCollection({
-  loader: glob({ pattern: "index.{md,mdx}", base: "src/content/homepage" }),
-  schema: z.object({
-    banner: z.object({
-      title: z.string(),
-      content: z.string(),
-      image: z.string(),
-      button: z.object({
-        enable: z.boolean(),
-        label: z.string(),
-        link: z.string(),
-      }),
-    }),
-    features: z.array(
-      z.object({
-        title: z.string(),
-        image: z.string(),
-        content: z.string(),
-        bulletpoints: z.array(z.string()),
-        button: z.object({
-          enable: z.boolean(),
-          label: z.string(),
-          link: z.string(),
-        }),
-      }),
-    ),
-  }),
+const contactPageSchema = z.object({
+  ...commonFields,
+  name_label: z.string(),
+  email_label: z.string(),
+  message_label: z.string(),
+  submit_label: z.string(),
 });
 
-// Call to Action section (homepage)
-const ctaSectionCollection = defineCollection({
-  loader: glob({
-    pattern: "call-to-action.{md,mdx}",
-    base: "src/content/homepage",
-  }),
-  schema: z.object({
-    enable: z.boolean(),
+const homepageSchema = z.object({
+  ...commonFields,
+  banner: z.object({
     title: z.string(),
-    description: z.string(),
+    content: z.string(),
     image: z.string(),
     button: z.object({
       enable: z.boolean(),
@@ -104,37 +74,29 @@ const ctaSectionCollection = defineCollection({
       link: z.string(),
     }),
   }),
+  features: z.array(
+    z.object({
+      title: z.string(),
+      image: z.string(),
+      content: z.string(),
+      bulletpoints: z.array(z.string()),
+      button: z.object({
+        enable: z.boolean(),
+        label: z.string(),
+        link: z.string(),
+      }),
+    }),
+  ),
 });
 
-// Testimonials section (homepage)
-const testimonialSectionCollection = defineCollection({
-  loader: glob({
-    pattern: "testimonial.{md,mdx}",
-    base: "src/content/homepage",
-  }),
-  schema: z.object({
-    enable: z.boolean(),
-    title: z.string(),
-    description: z.string(),
-    testimonials: z.array(
-      z.object({
-        name: z.string(),
-        avatar: z.string(),
-        designation: z.string(),
-        content: z.string(),
-      }),
-    ),
-  }),
+const pagesCollection = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/pages" }),
+  schema: z.union([homepageSchema, contactPageSchema, pageSchema]),
 });
 
 // Export collections
 export const collections = {
   pages: pagesCollection,
-  homepage: homepageCollection,
   blog: blogCollection,
   authors: authorsCollection,
-
-  // Homepage sections (separate Astro collections for type safety, same directory)
-  ctaSection: ctaSectionCollection,
-  testimonialSection: testimonialSectionCollection,
 };

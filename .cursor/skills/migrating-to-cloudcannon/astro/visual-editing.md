@@ -155,17 +155,44 @@ data-prop="banner.title"    -> frontmatter.banner.title
 data-prop="@content"        -> file content body (markdown)
 ```
 
+### Data file paths (shared data editing)
+
+When a section's data comes from a data file configured in `data_config` (e.g. a shared CTA or testimonial section), use `@data[key].path` syntax:
+
+```
+data-prop="@data[call-to-action].title"
+data-prop="@data[call-to-action].description"
+data-prop-src="@data[call-to-action].image"
+data-prop="@data[testimonial].title"
+```
+
+The key matches the `data_config` entry name in `cloudcannon.config.yml`. This is the recommended approach for reusable data that appears on multiple pages or is shared across components.
+
 ### Absolute file paths (cross-file editing)
 
-When a section's data comes from a different file (e.g. a shared CTA section rendered on the homepage), use absolute file paths:
+Use `@file[path]` for editing data in a specific file. File paths are relative to the repository root:
 
 ```
-data-prop="@file[src/content/sections/call-to-action.md].title"
-data-prop="@file[src/content/sections/call-to-action.md].description"
-data-prop="@file[src/content/sections/call-to-action.md].image"
+data-prop="@file[src/content/sections/cta.md].title"
 ```
 
-File paths are relative to the repository root.
+**Limitation:** `@file` targets a specific file. If that file is in a collection with a `url` pattern, CloudCannon resolves the URL from the pattern and may navigate away from the current page when the user clicks the editable region. For shared/reusable data that appears on pages other than the file's own URL, prefer `data_config` + `@data` instead.
+
+### Content body editing
+
+Use `@content` to make the markdown body of a content file editable as rich text:
+
+```astro
+<div class="content" data-editable="text" data-type="block" data-prop="@content">
+  <Content />
+</div>
+```
+
+This works on any page backed by a content collection file -- about pages, blog posts, `[regular].astro` catch-all pages, etc.
+
+### Non-source editables for hardcoded pages
+
+When a page template (e.g. `contact.astro`) has its own rendering logic but reads data from a `.md` file in the pages collection, the editable regions still use relative paths since the collection file provides the data context. The `_enabled_editors` and `_schema` settings in CloudCannon ensure editors see the right fields.
 
 ### Nested relative paths (inside arrays)
 

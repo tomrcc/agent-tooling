@@ -36,27 +36,27 @@ const swiperOptions: SwiperOptions = {
 ---
 
 {
-  testimonial.data.enable && (
+  testimonial.enable && (
     <section class="section">
       <div class="container">
         <div class="row">
           <div class="mx-auto mb-12 text-center md:col-10 lg:col-8 xl:col-6">
             <h2
-              set:html={markdownify(testimonial.data.title)}
+              set:html={markdownify(testimonial.title)}
               class="mb-4"
               data-editable="text"
-              data-prop="@file[src/content/sections/testimonial.md].title"
+              data-prop="@data[testimonial].title"
             />
             <p
-              set:html={markdownify(testimonial.data.description)}
+              set:html={markdownify(testimonial.description)}
               data-editable="text"
-              data-prop="@file[src/content/sections/testimonial.md].description"
+              data-prop="@data[testimonial].description"
             />
           </div>
           <div class="col-12">
             <Swiper options={swiperOptions} class="testimonial-slider">
               <SwiperWrapper class={"mb-12"}>
-                {testimonial.data.testimonials.map(
+                {testimonial.testimonials.map(
                   (item: {
                     avatar: string;
                     content: string;
