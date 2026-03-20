@@ -65,7 +65,7 @@ Gadget produces a structural baseline. The following customizations are almost a
 - **`_structures`** -- define reusable component structures for array-based page building. Derive these from the component inventory in the audit.
 - **`collection_groups`** -- organize collections into sidebar groups for a clean editing experience.
 - **`_editables`** -- configure rich text editor toolbars per collection or globally.
-- **`_snippets_imports`** -- add snippet support for Astro component syntax. Use `"astro"` as the import key.
+- **`_snippets_imports`** and **`_snippets`** -- configure snippets for MDX components used in rich text content. Use `"mdx"` as the import key (there is no `"astro"` key). See [snippets.md](snippets.md) for the full workflow.
 - **`_select_data`** -- define shared dropdown options for fields used across collections.
 - **Schemas** -- define templates for creating new content files, based on the content patterns found in the audit.
 - **`file_config`** -- a root-level key that targets specific files via glob and scopes `_inputs` to them. Use it when key names would collide at broader scopes, or to configure inputs for settings/data files. Supports `$` to reference the root of the file or structure. Example:
@@ -245,8 +245,11 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
 - [ ] `file_config` entries exist for files with inputs not covered by global or collection-level config
+- [ ] Object inputs have `type: object` with `preview.icon` for a clean editor UI
 - [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures` (don't rely on naming conventions)
 - [ ] Structure previews have `icon` fallbacks where `image` may be empty
+- [ ] `_snippets_imports: mdx: { include: [] }` is set if the site uses MDX components in content (use `include: []` to avoid default snippets matching code blocks)
+- [ ] `_snippets` entries exist for each MDX component used in content files (see [snippets.md](snippets.md))
 
 ## Patterns and gotchas
 
@@ -273,6 +276,28 @@ preview:
   image:
     - key: avatar
 ```
+
+### Configure object inputs with preview icons
+
+When a data or config file has top-level object keys (e.g. `site`, `settings`, `metadata`), configure them as `type: object` with a `preview.icon` so they display a meaningful icon in the data editor instead of the default generic object icon:
+
+```yaml
+file_config:
+  - glob: src/config/config.json
+    _inputs:
+      site:
+        type: object
+        options:
+          preview:
+            icon: language
+      metadata:
+        type: object
+        options:
+          preview:
+            icon: manage_search
+```
+
+Use [Material Icons](https://fonts.google.com/icons) names. Pick icons that reflect the object's purpose (e.g. `tune` for settings, `analytics` for tracking, `forum` for comments).
 
 ### `_inputs` key collision across nesting levels
 

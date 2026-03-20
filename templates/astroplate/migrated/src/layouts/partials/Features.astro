@@ -3,7 +3,7 @@ import ImageMod from "@/components/ImageMod.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import { FaCheck } from "react-icons/fa";
 
-const { features } = Astro.props;
+const features = Object.values(Astro.props);
 ---
 
 <div data-editable="array" data-prop="">

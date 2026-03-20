@@ -24,9 +24,9 @@ See [audit.md](audit.md).
 
 ### Phase 2: Configuration
 
-Generate a baseline `cloudcannon.config.yml` using Gadget, then customize based on the audit findings.
+Generate a baseline `cloudcannon.config.yml` using Gadget, then customize based on the audit findings. If the site uses MDX components in content, configure snippets as part of this phase.
 
-See [configuration.md](configuration.md).
+See [configuration.md](configuration.md) and [snippets.md](snippets.md).
 
 ### Phase 3: Content
 

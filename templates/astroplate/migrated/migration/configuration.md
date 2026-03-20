@@ -67,3 +67,15 @@ The `[slug]` URL pattern collapses `index` to an empty string, so `blog/index.md
 ### _structures
 
 Global structures for: `social` (author social links), `features` (homepage feature blocks), `testimonials` (testimonial entries).
+
+### Snippets
+
+Seven MDX components from `elements.mdx` configured as snippets via `_snippets_imports: mdx: true` and custom `_snippets` entries:
+
+- **Template-based** (no `client:load`): `button` (`mdx_component`), `video` (`mdx_component`), `notice` (`mdx_paired_component`)
+- **Raw snippet syntax** (need `client:load` in output): `youtube`, `accordion`
+- **Nested snippets** (`allow_nested: true`): `tabs` (outer wrapper) + `tab` (inner items)
+
+Components are auto-imported via `astro-auto-import` — no import statements in content files. The `client:load` directive is included as literal text in raw snippet strings since the MDX templates can't output Astro directives.
+
+All raw snippets using the `key_values` parser require `root_value_delimiter: '='` in their `format:` block. This has no default — without it, CloudCannon cannot parse `key="value"` attribute pairs.

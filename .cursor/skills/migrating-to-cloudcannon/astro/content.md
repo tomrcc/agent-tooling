@@ -59,7 +59,7 @@ No content file changes are needed for this pattern.
 
 Check for:
 
-- **MDX components and shortcodes** -- auto-imported components or explicit `import` statements in `.mdx` files. CloudCannon's content editor can't render these. They're fine in files but won't be live-previewable. Document which files use them.
+- **MDX components and shortcodes** -- auto-imported components or explicit `import` statements in `.mdx` files. CloudCannon's content editor can't render these but can parse and re-serialize them if snippet configs are defined. Document which files use them, note each component's props, and whether `client:load` is used. This inventory feeds directly into the snippet configuration in Phase 2. See [snippets.md](snippets.md) for the full workflow.
 - **Inline HTML** in markdown. CloudCannon's rich text editor handles standard HTML, but complex embedded HTML (especially with `set:html` directives in the rendering template) may not round-trip cleanly. Usually not an issue for content bodies.
 - **Empty content bodies.** Index files and section data often have no body content (all data lives in frontmatter). This is normal and CloudCannon handles it fine.
 - **Remark/rehype plugin output.** If custom remark or rehype plugins transform markdown in ways that affect the content structure (e.g. adding IDs to headings, wrapping images), note them but don't change the content. The plugins run at build time.

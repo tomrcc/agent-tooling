@@ -1,3 +1,4 @@
+import "@cloudcannon/editable-regions/astro-react-renderer";
 import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
 import { registerReactComponent } from "@cloudcannon/editable-regions/react";
 import { AnnouncementDisplay } from "@/layouts/helpers/Announcement";

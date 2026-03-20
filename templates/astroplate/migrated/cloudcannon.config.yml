@@ -290,6 +290,179 @@ _structures:
           name:
           url:
 
+_snippets_imports:
+  mdx:
+    include: []
+
+_snippets:
+  button:
+    template: mdx_component
+    inline: false
+    preview:
+      text: Button
+      icon: smart_button
+    definitions:
+      component_name: Button
+      named_args:
+        - editor_key: label
+          type: string
+        - editor_key: link
+          type: string
+        - editor_key: style
+          type: string
+          optional: true
+        - editor_key: rel
+          type: string
+          optional: true
+          remove_empty: true
+    _inputs:
+      style:
+        type: select
+        options:
+          values:
+            - solid
+            - outline
+      link:
+        type: url
+
+  video:
+    template: mdx_component
+    inline: false
+    preview:
+      text: Video
+      icon: videocam
+    definitions:
+      component_name: Video
+      named_args:
+        - editor_key: src
+          type: string
+        - editor_key: width
+          type: string
+          optional: true
+        - editor_key: height
+          type: string
+          optional: true
+          remove_empty: true
+        - editor_key: title
+          type: string
+          optional: true
+          remove_empty: true
+    _inputs:
+      src:
+        type: url
+        comment: URL or path to video file
+
+  notice:
+    template: mdx_paired_component
+    inline: false
+    preview:
+      text: Notice
+      icon: info
+    definitions:
+      component_name: Notice
+      content_key: inner_content
+      named_args:
+        - editor_key: type
+          type: string
+    _inputs:
+      type:
+        type: select
+        options:
+          values:
+            - note
+            - tip
+            - info
+            - warning
+
+  youtube:
+    snippet: '<Youtube client:load [[named_args]] />'
+    inline: false
+    preview:
+      text: YouTube Video
+      icon: play_circle
+    params:
+      named_args:
+        parser: key_values
+        options:
+          models:
+            - editor_key: id
+              type: string
+            - editor_key: title
+              type: string
+          format:
+            root_value_delimiter: '='
+            string_boundary:
+              - '"'
+    _inputs:
+      id:
+        type: text
+        comment: YouTube video ID
+      title:
+        type: text
+
+  accordion:
+    snippet: '<Accordion client:load [[named_args]]>[[inner_content]]</Accordion>'
+    inline: false
+    preview:
+      text: Accordion
+      icon: expand_more
+    params:
+      named_args:
+        parser: key_values
+        options:
+          models:
+            - editor_key: title
+              type: string
+          format:
+            root_value_delimiter: '='
+            string_boundary:
+              - '"'
+      inner_content:
+        parser: content
+        options:
+          editor_key: inner_content
+    _inputs:
+      title:
+        type: text
+
+  tabs:
+    snippet: '<Tabs client:load>[[tabs_content]]</Tabs>'
+    inline: false
+    preview:
+      text: Tabs
+      icon: tab
+    params:
+      tabs_content:
+        parser: content
+        options:
+          editor_key: tabs_content
+          allow_nested: true
+
+  tab:
+    snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
+    inline: false
+    preview:
+      text: Tab
+      icon: tab
+    params:
+      named_args:
+        parser: key_values
+        options:
+          models:
+            - editor_key: name
+              type: string
+          format:
+            root_value_delimiter: '='
+            string_boundary:
+              - '"'
+      tab_content:
+        parser: content
+        options:
+          editor_key: tab_content
+    _inputs:
+      name:
+        type: text
+
 file_config:
   - glob: src/config/menu.json
     _inputs:
@@ -313,6 +486,41 @@ file_config:
           structures: _structures.social
   - glob: src/config/config.json
     _inputs:
+      site:
+        type: object
+        options:
+          preview:
+            icon: language
+      settings:
+        type: object
+        options:
+          preview:
+            icon: tune
+      params:
+        type: object
+        options:
+          preview:
+            icon: data_object
+      navigation_button:
+        type: object
+        options:
+          preview:
+            icon: smart_button
+      google_tag_manager:
+        type: object
+        options:
+          preview:
+            icon: analytics
+      disqus:
+        type: object
+        options:
+          preview:
+            icon: forum
+      metadata:
+        type: object
+        options:
+          preview:
+            icon: manage_search
       base_url:
         type: url
       base_path:

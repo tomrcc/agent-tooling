@@ -31,7 +31,7 @@ This returns the detected SSG and confidence scores. Use the result to select th
 Each SSG guide walks through these phases in order with SSG-specific instructions:
 
 1. **Audit** -- Analyze the site's content structure, components, routing, and build pipeline before making changes.
-2. **Configuration** -- Generate a baseline `cloudcannon.config.yml` and `.cloudcannon/initial-site-settings.json` using Gadget, then customize.
+2. **Configuration** -- Generate a baseline `cloudcannon.config.yml` and `.cloudcannon/initial-site-settings.json` using Gadget, then customize. Includes snippet configuration for sites using MDX/shortcode components in content (see [snippets.md](snippets.md)).
 3. **Content** -- Restructure content files if needed so they're CMS-friendly.
 4. **Visual editing** -- Add support for CloudCannon's Visual Editor with editable regions.
 5. **Build and test** -- Validate the migration works end-to-end.

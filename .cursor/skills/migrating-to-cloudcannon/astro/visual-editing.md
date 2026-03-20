@@ -48,6 +48,9 @@ This registers a Vite plugin that enables client-side rendering of Astro compone
 Create `src/cloudcannon/registerComponents.ts`. This is where Astro components are registered for live re-rendering in the Visual Editor. Initially it contains only commented-out examples -- uncomment and add registrations as components are wired up.
 
 ```typescript
+// Enable React components (e.g. react-icons) inside registered Astro components.
+// import "@cloudcannon/editable-regions/astro-react-renderer";
+
 // Register Astro components for live re-rendering in the Visual Editor.
 // Import each component and call registerAstroComponent() to enable
 // EditableComponent regions to re-render when data changes.
@@ -65,7 +68,8 @@ This keeps component registrations in one place rather than scattering them acro
 |---|---|
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
-| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for React component re-rendering |
+| `@cloudcannon/editable-regions/astro-react-renderer` | Side-effect import: registers React as a framework renderer for Astro's client-side SSR (needed when React components like `react-icons` are used inside registered Astro components) |
+| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering |
 
 ## Adding editable regions
 
@@ -235,6 +239,20 @@ A features section where each item has an optional button controlled by `button.
 
 Inside `Features.astro`, the array editables and text/image editables still work for inline editing and CRUD. The component handles the re-rendering.
 
+**Props for array-bound components:** When `data-prop` points to an array, the client-side renderer passes the array directly as props. Astro's template syntax can't pass a raw array, so spread the array and use `Object.values()` — this works identically for both SSR and client re-render:
+
+```astro
+<!-- Page template -->
+<editable-component data-component="features" data-prop="features">
+  <Features {...features} />
+</editable-component>
+
+<!-- Features.astro -->
+const features = Object.values(Astro.props);
+```
+
+This doesn't apply to object-bound components (like Banner) where spreading the object naturally matches what the renderer passes.
+
 **Array items inside a component don't take over the re-rendering boundary.** The component renderer produces the full HTML for the section, including all array items. The array editables provide CRUD controls, but visual output comes from the component renderer. This is more useful than array items re-rendering independently, since cross-item concerns (alternating layouts, index-based styles) are handled correctly.
 
 **When in doubt, make it a component.** The cost is one `registerAstroComponent()` call and a wrapper element. The benefit is that every data-driven change live-updates.
@@ -310,7 +328,7 @@ If a suitable container already exists in the markup (e.g. a `<section>` wrappin
 
 **Caveats:**
 - Astro components that use `astro:content` or `astro:assets` imports need the integration's Vite plugin (which shims these modules for client-side rendering)
-- React islands within components work via `addFrameworkRenderer()`
+- React components inside registered Astro components (e.g. `react-icons`) need the React framework renderer. Add `import "@cloudcannon/editable-regions/astro-react-renderer"` to `registerComponents.ts` -- this is a side-effect import that registers a generic React renderer for Astro's client-side SSR. Without it, any React component encountered during re-rendering will fail with "NoMatchingRenderer".
 - Components must be self-contained -- external data fetching won't work client-side
 
 Text/image editable regions provide the most value with the least complexity. Component registration is the next step for templates where full live preview is a priority.
