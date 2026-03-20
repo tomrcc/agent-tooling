@@ -97,6 +97,22 @@ Extends `EditableComponent` for editing snippets (shortcodes) within rich text c
 
 ---
 
+## When to use component editable regions
+
+Primitive editables (`EditableText`, `EditableImage`, `EditableArray`, `EditableSource`) handle their own DOM updates for the content they manage — typing text, swapping an image src, adding/removing/reordering array items. They do **not** re-render the surrounding template. This means non-content changes are invisible in the visual editor:
+
+- **Conditional elements** — a button that appears/disappears based on a boolean (`button.enable`)
+- **Style or class bindings** — alternating background colours, layout order driven by index
+- **Computed/derived content** — a badge or label that changes based on a category field
+
+When any of these exist inside a section, wrap the section in an `EditableComponent` (or `<editable-component>`) and register a renderer. The component re-renders its entire subtree whenever any of its data changes, so all conditionals, styles, and derived content update live.
+
+**Array items inside a component don't override the re-rendering boundary.** The component handles re-rendering for the entire tree, including nested arrays. Array editables within the component still provide their CRUD controls (add, remove, reorder, drag-and-drop), but the visual output comes from the component renderer.
+
+**When in doubt, prefer a component.** The cost is one registration call and a wrapper element. The benefit is that every data-driven change inside the section live-updates, not just text and images.
+
+---
+
 ## Path Resolution & Data Sources
 
 The `data-prop` attribute (and variants like `data-prop-src`, `data-prop-alt`) describes where the editable's data lives. Paths can be:

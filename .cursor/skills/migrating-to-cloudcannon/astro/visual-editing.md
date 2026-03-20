@@ -150,7 +150,7 @@ Wrap the container with `data-editable="array"` and each item with `data-editabl
 </div>
 ```
 
-Array items get CRUD controls (reorder, add, delete) automatically. Without a registered component renderer, items won't visually re-render after data changes -- the user saves and refreshes. Text/image editable regions within items still work in real-time.
+Array items get CRUD controls (reorder, add, delete) automatically. Without a registered component renderer, items won't visually re-render after data changes -- the user saves and refreshes. Text/image editable regions within items still work in real-time. If the array contains conditional elements, style bindings, or computed content, wrap the parent section as a component -- see [When to use a component editable region](#when-to-use-a-component-editable-region) below.
 
 ## Data path patterns
 
@@ -212,6 +212,32 @@ data-prop="title"    -> features[N].title
 data-prop="image"    -> features[N].image
 data-prop="content"  -> features[N].content
 ```
+
+## When to use a component editable region
+
+Primitive editables (text, image, array, source) handle their own DOM updates but can't trigger re-rendering of the surrounding template. This matters when a section contains data-driven behaviour beyond simple content — see [editable-regions.md > When to use component editable regions](../editable-regions.md#when-to-use-component-editable-regions) for the general principle.
+
+**Use a component when the section has any of:**
+
+- Conditional elements — `{feature.button.enable && (<a>...</a>)}` won't show/hide live without a re-render
+- Style/class bindings — `class={index % 2 === 0 && "bg-gradient"}` won't toggle live
+- Computed content — a label derived from another field won't update live
+
+**Example: features array with conditional buttons**
+
+A features section where each item has an optional button controlled by `button.enable`. As a plain array with primitive editables, toggling the button in the sidebar does nothing visually. Wrapping the section as a registered component means the entire features block re-renders on any change:
+
+```astro
+<editable-component data-component="features" data-prop="features">
+  <Features features={features} />
+</editable-component>
+```
+
+Inside `Features.astro`, the array editables and text/image editables still work for inline editing and CRUD. The component handles the re-rendering.
+
+**Array items inside a component don't take over the re-rendering boundary.** The component renderer produces the full HTML for the section, including all array items. The array editables provide CRUD controls, but visual output comes from the component renderer. This is more useful than array items re-rendering independently, since cross-item concerns (alternating layouts, index-based styles) are handled correctly.
+
+**When in doubt, make it a component.** The cost is one `registerAstroComponent()` call and a wrapper element. The benefit is that every data-driven change live-updates.
 
 ## What to make editable vs. what to leave for the sidebar
 

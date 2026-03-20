@@ -12,20 +12,24 @@
 
 Data source: `src/content/pages/index.md` (pages collection, `_schema: homepage`).
 
-**Banner** (frontmatter `banner` object):
-- `banner.title` -- text editable on `<h1>`
-- `banner.content` -- text editable on `<p>`
-- `banner.image` -- image editable wrapping `<ImageMod>`
-- `banner.button.label` -- text editable on `<span>` inside the CTA link
+**Banner** (frontmatter `banner` object) -- registered component (`banner`):
+- Extracted to `src/layouts/partials/Banner.astro`, wrapped with `<editable-component data-component="banner" data-prop="banner">`
+- `title` -- text editable on `<h1>`
+- `content` -- text editable on `<p>`
+- `image` -- image editable wrapping `<ImageMod>`
+- `button.label` -- text editable on `<span>` inside the CTA link
+- Made a component because `button.enable` and `image` are conditional -- toggling them wouldn't live-update without a full re-render
 
-**Features** (frontmatter `features` array):
-- `features` -- array editable on container `<div>`
-- Each feature is an `array-item` with:
+**Features** (frontmatter `features` array) -- registered component (`features`):
+- Extracted to `src/layouts/partials/Features.astro`, wrapped with `<editable-component data-component="features" data-prop="features">`
+- Array editable on container `<div>` with array-items for each feature
+- Each feature has:
   - `title` -- text editable on `<h2>`
   - `content` -- text editable on `<p>`
   - `image` -- image editable wrapping `<ImageMod>`
   - `button.label` -- text editable on `<span>` inside the link
-- Bulletpoints are not individually editable (array of strings with check icons -- better edited via the data panel)
+  - `bulletpoints` -- nested array editable with text editables per bullet
+- Made a component because `button.enable` is conditional and alternating styles (`bg-gradient`, `md:order-2`) are index-driven
 
 ### Call to Action (`src/layouts/partials/CallToAction.astro`)
 
@@ -82,7 +86,7 @@ Data source: `src/content/pages/contact.md` (pages collection).
 | Element | Reason |
 |---------|--------|
 | Testimonial items (inside Swiper) | Swiper carousel DOM management conflicts with editable regions |
-| Feature bulletpoints | Array of strings with icon elements -- better edited in data panel |
+| Feature bulletpoints | ~~Array of strings with icon elements -- better edited in data panel~~ Now editable inline (array + text editables) |
 | Blog metadata (author, date, categories, tags) | Sidebar/data editor fields, not visual content |
 | Navigation (Header/Footer) | Complex structure, config-driven (`menu.json`) -- data editor |
 | SEO fields (meta_title, description) | Not visible on page; sidebar fields |
@@ -92,4 +96,12 @@ Data source: `src/content/pages/contact.md` (pages collection).
 
 ## Component Re-rendering
 
-Not implemented in this migration. Text and image editable regions provide real-time inline editing. Full component re-rendering (via `registerAstroComponent()`) is a future enhancement for templates where full live preview is a priority.
+Registered components in `src/cloudcannon/registerComponents.ts`:
+
+| Component | Key | Type | Why |
+|-----------|-----|------|-----|
+| `Banner` | `banner` | Astro | Conditional button (`button.enable`) and image (`image &&`) |
+| `Features` | `features` | Astro | Conditional buttons, index-driven alternating styles |
+| `AnnouncementDisplay` | `announcement` | React | Conditional display (`enable` toggle), styled banner |
+
+Sections without conditional elements or style bindings (Testimonial, CallToAction, PageHeader) use primitive editables only -- text and image regions provide real-time inline editing without component registration.
