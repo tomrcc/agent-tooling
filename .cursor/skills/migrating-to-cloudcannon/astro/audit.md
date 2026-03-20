@@ -1,6 +1,12 @@
 # Audit (Astro)
 
-Analyze the site before making any changes. Use the sections below as a repeatable template -- copy the headings and fill in the details for each new migration. Output lives in the template's `migration/audit.md`.
+Analyze the site before making any changes. Start by running the audit script to gather data automatically:
+
+```bash
+bash .cursor/skills/migrating-to-cloudcannon/scripts/audit-astro.sh .
+```
+
+This runs Gadget detection and collects project metadata. Use its output as a starting point, then fill in the sections below with findings that require judgment. Output lives in the template's `migration/audit.md`.
 
 ## 1. Astro version and dependencies
 

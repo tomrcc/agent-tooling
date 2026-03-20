@@ -24,7 +24,7 @@ Before starting, identify the SSG. Run from the project root:
 gadget detect-ssg
 ```
 
-This returns the detected SSG and confidence scores. Use the result to select the correct SSG guide above. If the SSG isn't supported yet, the migration will need manual guidance informed by the core reference docs below.
+This returns the detected SSG and confidence scores. Use the result to select the correct SSG guide above.
 
 ## Migration phases (summary)
 
@@ -37,16 +37,6 @@ Each SSG guide walks through these phases in order with SSG-specific instruction
 5. **Build and test** -- Validate the migration works end-to-end.
 
 Not every site needs all phases. Small sites may skip Phase 3 if content is already well-structured. Visual editing (Phase 4) is optional but high-value.
-
-## Core reference docs
-
-These cover CloudCannon concepts that apply across all SSGs:
-
-- [gadget-guide.md](gadget-guide.md) -- Gadget CLI reference for generating CloudCannon config
-- [editable-regions.md](editable-regions.md) -- Editable region types, path syntax, and API actions
-- [editable-regions-lifecycle.md](editable-regions-lifecycle.md) -- Full lifecycle trace, core internals, and data flow
-
-For deeper dives into library internals or the JavaScript API, see the [deep-dive docs index](../../docs/README.md).
 
 ## Scripts
 

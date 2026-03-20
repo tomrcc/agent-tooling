@@ -84,7 +84,7 @@ The full set of configuration keys is defined in the [CloudCannon Configuration 
 
 ## Consolidating single-file collections
 
-After Gadget generates collections, review the result for collections that contain only a single file. A collection of one doesn't add value in the CloudCannon sidebar and should be consolidated. Two strategies, applied in order:
+After Gadget generates collections, review the result for collections that contain only a single file. A collection of one doesn't add value in the CloudCannon sidebar, is semantically less correct, and should be consolidated. Two strategies, applied in order:
 
 ### Strategy A: Merge simple pages into the `pages` collection
 
@@ -97,7 +97,7 @@ If a single-file collection uses the same schema as `pages` (e.g. an `about` or 
 
 ### Strategy B: Use `data_config` for reusable section data
 
-If a page has section data (CTA, testimonials, etc.) that is separate from the page's own content, extract it into JSON data files and configure `data_config` rather than creating extra collections:
+If a page has data coming from a file separate from the content page, or a page has data that is consistent across the site (CTA, testimonials, etc.), extract it into JSON data files and configure `data_config` rather than trying to group it into a collection with the page:
 
 - Move section data from `.md` frontmatter into `src/data/*.json` files
 - Add `data_config` entries in `cloudcannon.config.yml` pointing to each JSON file
@@ -116,7 +116,7 @@ If a page has a unique schema but doesn't have related files that would make the
 - Combine them with `z.union([mostSpecific, ..., leastSpecific])` -- Zod tries each member in order and returns the first that validates, so ordering most-specific first ensures correct discrimination without a discriminator field
 - In CloudCannon, define multiple schemas for the `pages` collection so editors get the correct fields for each page type
 - In templates, narrow the union type with an `in` check (e.g. `if (!("banner" in data)) throw new Error(...)`) before accessing schema-specific fields
-- The page still uses its own rendering template in `src/pages/` -- routing is independent of collection structure
+- The page still uses its own rendering template in `src/pages/` -- routing and layouts is independent of collection structure
 
 ```typescript
 const pageSchema = z.object({ ...commonFields });

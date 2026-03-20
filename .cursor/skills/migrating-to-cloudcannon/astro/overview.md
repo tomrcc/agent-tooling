@@ -26,7 +26,7 @@ See [audit.md](audit.md).
 
 Generate a baseline `cloudcannon.config.yml` using Gadget, then customize based on the audit findings.
 
-See [configuration.md](configuration.md). Also reference the [Gadget CLI guide](../gadget-guide.md).
+See [configuration.md](configuration.md).
 
 ### Phase 3: Content
 
@@ -38,7 +38,7 @@ See [content.md](content.md).
 
 Add `@cloudcannon/editable-regions` for inline editing in CloudCannon's Visual Editor.
 
-See [visual-editing.md](visual-editing.md). Also reference the core [editable regions overview](../editable-regions.md) and [lifecycle docs](../editable-regions-lifecycle.md) for deeper understanding.
+See [visual-editing.md](visual-editing.md). Also reference the core [editable regions overview](../editable-regions.md). Only read the [lifecycle docs](../editable-regions-lifecycle.md) if debugging unexpected editable region behavior.
 
 ### Phase 5: Build and test
 

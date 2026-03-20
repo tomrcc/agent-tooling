@@ -36,7 +36,10 @@ Some Astro templates use a `-index.md` file to hold listing/index page metadata 
 
 **Migration action:** Rename `-index.md` to `index.md` in every collection that uses this convention and refactor the helpers accordingly:
 
-1. **Rename the files.** `src/content/blog/-index.md` becomes `src/content/blog/index.md`, and so on for every collection.
+1. **Rename the files.** Run the rename script to handle this automatically:
+   ```bash
+   bash .cursor/skills/migrating-to-cloudcannon/scripts/rename-dash-index.sh .
+   ```
 2. **Update `getSinglePage()`** to filter on `id === "index"` instead of `id.startsWith("-")`.
 3. **Update `getListPage()` callers** from `"-index"` to `"index"`.
 

@@ -24,7 +24,6 @@ The skills and rules are **living documents** -- agents are expected to update t
     tone.md                           # Agent tone and coding conventions (alwaysApply)
     testing.md                        # What agents vs. humans should test (alwaysApply)
     casing.md                         # Naming conventions (applyIntelligently)
-    astro.md                          # Astro-specific patterns (applyIntelligently)
   skills/
     migrating-to-cloudcannon/         # Main migration workflow skill
       SKILL.md                        # Entry point -- detects SSG, routes to SSG guide
@@ -38,13 +37,75 @@ The skills and rules are **living documents** -- agents are expected to update t
         content.md                    # Phase 3: Content review for Astro
         visual-editing.md             # Phase 4: Visual editor setup for Astro
         build.md                      # Phase 5: Build and validate for Astro
-      scripts/                        # Deterministic migration scripts (TBD)
+      scripts/                        # Deterministic migration scripts
+        audit-astro.sh                # Phase 1: Gather audit data (Gadget + supplements)
+        rename-dash-index.sh          # Phase 3: Rename -index.md to index.md
+        setup-editable-regions.sh     # Phase 4: Install + configure editable regions
 
 templates/
   astroplate/
     pristine/                         # Untouched original (never modify)
     migrated/                         # Agent works here
 ```
+
+## Agent reading order
+
+When a user asks an agent to migrate a site, Cursor loads files in layers. Understanding this order helps when authoring or reviewing the tooling.
+
+### Dependency graph
+
+```mermaid
+flowchart TD
+    subgraph "Always-applied rules (auto-injected)"
+        R1[project-context.mdc]
+        R2[tone.mdc]
+        R3[gadget.mdc]
+        R4[testing.mdc]
+    end
+
+    subgraph "Intelligently-applied rules (injected by context)"
+        R5[casing.mdc]
+    end
+
+    SKILL[SKILL.md] -->|detects SSG| OV[astro/overview.md]
+
+    OV --> P1[Phase 1: audit.md]
+    OV --> P2[Phase 2: configuration.md]
+    OV --> P3[Phase 3: content.md]
+    OV --> P4[Phase 4: visual-editing.md]
+    OV --> P5[Phase 5: build.md]
+
+    P1 -.->|runs| S1[audit-astro.sh]
+    P2 -.->|references| GG[gadget-guide.md]
+    P3 -.->|runs| S2[rename-dash-index.sh]
+    P4 -.->|runs| S3[setup-editable-regions.sh]
+    P4 -.->|references| ER[editable-regions.md]
+    P4 -.->|debug only| ERL[editable-regions-lifecycle.md]
+
+    style R1 fill:#e0f0e0
+    style R2 fill:#e0f0e0
+    style R3 fill:#e0f0e0
+    style R4 fill:#e0f0e0
+    style R5 fill:#fff3cd
+    style S1 fill:#e0e0f0
+    style S2 fill:#e0e0f0
+    style S3 fill:#e0e0f0
+```
+
+### Layer breakdown
+
+| Layer | Files | When loaded |
+|-------|-------|-------------|
+| 1. Always-applied rules | `project-context`, `tone`, `gadget`, `testing` | Every conversation, automatically |
+| 2. Skill entry point | `SKILL.md` | Agent recognizes migration intent |
+| 3. SSG overview | `astro/overview.md` | Agent follows link from SKILL.md |
+| 4. Phase docs | `audit`, `configuration`, `content`, `visual-editing`, `build` | Sequentially as work progresses |
+| 5. Scripts | `audit-astro.sh`, `rename-dash-index.sh`, `setup-editable-regions.sh` | Invoked by phase docs during execution |
+| 6. Reference docs | `gadget-guide`, `editable-regions` | On-demand when a phase doc references them |
+| 7. Debug reference | `editable-regions-lifecycle` | Only if debugging unexpected editable region behavior |
+| 8. Intelligent rules | `casing` | Cursor injects when it deems relevant |
+
+The ideal agent reads phase docs just-in-time rather than front-loading all reference docs at once. The lifecycle doc should only be read when troubleshooting.
 
 ## Key principles
 

@@ -4,10 +4,26 @@ Guidance for adding CloudCannon Visual Editor support to an Astro site using `@c
 
 ## Setup steps
 
+Run the setup script to handle steps 1-3 automatically:
+
+```bash
+bash .cursor/skills/migrating-to-cloudcannon/scripts/setup-editable-regions.sh .
+```
+
+This installs the package (falling back to `--legacy-peer-deps` if needed), adds the Astro integration to `astro.config.mjs`, and creates `src/cloudcannon/registerComponents.ts`. Verify the results and then import the registerComponents script from the base layout:
+
+```astro
+<script>
+  import "@/cloudcannon/registerComponents";
+</script>
+```
+
+The details of what the script sets up are below for reference.
+
 ### 1. Install the package
 
 ```bash
-npm install @cloudcannon/editable-regions --legacy-peer-deps
+npm install @cloudcannon/editable-regions
 ```
 
 ### 2. Add the Astro integration
@@ -39,14 +55,6 @@ Create `src/cloudcannon/registerComponents.ts`. This is where Astro components a
 // import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
 // import CallToAction from "@/layouts/partials/CallToAction.astro";
 // registerAstroComponent("call-to-action", CallToAction);
-```
-
-Then import it from the base layout (loaded on every page):
-
-```astro
-<script>
-  import "@/cloudcannon/registerComponents";
-</script>
 ```
 
 This keeps component registrations in one place rather than scattering them across individual pages.
