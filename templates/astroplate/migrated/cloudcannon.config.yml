@@ -1,4 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+source: templates/astroplate/migrated
+
 paths:
   static: public
   uploads: public/images
