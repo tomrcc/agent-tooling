@@ -286,6 +286,7 @@ _structures:
             - key: name
           subtext:
             - key: url
+          icon: link
         value:
           name:
           url:
@@ -296,6 +297,7 @@ _structures:
         preview:
           text:
             - key: name
+          icon: arrow_drop_down
         value:
           name:
           url:
@@ -312,6 +314,7 @@ _structures:
             - key: name
           subtext:
             - key: url
+          icon: link
         value:
           name:
           url:
@@ -613,6 +616,46 @@ file_config:
         type: textarea
   - glob: src/config/theme.json
     _inputs:
+      colors:
+        type: object
+        options:
+          preview:
+            icon: palette
+      default:
+        type: object
+        options:
+          preview:
+            icon: light_mode
+      darkmode:
+        type: object
+        options:
+          preview:
+            icon: dark_mode
+      theme_color:
+        type: object
+        options:
+          preview:
+            icon: palette
+      text_color:
+        type: object
+        options:
+          preview:
+            icon: format_color_text
+      fonts:
+        type: object
+        options:
+          preview:
+            icon: text_fields
+      font_family:
+        type: object
+        options:
+          preview:
+            icon: font_download
+      font_size:
+        type: object
+        options:
+          preview:
+            icon: format_size
       theme_color.primary:
         type: color
       body:
