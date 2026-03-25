@@ -57,6 +57,13 @@ collections_config:
     _enabled_editors:
       - visual
       - data
+    add_options:
+      - name: Page
+        schema: default
+        icon: wysiwyg
+      - name: Page Builder
+        schema: page_builder
+        icon: dashboard
     schemas:
       default:
         path: templates/astroplate/migrated/.cloudcannon/schemas/page.md
@@ -67,11 +74,20 @@ collections_config:
       contact:
         path: templates/astroplate/migrated/.cloudcannon/schemas/contact.md
         name: Contact
+      page_builder:
+        path: templates/astroplate/migrated/.cloudcannon/schemas/page-builder.md
+        name: Page Builder
     _inputs:
       features:
         type: array
         options:
           structures: _structures.features
+      content_blocks:
+        type: array
+        options:
+          structures: _structures.content_blocks
+      hero_content:
+        type: textarea
   blog:
     path: src/content/blog
     url: "/blog/[slug]/"
@@ -81,6 +97,10 @@ collections_config:
     _enabled_editors:
       - visual
       - data
+    add_options:
+      - name: Blog Post
+        schema: default
+        icon: event_available
     schemas:
       default:
         path: templates/astroplate/migrated/.cloudcannon/schemas/post.md
@@ -111,6 +131,10 @@ collections_config:
     _enabled_editors:
       - visual
       - data
+    add_options:
+      - name: Author
+        schema: default
+        icon: person
     schemas:
       default:
         path: templates/astroplate/migrated/.cloudcannon/schemas/author.md
@@ -246,6 +270,78 @@ _structures:
             enable: true
             label:
             link:
+  content_blocks:
+    values:
+      - label: Banner
+        picker_preview:
+          text: Banner
+          icon: flag
+        preview:
+          text:
+            - key: title
+          icon: flag
+        _inputs:
+          title:
+            type: text
+          content:
+            type: textarea
+          image:
+            type: image
+        value:
+          _type: banner
+          title:
+          content:
+          image:
+          button:
+            enable: true
+            label:
+            link:
+      - label: Features
+        picker_preview:
+          text: Features
+          icon: star
+        preview:
+          text: Features
+          icon: star
+        _inputs:
+          items:
+            type: array
+            options:
+              structures: _structures.features
+        value:
+          _type: features
+          items: []
+      - label: Rich Text
+        picker_preview:
+          text: Rich Text
+          icon: article
+        preview:
+          text: Rich Text
+          icon: article
+        _inputs:
+          content:
+            type: markdown
+        value:
+          _type: rich_text
+          content:
+      - label: Call to Action
+        picker_preview:
+          text: Call to Action
+          icon: campaign
+        preview:
+          text: Call to Action
+          icon: campaign
+        value:
+          _type: call_to_action
+      - label: Testimonial
+        picker_preview:
+          text: Testimonial
+          icon: format_quote
+        preview:
+          text: Testimonial
+          icon: format_quote
+        value:
+          _type: testimonial
   testimonials:
     values:
       - label: Testimonial

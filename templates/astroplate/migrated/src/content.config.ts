@@ -89,9 +89,70 @@ const homepageSchema = z.object({
   ),
 });
 
+const bannerBlock = z.object({
+  _type: z.literal("banner"),
+  title: z.string(),
+  content: z.string(),
+  image: z.string().optional(),
+  button: z.object({
+    enable: z.boolean(),
+    label: z.string(),
+    link: z.string(),
+  }),
+});
+
+const featuresBlock = z.object({
+  _type: z.literal("features"),
+  items: z.array(
+    z.object({
+      title: z.string(),
+      image: z.string(),
+      content: z.string(),
+      bulletpoints: z.array(z.string()),
+      button: z.object({
+        enable: z.boolean(),
+        label: z.string(),
+        link: z.string(),
+      }),
+    }),
+  ),
+});
+
+const richTextBlock = z.object({
+  _type: z.literal("rich_text"),
+  content: z.string(),
+});
+
+const callToActionBlock = z.object({
+  _type: z.literal("call_to_action"),
+});
+
+const testimonialBlock = z.object({
+  _type: z.literal("testimonial"),
+});
+
+const contentBlock = z.discriminatedUnion("_type", [
+  bannerBlock,
+  featuresBlock,
+  richTextBlock,
+  callToActionBlock,
+  testimonialBlock,
+]);
+
+const pageBuilderSchema = z.object({
+  ...commonFields,
+  hero_content: z.string().optional(),
+  content_blocks: z.array(contentBlock),
+});
+
 const pagesCollection = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/pages" }),
-  schema: z.union([homepageSchema, contactPageSchema, pageSchema]),
+  schema: z.union([
+    homepageSchema,
+    contactPageSchema,
+    pageBuilderSchema,
+    pageSchema,
+  ]),
 });
 
 // Export collections

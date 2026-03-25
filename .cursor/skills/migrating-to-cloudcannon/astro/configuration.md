@@ -212,6 +212,144 @@ The `[slug]` collapse behavior means no special URL handling is needed -- `index
 
 Create the schema template files in `.cloudcannon/schemas/` with representative frontmatter for each type. These serve as blueprints when editors create new files from within CloudCannon.
 
+## Controlling the Add button with `add_options`
+
+By default, CloudCannon shows all schemas in the "+ Add" button dropdown. Use `add_options` to restrict which schemas editors can create new files from. This is important when a collection has schemas that should only exist once (like index pages) or schemas tied to dedicated routes that can't be duplicated.
+
+```yaml
+collections_config:
+  pages:
+    add_options:
+      - name: Page
+        schema: default
+        icon: wysiwyg
+      - name: Page Builder
+        schema: page_builder
+        icon: dashboard
+  blog:
+    add_options:
+      - name: Blog Post
+        schema: default
+        icon: event_available
+  authors:
+    add_options:
+      - name: Author
+        schema: default
+        icon: person
+```
+
+Each `add_options` entry supports:
+
+- **`name`** -- text shown in the menu. Defaults to the schema's `name`.
+- **`schema`** -- which schema template to use.
+- **`icon`** -- Material Icons name shown next to the text.
+- **`editor`** -- which editor to open (`content`, `data`, or `visual`).
+- **`base_path`** -- enforce a path for new files.
+
+When `add_options` is defined, **only** the listed options appear. Schemas not listed (like index page schemas or one-off page schemas) are still used for editing existing files but can't be used to create new ones.
+
+### When to use `add_options`
+
+- **Index pages in content collections**: Blog, authors, tags -- where `index.md` has its own schema but shouldn't be duplicable.
+- **One-off pages with dedicated routes**: Homepage, contact -- where the Astro route is hardcoded to load a specific entry. Creating a second one would have no route to display it.
+- **Page builder pages**: When offering multiple schema types for new pages, `add_options` curates the list editors see.
+
+## Page building patterns
+
+Two approaches for letting editors create new pages, which can coexist:
+
+### Schema-based pages (fixed layouts)
+
+Each schema maps to a pre-designed layout. The editor picks a schema from the Add dropdown and gets a page with a fixed structure. Editing happens through the data editor (frontmatter fields) and visual editor (source editables).
+
+This is the default approach -- every collection with schemas already supports it. Use it for pages with well-defined structures like contact forms, landing pages, or about pages.
+
+### Array-based page builder
+
+A schema with a `content_blocks` array lets editors assemble pages from reusable blocks in any order. The schema pairs a hardcoded hero section (guaranteeing an h1 and consistent page structure) with the flexible array below.
+
+**When to use it**: When the site has 3+ reusable block components (banners, features, CTAs, testimonials, rich text). Fewer than 3 blocks doesn't justify the added complexity.
+
+**Schema structure**:
+
+```yaml
+_schema: page_builder
+title:
+description:
+meta_title:
+image:
+hero_content:
+draft: false
+content_blocks: []
+```
+
+**Zod schema**: Add a `pageBuilderSchema` to the union with `content_blocks` as a discriminated union array:
+
+```typescript
+const contentBlock = z.discriminatedUnion("_type", [
+  z.object({ _type: z.literal("banner"), title: z.string(), /* ... */ }),
+  z.object({ _type: z.literal("features"), items: z.array(/* ... */) }),
+  z.object({ _type: z.literal("rich_text"), content: z.string() }),
+  z.object({ _type: z.literal("call_to_action") }),
+  z.object({ _type: z.literal("testimonial") }),
+]);
+
+const pageBuilderSchema = z.object({
+  ...commonFields,
+  hero_content: z.string().optional(),
+  content_blocks: z.array(contentBlock),
+});
+```
+
+Place `pageBuilderSchema` before the generic `pageSchema` in the union so it matches before the catch-all.
+
+**CC structures**: Define `_structures.content_blocks` with a value for each block type. Use `_type` as the discriminator field:
+
+```yaml
+_structures:
+  content_blocks:
+    values:
+      - label: Banner
+        value:
+          _type: banner
+          title:
+          content:
+          image:
+          button:
+            enable: true
+            label:
+            link:
+      - label: Rich Text
+        value:
+          _type: rich_text
+          content:
+      - label: Call to Action
+        value:
+          _type: call_to_action
+```
+
+**Reference blocks vs inline blocks**: Blocks like CTA and Testimonial that pull from global JSON data files are "reference" blocks -- they have no inline data, just a `_type` marker. The rendering code imports the global data and passes it to the component. This keeps the data DRY (edited once in the Data section) while letting editors place these sections anywhere on the page. Visual editing still works via `@data[key]` editable regions.
+
+**Rendering**: The catch-all route detects `content_blocks` in the page data and switches between plain body rendering and block-based rendering:
+
+```astro
+{isPageBuilder ? (
+  <>
+    {/* Hero section with h1 */}
+    {contentBlocks.map((block) => {
+      if (block._type === "banner") return <Banner {...block} />;
+      if (block._type === "call_to_action") return <CallToAction call_to_action={callToActionData} />;
+      // ...
+    })}
+  </>
+) : (
+  <>
+    <PageHeader title={title} />
+    <Content />
+  </>
+)}
+```
+
 ## Prebuild script
 
 If the audit identified pre-build scripts (theme generation, JSON generation, search indexing), create `.cloudcannon/prebuild`:
@@ -251,6 +389,8 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Structure previews have `icon` fallbacks where `image` may be empty
 - [ ] `_snippets` entries exist for each MDX component used in content files (no `_snippets_imports` needed). See [snippets.md](snippets.md)
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
+- [ ] `add_options` restricts the Add button to only creatable schemas (excludes index pages and one-off pages with dedicated routes)
+- [ ] If the site has 3+ reusable block components, a page builder schema with `content_blocks` array is available
 
 ## Patterns and gotchas
 
