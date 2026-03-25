@@ -1,0 +1,510 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+
+paths:
+  static: public
+  uploads: public/images
+
+markdown:
+  engine: commonmark
+  options:
+    gfm: true
+    table: true
+
+_editables:
+  content:
+    blockquote: true
+    bold: true
+    bulletedlist: true
+    format: p h1 h2 h3 h4 h5 h6
+    image: true
+    italic: true
+    link: true
+    numberedlist: true
+    removeformat: true
+    snippet: true
+    table: true
+
+collections_config:
+  pages:
+    path: src/content/pages
+    url: "/[slug]/"
+    icon: wysiwyg
+    _enabled_editors:
+      - visual
+      - data
+    schemas:
+      page_builder:
+        path: .cloudcannon/schemas/page-builder.md
+        name: Page Builder
+      default:
+        path: .cloudcannon/schemas/page.md
+        name: Page
+    add_options:
+      - name: Page
+        schema: default
+        icon: wysiwyg
+      - name: Page Builder
+        schema: page_builder
+        icon: dashboard
+  post:
+    path: src/data/post
+    url: "/[slug]/"
+    icon: event_available
+    _enabled_editors:
+      - content
+      - data
+
+data_config:
+  navigation:
+    path: src/data/navigation.json
+  config:
+    path: src/config.yaml
+
+collection_groups:
+  - heading: Pages
+    collections:
+      - pages
+  - heading: Blogging
+    collections:
+      - post
+  - heading: Site Settings
+    collections:
+      - data
+
+_inputs:
+  title:
+    type: text
+  subtitle:
+    type: textarea
+  tagline:
+    type: text
+  description:
+    type: textarea
+  content:
+    type: html
+    options:
+      allow_custom_markup: true
+  image:
+    type: image
+  src:
+    type: image
+  alt:
+    type: text
+  icon:
+    type: text
+    comment: "Icon name (e.g. tabler:rocket, flat-color-icons:template)"
+  href:
+    type: url
+  isDark:
+    type: switch
+  isReversed:
+    type: switch
+  isBeforeContent:
+    type: switch
+  isAfterContent:
+    type: switch
+  hasRibbon:
+    type: switch
+  draft:
+    type: switch
+  publishDate:
+    type: datetime
+    instance_value: now
+  updateDate:
+    type: datetime
+  layout:
+    type: select
+    options:
+      values:
+        - page
+        - landing
+  variant:
+    type: select
+    options:
+      values:
+        - primary
+        - secondary
+        - tertiary
+        - link
+  _schema:
+    type: select
+    options:
+      values:
+        - page_builder
+        - default
+    hidden: true
+  content_blocks:
+    type: array
+    options:
+      structures: _structures.content_blocks
+  metadata:
+    type: object
+    options:
+      preview:
+        icon: manage_search
+  columns:
+    type: number
+  rows:
+    type: number
+  count:
+    type: number
+  price:
+    type: text
+  period:
+    type: text
+  target:
+    type: select
+    options:
+      values:
+        - _blank
+        - _self
+  type:
+    type: text
+
+_structures:
+  content_blocks:
+    values:
+      - label: Hero
+        icon: flag
+        value:
+          _type: hero
+          title:
+          subtitle:
+          tagline:
+          actions: []
+          image:
+            src:
+            alt:
+      - label: Hero 2
+        icon: flag
+        value:
+          _type: hero2
+          title:
+          subtitle:
+          tagline:
+          actions: []
+          image:
+            src:
+            alt:
+      - label: Hero Text
+        icon: title
+        value:
+          _type: hero_text
+          title:
+          subtitle:
+          tagline:
+      - label: Note
+        icon: sticky_note_2
+        value:
+          _type: note
+          title:
+          description:
+          icon:
+      - label: Features
+        icon: auto_awesome
+        value:
+          _type: features
+          title:
+          subtitle:
+          tagline:
+          items: []
+          columns: 3
+      - label: Features 2
+        icon: auto_awesome
+        value:
+          _type: features2
+          title:
+          subtitle:
+          tagline:
+          items: []
+          columns: 3
+      - label: Features 3
+        icon: auto_awesome
+        value:
+          _type: features3
+          title:
+          subtitle:
+          tagline:
+          items: []
+          columns: 3
+          image:
+            src:
+            alt:
+      - label: Content
+        icon: article
+        value:
+          _type: content
+          title:
+          subtitle:
+          tagline:
+          content:
+          items: []
+          image:
+            src:
+            alt:
+          isReversed: false
+          isAfterContent: false
+      - label: Steps
+        icon: format_list_numbered
+        value:
+          _type: steps
+          title:
+          subtitle:
+          tagline:
+          items: []
+          image:
+            src:
+            alt:
+      - label: Steps 2
+        icon: format_list_numbered
+        value:
+          _type: steps2
+          title:
+          subtitle:
+          tagline:
+          items: []
+          callToAction:
+            text:
+            href:
+      - label: Call to Action
+        icon: ads_click
+        value:
+          _type: call_to_action
+          title:
+          subtitle:
+          actions: []
+      - label: FAQs
+        icon: quiz
+        value:
+          _type: faqs
+          title:
+          subtitle:
+          tagline:
+          items: []
+          columns: 1
+      - label: Stats
+        icon: bar_chart
+        value:
+          _type: stats
+          title:
+          subtitle:
+          stats: []
+      - label: Pricing
+        icon: payments
+        value:
+          _type: pricing
+          title:
+          subtitle:
+          prices: []
+      - label: Testimonials
+        icon: format_quote
+        value:
+          _type: testimonials
+          title:
+          subtitle:
+          testimonials: []
+      - label: Brands
+        icon: handshake
+        value:
+          _type: brands
+          title:
+          subtitle:
+          images: []
+      - label: Contact
+        icon: contact_mail
+        value:
+          _type: contact
+          title:
+          subtitle:
+          inputs: []
+          textarea:
+            label:
+          disclaimer:
+            label:
+          description:
+      - label: Blog Latest Posts
+        icon: rss_feed
+        value:
+          _type: blog_latest_posts
+          title:
+          information:
+      - label: Blog Highlighted Posts
+        icon: star
+        value:
+          _type: blog_highlighted_posts
+          title:
+          information:
+          postIds: []
+  actions:
+    values:
+      - label: Action
+        icon: ads_click
+        value:
+          text:
+          href:
+          variant: primary
+          icon:
+          target:
+  items:
+    values:
+      - label: Item
+        icon: list
+        value:
+          title:
+          description:
+          icon:
+  stats:
+    values:
+      - label: Stat
+        icon: bar_chart
+        value:
+          amount:
+          title:
+          icon:
+  prices:
+    values:
+      - label: Price
+        icon: payments
+        value:
+          title:
+          subtitle:
+          price:
+          period:
+          items: []
+          callToAction:
+            text:
+            href:
+          hasRibbon: false
+          ribbonTitle:
+  testimonials:
+    values:
+      - label: Testimonial
+        icon: format_quote
+        value:
+          testimonial:
+          name:
+          job:
+          image:
+            src:
+            alt:
+  inputs:
+    values:
+      - label: Input
+        icon: input
+        value:
+          type: text
+          name:
+          label:
+          placeholder:
+  images:
+    values:
+      - label: Image
+        icon: image
+        value:
+          src:
+          alt:
+  header_links:
+    values:
+      - label: Link
+        icon: link
+        value:
+          text:
+          href:
+      - label: Dropdown
+        icon: arrow_drop_down
+        value:
+          text:
+          links: []
+  footer_link_groups:
+    values:
+      - label: Link Group
+        icon: folder
+        value:
+          title:
+          links: []
+  social_links:
+    values:
+      - label: Social Link
+        icon: share
+        value:
+          ariaLabel:
+          icon:
+          href:
+
+_snippets:
+  logo:
+    template: mdx_component
+    inline: false
+    preview:
+      text: Logo
+      icon: image
+    definitions:
+      component_name: Logo
+      named_args: []
+  youtube:
+    template: mdx_component
+    inline: false
+    preview:
+      text: YouTube Video
+      icon: play_circle
+    definitions:
+      component_name: YouTube
+      named_args:
+        - editor_key: id
+          type: string
+  tweet:
+    template: mdx_component
+    inline: false
+    preview:
+      text: Tweet
+      icon: chat
+    definitions:
+      component_name: Tweet
+      named_args:
+        - editor_key: id
+          type: string
+  vimeo:
+    template: mdx_component
+    inline: false
+    preview:
+      text: Vimeo Video
+      icon: videocam
+    definitions:
+      component_name: Vimeo
+      named_args:
+        - editor_key: id
+          type: string
+
+file_config:
+  - glob: src/config.yaml
+    _inputs:
+      site:
+        type: object
+        options:
+          preview:
+            icon: language
+      metadata:
+        type: object
+        options:
+          preview:
+            icon: manage_search
+      i18n:
+        type: object
+        options:
+          preview:
+            icon: translate
+      apps:
+        type: object
+        options:
+          preview:
+            icon: apps
+      analytics:
+        type: object
+        options:
+          preview:
+            icon: analytics
+      ui:
+        type: object
+        options:
+          preview:
+            icon: palette
