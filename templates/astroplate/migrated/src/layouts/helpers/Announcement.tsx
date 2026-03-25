@@ -53,43 +53,6 @@ const Cookies = {
   },
 };
 
-/**
- * Pure display component (no hooks) for CloudCannon's registerReactComponent
- * renderer. flushSync renders synchronously so useEffect never fires —
- * this version always produces visible output.
- */
-export const AnnouncementDisplay: React.FC<AnnouncementProps> = ({
-  enable,
-  text,
-  link_text,
-  link_url,
-}) => {
-  if (!enable || !text) return null;
-
-  return (
-    <div className="relative z-999 bg-body dark:bg-darkmode-body shadow-[1px_0_10px_7px_rgba(154,154,154,0.11)] px-4 py-4 pr-12 md:text-lg transition-all duration-300">
-      <p className="text-center">
-        {text}{" "}
-        {link_text && link_url && (
-          <a className="underline" href={link_url} target="_blank" rel="noopener">
-            {link_text}
-          </a>
-        )}
-      </p>
-      <button
-        className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer flex items-center justify-center w-7 h-7 border border-border dark:border-darkmode-border rounded-full text-xl transition-colors duration-200"
-        aria-label="Close announcement"
-      >
-        &times;
-      </button>
-    </div>
-  );
-};
-
-/**
- * Interactive version with cookie-based dismiss logic for the live site.
- * Rendered via client:load in Base.astro.
- */
 const Announcement: React.FC<AnnouncementProps> = ({
   enable,
   text,
