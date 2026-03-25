@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
+import Button from "@/components/ui/button.astro";
 
 // Generate a new path for every collection entry
 export async function getStaticPaths() {
@@ -24,7 +25,9 @@ const { Content } = await entry.render();
         {entry.data.category}
       </span>
       <h1
-        class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+        class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight"
+        data-editable="text"
+        data-prop="title">
         {entry.data.title}
       </h1>
       <div class="flex gap-2 mt-3 items-center flex-wrap md:flex-nowrap">
@@ -48,8 +51,12 @@ const { Content } = await entry.render();
       </div>
     </div>
 
-    <div class="mx-auto prose prose-lg mt-6 max-w-3xl">
-      <Content />
+    <div
+      class="mx-auto prose prose-lg mt-6 max-w-3xl"
+      data-editable="text"
+      data-type="block"
+      data-prop="@content">
+      <Content components={{ Button }} />
     </div>
     <div class="text-center mt-8">
       <a

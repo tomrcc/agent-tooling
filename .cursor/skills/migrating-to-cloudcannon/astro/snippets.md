@@ -57,7 +57,7 @@ const { Content } = await entry.render();
 <Content components={{ Button }} />
 ```
 
-Less scalable but avoids the extra dependency. The `astro-auto-import` approach is better for templates with many shortcodes.
+Less scalable but avoids the extra dependency. The `astro-auto-import` approach is better for templates with many shortcodes. If auto-import fails to resolve components (path alias issues, pnpm hoisting), fallback to this approach -- it's reliable and sufficient for sites with only 1-2 MDX components.
 
 ## Built-in templates for Astro
 

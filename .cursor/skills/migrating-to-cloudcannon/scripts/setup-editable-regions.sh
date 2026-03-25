@@ -16,14 +16,31 @@ CONFIG="astro.config.mjs"
 REGISTER_DIR="src/cloudcannon"
 REGISTER_FILE="$REGISTER_DIR/registerComponents.ts"
 
+# --- Detect package manager ---
+if [ -f "pnpm-lock.yaml" ]; then
+  PKG_MGR="pnpm"
+  INSTALL_CMD="pnpm add"
+elif [ -f "yarn.lock" ]; then
+  PKG_MGR="yarn"
+  INSTALL_CMD="yarn add"
+else
+  PKG_MGR="npm"
+  INSTALL_CMD="npm install"
+fi
+
 # --- Install the package ---
-echo "Installing $PACKAGE..."
-if npm install "$PACKAGE" 2>/dev/null; then
+echo "Installing $PACKAGE with $PKG_MGR..."
+if $INSTALL_CMD "$PACKAGE" 2>/dev/null; then
   echo "Installed $PACKAGE"
 else
-  echo "Peer dependency conflict detected, retrying with --legacy-peer-deps..."
-  npm install "$PACKAGE" --legacy-peer-deps
-  echo "Installed $PACKAGE (with --legacy-peer-deps)"
+  if [ "$PKG_MGR" = "npm" ]; then
+    echo "Peer dependency conflict detected, retrying with --legacy-peer-deps..."
+    npm install "$PACKAGE" --legacy-peer-deps
+    echo "Installed $PACKAGE (with --legacy-peer-deps)"
+  else
+    echo "ERROR: Failed to install $PACKAGE with $PKG_MGR"
+    exit 1
+  fi
 fi
 echo ""
 

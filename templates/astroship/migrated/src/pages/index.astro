@@ -1,17 +1,28 @@
 ---
+import { getEntry } from "astro:content";
 import Container from "@/components/container.astro";
 import Cta from "@/components/cta.astro";
 import Features from "@/components/features.astro";
 import Hero from "@/components/hero.astro";
 import Logos from "@/components/logos.astro";
 import Layout from "@/layouts/Layout.astro";
+
+const page = await getEntry("pages", "index");
+if (!page) throw new Error("Missing pages/index.md");
+const { banner, features, cta } = page.data;
 ---
 
 <Layout title="">
   <Container>
-    <Hero />
-    <Features />
+    <editable-component data-component="hero" data-prop="banner">
+      <Hero banner={banner} />
+    </editable-component>
+    <editable-component data-component="features" data-prop="features">
+      <Features features={features} />
+    </editable-component>
     <Logos />
-    <Cta />
+    <editable-component data-component="cta" data-prop="cta">
+      <Cta cta={cta} />
+    </editable-component>
   </Container>
 </Layout>

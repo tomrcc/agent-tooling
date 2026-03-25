@@ -396,6 +396,10 @@ After generating and customizing the config, work through these checks before mo
 
 This section grows as we complete more migrations. Document template-specific findings in the template's own `migration/configuration.md`, not here.
 
+### Verify Gadget's `source` path
+
+Gadget may generate an incorrect `source` path (e.g. pointing into `node_modules/`). Always check this field after generation. For most Astro sites, `source` should be empty or omitted (the project root is the source). Remove it if Gadget set it to something wrong.
+
 ### Set `markdown.options.table` when content has Markdown tables
 
 CloudCannon defaults `markdown.options.table` to `false`, meaning the rich text editor outputs `<table>` HTML. If the site's content files already use Markdown table syntax (`| col | col |`), set this to `true` so tables survive round-tripping through the editor. Grep content directories for the pipe-delimited pattern to detect this:

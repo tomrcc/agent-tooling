@@ -47,6 +47,10 @@ Some Astro templates use a `-index.md` file to hold listing/index page metadata 
 
 **CloudCannon implications:** The index file stays in the same collection as its siblings -- no separate collection or filter needed. In Phase 2 (configuration), define a separate schema on the collection for the index page so editors get the right fields when editing it vs. a regular item. See the "Schemas for index pages" section in configuration.md.
 
+### Mixed-type fields
+
+Some templates use fields with mixed types (e.g. `price` is a string `"Free"` for some items and an object `{monthly, annual}` for others). CloudCannon's data editor works best with consistent types. If the template only uses one branch of the type (e.g. only displays `price.monthly` from the object), simplify to a single type in the content files (e.g. always a string). Update the rendering code to match.
+
 ### Content references (string-based)
 
 Some templates reference related content by string rather than by collection ID. For example, blog posts might use `author: "John Doe"` where the matching is done by slugifying the name and comparing to author filenames.
