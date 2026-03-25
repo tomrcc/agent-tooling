@@ -156,6 +156,10 @@ Copyright (c) 2023 - Present, Designed & Developed by [Zeon Studio](https://zeon
 
 **Image license:** The images are only for demonstration purposes. They have their license, we don't have permission to share those images.
 
+## CloudCannon Notes
+
+The `/services/` page (`src/content/pages/services.md`) is a page_builder example used as the `new_preview_url` for the page_builder schema. It provides a live preview for unbuilt page_builder pages in the visual editor.
+
 ## 💻 Need Custom Development Services?
 
 If you need a custom theme, theme customization, or complete website development services from scratch you can [Hire Us](https://zeon.studio/).

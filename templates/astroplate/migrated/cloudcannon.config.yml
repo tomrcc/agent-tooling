@@ -68,6 +68,7 @@ collections_config:
       default:
         path: templates/astroplate/migrated/.cloudcannon/schemas/page.md
         name: Page
+        new_preview_url: /elements/
       homepage:
         path: templates/astroplate/migrated/.cloudcannon/schemas/homepage.md
         name: Homepage
@@ -77,6 +78,7 @@ collections_config:
       page_builder:
         path: templates/astroplate/migrated/.cloudcannon/schemas/page-builder.md
         name: Page Builder
+        new_preview_url: /services/
     _inputs:
       features:
         type: array
@@ -96,6 +98,7 @@ collections_config:
       - "**/*.{md,mdx}"
     _enabled_editors:
       - visual
+      - content
       - data
     add_options:
       - name: Blog Post
@@ -130,6 +133,7 @@ collections_config:
       - "**/*.{md,mdx}"
     _enabled_editors:
       - visual
+      - content
       - data
     add_options:
       - name: Author
