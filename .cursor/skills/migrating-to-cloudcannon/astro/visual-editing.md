@@ -69,7 +69,7 @@ This keeps component registrations in one place rather than scattering them acro
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
 | `@cloudcannon/editable-regions/astro-react-renderer` | Side-effect import: registers React as a framework renderer for Astro's client-side SSR (needed when React components like `react-icons` are used inside registered Astro components) |
-| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering |
+| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering — **unreliable, use Astro display fallback instead** |
 
 ## Adding editable regions
 
@@ -333,18 +333,44 @@ import CallToAction from "@/layouts/partials/CallToAction.astro";
 registerAstroComponent("call-to-action", CallToAction);
 ```
 
-### React components
+### React / non-Astro components (Astro display fallback)
 
-Use `registerReactComponent` from the React integration. The renderer uses `flushSync` to produce HTML synchronously -- `useEffect` never fires, so the registered component must produce visible output without hooks. Export a separate pure display function if the live component uses hooks for interactivity (e.g. cookie-based dismiss, animations):
+`registerReactComponent` exists but is unreliable -- live updates silently fail in the visual editor (see bug report in `templates/astroplate/migrated/migration/registerReactComponent-bug.md`). Instead, create a display-only `.astro` component that reproduces the same markup and register it with `registerAstroComponent`. The live site still uses the real React component via `client:load`; only the visual editor renderer is swapped.
 
-```typescript
-import { registerReactComponent } from "@cloudcannon/editable-regions/react";
-import { AnnouncementDisplay } from "@/layouts/helpers/Announcement";
+This "Astro display fallback" pattern is useful beyond just React bugs. Any component that is difficult to re-render client-side (complex hooks, third-party DOM libraries, Web Components with shadow DOM, animation frameworks) can use a simplified Astro stand-in for the visual editor. The stand-in only needs to produce the right visual output for the editor preview -- it doesn't need interactivity.
 
-registerReactComponent("announcement", AnnouncementDisplay);
+```astro
+<!-- src/layouts/helpers/AnnouncementDisplay.astro -->
+---
+const { enable, text, link_text, link_url } = Astro.props;
+---
+{enable && text && (
+  <div class="announcement-banner">
+    <p>{text} {link_text && link_url && <a href={link_url}>{link_text}</a>}</p>
+  </div>
+)}
 ```
 
-The display component receives the resolved data object as props and returns the visual output. The interactive version (default export) handles hooks and is rendered on the live site via `client:load`.
+```typescript
+// registerComponents.ts
+import AnnouncementDisplay from "@/layouts/helpers/AnnouncementDisplay.astro";
+registerAstroComponent("announcement", AnnouncementDisplay);
+```
+
+```astro
+<!-- Base.astro — live site uses the real React component -->
+<editable-component data-component="announcement" data-prop="@data[announcement]">
+  <Announcement client:load {...announcementData} />
+</editable-component>
+```
+
+**When to reach for this pattern:**
+- React components (hooks, state, effects won't fire in the editor renderer)
+- Components using third-party DOM libraries (Swiper, GSAP, etc.)
+- Web Components with shadow DOM that don't serialize cleanly
+- Any component where the live-site version is too complex for `registerAstroComponent` to handle directly
+
+**Keep the display component in sync.** The Astro fallback duplicates markup, so changes to the real component's visual structure need to be mirrored. Keep both in the same directory and name them clearly (e.g. `Announcement.tsx` + `AnnouncementDisplay.astro`).
 
 ### Wrapping with web components
 
