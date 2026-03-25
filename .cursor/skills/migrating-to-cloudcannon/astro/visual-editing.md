@@ -284,6 +284,40 @@ Not everything benefits from visual editing. Guidelines:
 - MDX content with shortcodes -- shortcodes won't render in the visual editor
 - Header/footer (too many moving parts, better in data editor)
 
+## Structured props over rich text
+
+When a component renders HTML with specific classes or structure — e.g. a centered `<span>`, a link with an `underline` class — it's tempting to store the entire block as a single rich text `content` field. This causes problems:
+
+- CloudCannon's rich text editor can't safely interact with non-standard HTML (custom classes, nested elements with styling) — these render with a red outline and are not editable inline.
+- Defining the HTML as a snippet is overkill when the structure is fixed and only a few values change.
+
+**Instead, decompose the structured HTML into explicit props and let the component own the markup.**
+
+Before (single rich text field):
+```json
+{
+  "content": "<span class='text-center block'>♥️ Loving Astroplate? <a class='underline' href='...'>Please ⭐️ on Github</a></span>"
+}
+```
+
+After (explicit props):
+```json
+{
+  "text": "♥️ Loving Astroplate?",
+  "link_text": "Please ⭐️ on Github",
+  "link_url": "https://github.com/zeon-studio/astroplate"
+}
+```
+
+The component templates the values into the correct HTML structure with the right classes:
+```tsx
+<p className="text-center">
+  {text} <a className="underline" href={link_url} target="_blank" rel="noopener">{link_text}</a>
+</p>
+```
+
+Editors get clean labeled inputs (text, text, url) in the sidebar instead of a broken rich text region. This pattern applies whenever a "rich text" field is really just a few values templated into fixed HTML — pull them out as props.
+
 ## Component re-rendering
 
 For full live preview (not just text/image), components need to be registered so `EditableComponent` can re-render them in the browser when data changes.

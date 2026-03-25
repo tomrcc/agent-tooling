@@ -1,9 +1,28 @@
 source: templates/astroplate/migrated
-
 paths:
   static: public
   uploads: public/images
+
 timezone: Pacific/Auckland
+
+markdown:
+  engine: commonmark
+  options:
+    table: true
+
+_editables:
+  content:
+    blockquote: true
+    bold: true
+    bulletedlist: true
+    format: p h1 h2 h3 h4 h5 h6
+    image: true
+    italic: true
+    link: true
+    numberedlist: true
+    removeformat: true
+    snippet: true
+    table: true
 
 data_config:
   announcement:
@@ -40,13 +59,13 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/page.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/page.md
         name: Page
       homepage:
-        path: .cloudcannon/schemas/homepage.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/homepage.md
         name: Homepage
       contact:
-        path: .cloudcannon/schemas/contact.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/contact.md
         name: Contact
     _inputs:
       features:
@@ -64,10 +83,10 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/post.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/post.md
         name: Blog Post
       blog_index:
-        path: .cloudcannon/schemas/blog-index.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/blog-index.md
         name: Blog Index
     _inputs:
       author:
@@ -94,10 +113,10 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/author.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/author.md
         name: Author
       authors_index:
-        path: .cloudcannon/schemas/authors-index.md
+        path: templates/astroplate/migrated/.cloudcannon/schemas/authors-index.md
         name: Authors Index
     _inputs:
       icon:
@@ -119,6 +138,12 @@ collections_config:
         type: array
         options:
           structures: _structures.testimonials
+      text:
+        type: text
+      link_text:
+        type: text
+      link_url:
+        type: url
       expire_days:
         type: number
         comment: Days before the announcement auto-dismisses
@@ -291,10 +316,6 @@ _structures:
           name:
           url:
 
-_snippets_imports:
-  mdx:
-    include: []
-
 _snippets:
   button:
     template: mdx_component
@@ -427,25 +448,37 @@ _snippets:
         type: text
 
   tabs:
-    snippet: '<Tabs client:load>[[tabs_content]]</Tabs>'
+    snippet: '<Tabs client:load>[[repeating_tabs]]</Tabs>'
     inline: false
     preview:
       text: Tabs
       icon: tab
-    params:
-      tabs_content:
-        parser: content
+    _inputs:
+      tab_items:
+        type: array
+      tab_items[*]:
         options:
-          editor_key: tabs_content
-          allow_nested: true
-
-  tab:
-    snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
-    inline: false
-    preview:
-      text: Tab
-      icon: tab
+          preview:
+            text:
+              - key: name
+            icon: tab
+      tab_items[*].name:
+        type: text
+      tab_items[*].tab_content:
+        type: markdown
     params:
+      repeating_tabs:
+        parser: repeating
+        options:
+          snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
+          editor_key: tab_items
+          default_length: 2
+          style:
+            output: block
+            between: "\n\n"
+            block:
+              leading: "\n\n"
+              trailing: "\n\n"
       named_args:
         parser: key_values
         options:
@@ -460,9 +493,10 @@ _snippets:
         parser: content
         options:
           editor_key: tab_content
-    _inputs:
-      name:
-        type: text
+          style:
+            block:
+              leading: "\n\n"
+              trailing: "\n\n"
 
 file_config:
   - glob: src/config/menu.json

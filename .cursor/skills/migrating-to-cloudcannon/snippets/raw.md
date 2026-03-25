@@ -105,20 +105,108 @@ Options:
 
 Makes another parser optional (matching zero times is valid).
 
-### `repeating` — higher-order wrapper
+### `repeating_literal` — repeated literal character
 
-Allows a snippet pattern to repeat. Wraps a sub-snippet string.
+Matches a single character repeated N or more times. Used for patterns like variable-length backtick fences (` ``` `, ` ```` `, etc.).
 
-### `wrapper` — wraps another snippet
+Options:
+- `literal` (string, required) — the character to repeat
+- `minimum` (number) — minimum number of repetitions required
+- `default` (number) — repetitions to use when creating a new snippet
 
-References another snippet by name to compose patterns.
+```yaml
+params:
+  backticks:
+    parser: repeating_literal
+    options:
+      literal: '`'
+      minimum: 3
+      default: 3
+```
+
+### `repeating` — repeat a child pattern as array items
+
+Parses a repeating inline template and presents matched items as a structured array in the editor (add/remove/reorder).
+
+Options:
+- `snippet` (string, required) — an **inline template string** with `[[placeholder]]` markers for the child pattern. This is NOT a reference to another `_snippets` entry — it is the raw template for a single repeated item, e.g. `'<Tab [[named_args]]>[[content]]</Tab>'`.
+- `editor_key` (string) — key for the array input in the editor
+- `default_length` (number) — how many items to create when inserting a new snippet. Default `1`.
+- `style` (object) — controls output formatting:
+  - `output` — `block` or `inline`
+  - `between` — delimiter string between repeated items (e.g. `"\n\n"`)
+  - `block.leading` / `block.trailing` — whitespace before/after the group
+  - `block.indent` — indentation for each item
+- `optional` (boolean) — allow zero items. Default `false`.
+
+**Critical**: The `[[placeholder]]` markers in the inline template reference params in the **parent snippet's** `params` block. The repeating parser's sub-parser inherits the parent's full params, so child param definitions must sit alongside the repeating param definition — not in a separate snippet.
+
+**Do not** define the child component as a separate `_snippets` entry. If you do, the content parser will match it standalone before the parent's repeating parser runs, stealing the child elements and leaving the parent empty.
+
+```yaml
+_snippets:
+  tabs:
+    snippet: '<Tabs client:load>[[repeating_tabs]]</Tabs>'
+    inline: false
+    params:
+      repeating_tabs:
+        parser: repeating
+        options:
+          snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
+          editor_key: tab_items
+          default_length: 2
+          style:
+            output: block
+            between: "\n\n"
+            block:
+              leading: "\n\n"
+              trailing: "\n\n"
+      named_args:
+        parser: key_values
+        options:
+          models:
+            - editor_key: name
+              type: string
+          format:
+            root_value_delimiter: '='
+            string_boundary:
+              - '"'
+      tab_content:
+        parser: content
+        options:
+          editor_key: tab_content
+          style:
+            block:
+              leading: "\n\n"
+              trailing: "\n\n"
+```
+
+Note: `named_args` and `tab_content` are in the same `params` block as `repeating_tabs` — the sub-parser inherits them and uses them to parse the inline template.
+
+### `wrapper` — embed one inline pattern inside another
+
+Like `repeating`, but produces a single instance instead of an array. The `options.snippet` is an **inline template string** (same rules as `repeating` — NOT a snippet name reference). The sub-parser inherits the parent's `params`.
+
+Options:
+- `snippet` (string, required) — inline template string with `[[placeholder]]` markers
+- `remove_empty` (boolean) — remove the wrapper output when all its fields are empty
 
 ```yaml
 params:
   wrapped:
     parser: wrapper
     options:
-      snippet: other_snippet_name
+      snippet: '<Inner [[inner_args]] />'
+  inner_args:
+    parser: key_values
+    options:
+      models:
+        - editor_key: size
+          type: string
+      format:
+        root_value_delimiter: '='
+        string_boundary:
+          - '"'
 ```
 
 ---

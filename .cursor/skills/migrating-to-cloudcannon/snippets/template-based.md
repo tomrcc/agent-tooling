@@ -1,14 +1,14 @@
 # Template-Based Snippets
 
-Use when the SSG's component syntax matches an available imported template exactly. Simpler and less verbose than raw snippets.
+Use when the SSG's component syntax matches a built-in template exactly. Simpler and less verbose than raw snippets.
 
-Read [snippets.md](../snippets.md) first for overview, imports, and shared snippet properties.
+Read [snippets.md](../snippets.md) first for overview and shared snippet properties.
 
 ---
 
 ## How it works
 
-Set `template` to an imported template name, then fill in the required `definitions`. CloudCannon handles the parsing format internally — you don't need to configure `format`, `params`, or parsers.
+Set `template` to a built-in template name, then fill in the required `definitions`. CloudCannon handles the parsing format internally — you don't need to configure `format`, `params`, or parsers.
 
 ```yaml
 _snippets:
@@ -27,7 +27,7 @@ _snippets:
 
 ## MDX templates
 
-Imported via `_snippets_imports: mdx: true` (or `mdx: { include: [] }` to avoid defaults). These are the most common templates for Astro and generic MDX sites.
+Built-in templates for Astro and generic MDX sites. No `_snippets_imports` required — these resolve automatically when referenced by name.
 
 ### `mdx_component` (self-closing)
 
@@ -87,9 +87,6 @@ Given this MDX component in content:
 The CC config to support it:
 
 ```yaml
-_snippets_imports:
-  mdx: true
-
 _snippets:
   notice:
     template: mdx_paired_component
@@ -116,7 +113,7 @@ _snippets:
 
 What happens:
 1. CC's Content Editor sees `<Notice type="warning">...</Notice>` in the MDX
-2. The `mdx_paired_component` template matches it against the `notice` snippet definition
+2. The built-in `mdx_paired_component` template matches it against the `notice` snippet definition
 3. The editor displays it as a "Notice" block (with the info icon from `preview`)
 4. Clicking it opens a panel with a `type` dropdown and an `inner_content` text field
 5. On save, CC serializes the data back to the MDX component syntax

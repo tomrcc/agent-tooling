@@ -42,15 +42,9 @@ models:
 
 ---
 
-### Default imports can match unintended content
+### `_snippets_imports` can match unintended content
 
-`_snippets_imports: mdx: true` imports default MDX snippets that may match fenced code blocks or other markup you don't want treated as snippets. Use `include: []` to disable defaults while keeping templates available:
-
-```yaml
-_snippets_imports:
-  mdx:
-    include: []
-```
+Don't use `_snippets_imports` during migrations. It auto-imports pre-built snippet instances that can incorrectly match fenced code blocks, CSS/JS blocks, and other markup as snippets. Custom `_snippets` entries give full control over what gets matched. Built-in templates like `mdx_component` resolve without any imports.
 
 ---
 
@@ -60,6 +54,18 @@ Rich text editors show everything in the file. Import statements (`import X from
 
 ---
 
-### Nested components are flat
+### Nested component children must use the `repeating` parser
 
-CC snippets don't support a compound model where child components map to array items in a single snippet. For nested patterns like `<Tabs><Tab>...</Tab></Tabs>`, use `allow_nested: true` on the content parser so inner components are recognized as separate snippets within the parent's content area. See [raw.md](raw.md) for the `content` parser options.
+For parent/child patterns like `<Tabs><Tab>...</Tab></Tabs>`, use the `repeating` parser with an **inline template** for the child — do NOT define the child as a separate `_snippets` entry. If you do, the content parser matches the child standalone before the parent's repeating parser runs, which empties the parent and breaks the match. See [raw.md](raw.md) for the `repeating` parser reference and a working example.
+
+---
+
+### Round-trip safety throws on unparseable stringify output
+
+When CloudCannon serializes snippet data back to source text, it re-parses the output and compares the result. If re-parsing produces a different snippet sequence, it throws `"Stringified content would be unparseable"`. This usually means two snippets match overlapping syntax, or a format issue causes the re-parse to match differently. Fix the snippet config ambiguity rather than working around it.
+
+---
+
+### `_cc_` snippets are deprioritized in matching
+
+Snippet types starting with `_cc_` are sorted after all user-defined snippets in the matching loop. This means your custom `_snippets` entries always get first chance to match. You don't need to worry about hidden catchall patterns (`_cc_*_unknown`) stealing matches from your explicit snippet configs.

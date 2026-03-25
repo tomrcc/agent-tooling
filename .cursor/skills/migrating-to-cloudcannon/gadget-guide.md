@@ -88,7 +88,8 @@ Gadget generates a baseline configuration. After generation, you may want to cus
 - **`_structures`** — Define reusable component structures for array-based content
 - **`collection_groups`** — Organize collections into sidebar groups
 - **`_editables`** — Configure rich text editor toolbars
-- **`_snippets_imports`** — Add snippet support for your SSG's component syntax
+- **`markdown`** — Set `markdown.options.table: true` if content contains Markdown-syntax tables (default is `false` / HTML tables)
+- **`_snippets`** — Add snippet support for your SSG's component syntax
 - **`_select_data`** — Define shared dropdown options
 - **`file_config`** — Per-file configuration overrides
 

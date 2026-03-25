@@ -1,9 +1,10 @@
-import { markdownify } from "@/lib/utils/textConverter";
 import React, { useEffect, useState } from "react";
 
 export interface AnnouncementProps {
   enable: boolean;
-  content: string;
+  text: string;
+  link_text: string;
+  link_url: string;
   expire_days: number;
 }
 
@@ -59,17 +60,22 @@ const Cookies = {
  */
 export const AnnouncementDisplay: React.FC<AnnouncementProps> = ({
   enable,
-  content,
+  text,
+  link_text,
+  link_url,
 }) => {
-  if (!enable || !content) return null;
+  if (!enable || !text) return null;
 
   return (
     <div className="relative z-999 bg-body dark:bg-darkmode-body shadow-[1px_0_10px_7px_rgba(154,154,154,0.11)] px-4 py-4 pr-12 md:text-lg transition-all duration-300">
-      <p
-        dangerouslySetInnerHTML={{ __html: markdownify(content) }}
-        data-editable="text"
-        data-prop="@data[announcement].content"
-      />
+      <p className="text-center">
+        {text}{" "}
+        {link_text && link_url && (
+          <a className="underline" href={link_url} target="_blank" rel="noopener">
+            {link_text}
+          </a>
+        )}
+      </p>
       <button
         className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer flex items-center justify-center w-7 h-7 border border-border dark:border-darkmode-border rounded-full text-xl transition-colors duration-200"
         aria-label="Close announcement"
@@ -86,16 +92,18 @@ export const AnnouncementDisplay: React.FC<AnnouncementProps> = ({
  */
 const Announcement: React.FC<AnnouncementProps> = ({
   enable,
-  content,
+  text,
+  link_text,
+  link_url,
   expire_days,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (enable && content && !Cookies.get("announcement-close")) {
+    if (enable && text && !Cookies.get("announcement-close")) {
       setIsVisible(true);
     }
-  }, [enable, content]);
+  }, [enable, text]);
 
   const handleClose = () => {
     Cookies.set("announcement-close", "true", {
@@ -104,17 +112,20 @@ const Announcement: React.FC<AnnouncementProps> = ({
     setIsVisible(false);
   };
 
-  if (!enable || !content || !isVisible) {
+  if (!enable || !text || !isVisible) {
     return null;
   }
 
   return (
     <div className="relative z-999 bg-body dark:bg-darkmode-body shadow-[1px_0_10px_7px_rgba(154,154,154,0.11)] px-4 py-4 pr-12 md:text-lg transition-all duration-300">
-      <p
-        dangerouslySetInnerHTML={{ __html: markdownify(content) }}
-        data-editable="text"
-        data-prop="@data[announcement].content"
-      />
+      <p className="text-center">
+        {text}{" "}
+        {link_text && link_url && (
+          <a className="underline" href={link_url} target="_blank" rel="noopener">
+            {link_text}
+          </a>
+        )}
+      </p>
       <button
         onClick={handleClose}
         className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer flex items-center justify-center w-7 h-7 border border-border dark:border-darkmode-border rounded-full text-xl transition-colors duration-200"

@@ -65,7 +65,8 @@ Gadget produces a structural baseline. The following customizations are almost a
 - **`_structures`** -- define reusable component structures for array-based page building. Derive these from the component inventory in the audit.
 - **`collection_groups`** -- organize collections into sidebar groups for a clean editing experience.
 - **`_editables`** -- configure rich text editor toolbars per collection or globally.
-- **`_snippets_imports`** and **`_snippets`** -- configure snippets for MDX components used in rich text content. Use `"mdx"` as the import key (there is no `"astro"` key). See [snippets.md](snippets.md) for the full workflow.
+- **`markdown`** -- if content files contain Markdown-syntax tables (`| col | col |`), set `markdown.options.table: true` so CloudCannon round-trips them as Markdown rather than converting to HTML, and add `table: true` to `_editables.content` (alongside all other desired toolbar options -- see gotchas). Grep content directories for `^\|.*\|` to detect this. Leave both at the default (`false`) when no Markdown tables exist.
+- **`_snippets`** -- configure snippets for MDX components used in rich text content. Built-in templates like `mdx_component` resolve automatically — no `_snippets_imports` needed. See [snippets.md](snippets.md) for the full workflow.
 - **`_select_data`** -- define shared dropdown options for fields used across collections.
 - **Schemas** -- define templates for creating new content files, based on the content patterns found in the audit.
 - **`file_config`** -- a root-level key that targets specific files via glob and scopes `_inputs` to them. Use it when key names would collide at broader scopes, or to configure inputs for settings/data files. Supports `$` to reference the root of the file or structure. Example:
@@ -248,12 +249,47 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Object inputs have `type: object` with `preview.icon` for a clean editor UI
 - [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures` (don't rely on naming conventions)
 - [ ] Structure previews have `icon` fallbacks where `image` may be empty
-- [ ] `_snippets_imports: mdx: { include: [] }` is set if the site uses MDX components in content (use `include: []` to avoid default snippets matching code blocks)
-- [ ] `_snippets` entries exist for each MDX component used in content files (see [snippets.md](snippets.md))
+- [ ] `_snippets` entries exist for each MDX component used in content files (no `_snippets_imports` needed). See [snippets.md](snippets.md)
+- [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 
 ## Patterns and gotchas
 
 This section grows as we complete more migrations. Document template-specific findings in the template's own `migration/configuration.md`, not here.
+
+### Set `markdown.options.table` when content has Markdown tables
+
+CloudCannon defaults `markdown.options.table` to `false`, meaning the rich text editor outputs `<table>` HTML. If the site's content files already use Markdown table syntax (`| col | col |`), set this to `true` so tables survive round-tripping through the editor. Grep content directories for the pipe-delimited pattern to detect this:
+
+```bash
+rg '^\|.*\|' src/content/
+```
+
+```yaml
+markdown:
+  engine: commonmark
+  options:
+    table: true
+```
+
+You also need `table: true` in `_editables.content` so the table button appears in the rich text toolbar. Because CloudCannon treats any omitted `_editables` key as `false` once you define one, you must re-declare all the defaults you want to keep:
+
+```yaml
+_editables:
+  content:
+    blockquote: true
+    bold: true
+    bulletedlist: true
+    format: p h1 h2 h3 h4 h5 h6
+    image: true
+    italic: true
+    link: true
+    numberedlist: true
+    removeformat: true
+    snippet: true
+    table: true
+```
+
+`markdown.options.table` controls serialization (Markdown vs HTML); `_editables.content.table` controls the toolbar button.
 
 ### `collection_groups` requires matching `collections_config` entries
 
@@ -298,6 +334,37 @@ file_config:
 ```
 
 Use [Material Icons](https://fonts.google.com/icons) names. Pick icons that reflect the object's purpose (e.g. `tune` for settings, `analytics` for tracking, `forum` for comments).
+
+### Array item previews go on `[*]`, not on the array
+
+When configuring how items appear inside an array, target `arrayName[*]` (the item), not `arrayName` (the array itself). The array input controls the list; the `[*]` input controls each card within it.
+
+Do **not** add `type: object` to `arrayName[*]` for snippet array items. The repeating parser already defines the item shape via its params — adding `type: object` overrides the inferred structure and causes a "misconfigured object input" error when adding new items (CloudCannon no longer knows what fields to create).
+
+Also note that `preview.text`, `preview.icon`, and `preview.image` use cascade format — an array of lookup objects, not a single object:
+
+```yaml
+# Wrong — preview on the array, text as a bare object
+_inputs:
+  tab_items:
+    type: array
+    options:
+      preview:
+        text:
+          key: name
+        icon: tab
+
+# Correct — preview on the array item, text as a cascade array
+_inputs:
+  tab_items:
+    type: array
+  tab_items[*]:
+    options:
+      preview:
+        text:
+          - key: name
+        icon: tab
+```
 
 ### `_inputs` key collision across nesting levels
 

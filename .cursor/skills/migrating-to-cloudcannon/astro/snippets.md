@@ -59,17 +59,9 @@ const { Content } = await entry.render();
 
 Less scalable but avoids the extra dependency. The `astro-auto-import` approach is better for templates with many shortcodes.
 
-## Snippet imports for Astro
+## Built-in templates for Astro
 
-Astro MDX files use standard MDX component syntax, so import the `mdx` snippet templates:
-
-```yaml
-_snippets_imports:
-  mdx:
-    include: []
-```
-
-There is no `astro` key in `_snippets_imports`. The `mdx` import provides `mdx_component` and `mdx_paired_component` templates which match JSX/MDX component syntax. Use `include: []` to avoid importing default MDX snippets that can incorrectly match fenced code blocks and other content as snippets.
+Astro MDX files use standard MDX component syntax. The built-in `mdx_component` and `mdx_paired_component` templates match JSX/MDX syntax and resolve automatically when referenced by name in `_snippets` — no `_snippets_imports` needed.
 
 ## Workflow: from component to snippet config
 
@@ -187,31 +179,43 @@ _snippets:
           type: string
 ```
 
-## Nested components
+## Nested components (repeating parser)
 
-CC snippets don't support a compound model where child components map to array items in a single snippet. For nested patterns like `<Tabs><Tab>...</Tab></Tabs>`, define two snippets and use `allow_nested: true`:
+For nested patterns like `<Tabs><Tab>...</Tab></Tabs>`, use a single snippet with the `repeating` parser. The child component's template is defined **inline** in the repeating parser's `options.snippet`, and its params live in the **parent's** `params` block. Do NOT define the child as a separate `_snippets` entry — it would match standalone and steal content from the parent.
 
 ```yaml
 tabs:
-  snippet: '<Tabs client:load>[[tabs_content]]</Tabs>'
+  snippet: '<Tabs client:load>[[repeating_tabs]]</Tabs>'
   inline: false
   preview:
     text: Tabs
     icon: tab
-  params:
-    tabs_content:
-      parser: content
+  _inputs:
+    tab_items:
+      type: array
+    tab_items[*]:
       options:
-        editor_key: tabs_content
-        allow_nested: true
-
-tab:
-  snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
-  inline: false
-  preview:
-    text: Tab
-    icon: tab
+        preview:
+          text:
+            - key: name
+          icon: tab
+    tab_items[*].name:
+      type: text
+    tab_items[*].tab_content:
+      type: markdown
   params:
+    repeating_tabs:
+      parser: repeating
+      options:
+        snippet: '<Tab [[named_args]]>[[tab_content]]</Tab>'
+        editor_key: tab_items
+        default_length: 2
+        style:
+          output: block
+          between: "\n\n"
+          block:
+            leading: "\n\n"
+            trailing: "\n\n"
     named_args:
       parser: key_values
       options:
@@ -226,9 +230,21 @@ tab:
       parser: content
       options:
         editor_key: tab_content
+        style:
+          block:
+            leading: "\n\n"
+            trailing: "\n\n"
 ```
 
-Editors insert a Tabs block, then add Tab snippets inside it. Each Tab's content is independently editable.
+Key points:
+
+- `repeating_tabs.options.snippet` is the full inline template for a single `<Tab>`, not a reference to another snippet name. The repeating parser creates a sub-parser from this template using the parent's `params`.
+- `named_args` and `tab_content` are defined alongside `repeating_tabs` in the same `params` block — the sub-parser inherits all of them.
+- The `style` controls output formatting: `between` is the delimiter between repeated items, `block.leading`/`trailing` wrap the group.
+- `_inputs` uses the `editor_key` from the repeating parser (`tab_items`) as the array input, and `tab_items[*]` as the array item input. Item-level `preview` and `type: object` go on the `[*]` target, not on the array itself. Use `[*].field` syntax (e.g. `tab_items[*].name`) to configure inputs for individual fields within each item.
+- Editors see a structured array of Tab items they can add, remove, and reorder.
+
+See the [raw snippets doc](../snippets/raw.md) for full `repeating` parser reference.
 
 ## What's practical as a snippet
 
@@ -250,7 +266,7 @@ When a component isn't worth a snippet config, document it in the migration note
 
 After adding snippet configs:
 
-- [ ] `_snippets_imports: mdx: { include: [] }` is in `cloudcannon.config.yml` (use `include: []` to avoid default MDX snippets matching code blocks)
+- [ ] `_snippets` entries exist in `cloudcannon.config.yml` (no `_snippets_imports` needed — built-in templates resolve automatically)
 - [ ] Every component used in MDX content has a corresponding `_snippets` entry (or is documented as source-editor-only)
 - [ ] Components with `client:load` use raw snippet syntax, not templates
 - [ ] `_inputs` are configured for constrained values (select dropdowns, url inputs, etc.)

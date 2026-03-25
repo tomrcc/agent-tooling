@@ -1,5 +1,7 @@
 {
   "enable": true,
-  "content": "<span class='text-center block'>♥️ Loving Astroplate? <a class='underline' href='https://github.com/zeon-studio/astroplate' target='_blank' rel='noopener'>Please ⭐️ on Github</a></span>",
+  "text": "♥️ Loving Astroplate?",
+  "link_text": "Please ⭐️ on Github",
+  "link_url": "https://github.com/zeon-studio/astroplate",
   "expire_days": 7
 }

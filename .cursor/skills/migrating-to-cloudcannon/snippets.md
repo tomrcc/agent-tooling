@@ -15,59 +15,32 @@ Agents must handle both layers during a migration, but keep them conceptually se
 
 | Doc | When to read |
 |---|---|
-| [Template-based snippets](snippets/template-based.md) | Component syntax matches an imported template (most common). Covers MDX templates, snippet model reference, example lifecycle. |
+| [Template-based snippets](snippets/template-based.md) | Component syntax matches a built-in template (most common). Covers MDX templates, snippet model reference, example lifecycle. |
 | [Raw snippets](snippets/raw.md) | Component needs custom syntax (e.g. `client:load`). Covers parser types, snippet format reference, custom templates. |
+| [Built-in templates](snippets/built-in-templates.md) | Reference for all built-in templates per SSG (MDX, Hugo, Jekyll, Eleventy, Markdoc), their patterns, required definitions, internal format configs, and parser internals. |
 | [Gotchas](snippets/gotchas.md) | Debugging or reviewing. Common pitfalls and workarounds. |
 
 ---
 
 ## Configuration hierarchy
 
-Four root-level config keys relate to snippets, listed from most to least commonly used:
+Root-level config keys that relate to snippets:
 
 | Key | Purpose |
 |---|---|
-| `_snippets_imports` | Import pre-built snippet templates for an SSG/framework |
 | `_snippets` | Define individual snippet configurations (the main key agents write) |
-| `_snippets_templates` | Define custom reusable snippet templates (when imported ones don't cover your syntax) |
+| `_snippets_templates` | Define custom reusable snippet templates (when built-in ones don't cover your syntax) |
 | `_snippets_definitions` | Define reusable values shared across snippets via `{ ref: "key" }` syntax |
 
-Most migrations only need `_snippets_imports` + `_snippets`.
+Most migrations only need `_snippets`.
 
----
-
-## Available imports
-
-`_snippets_imports` provides pre-built templates. Each key maps to an SSG or content format:
-
-| Import key | Templates provided | Use for |
-|---|---|---|
-| `mdx` | `mdx_component`, `mdx_paired_component` | Astro MDX, generic MDX |
-| `docusaurus_mdx` | Docusaurus-specific MDX templates | Docusaurus sites |
-| `hugo` | Hugo shortcode templates | Hugo sites |
-| `jekyll` | Jekyll include templates | Jekyll sites |
-| `eleventy_liquid` | Eleventy Liquid shortcode templates | Eleventy (Liquid) |
-| `eleventy_nunjucks` | Eleventy Nunjucks shortcode templates | Eleventy (Nunjucks) |
-| `markdoc` | Markdoc tag templates | Markdoc content |
-| `python_markdown_extensions` | Python Markdown extension templates | MkDocs, Pelican |
-
-There is **no `astro` key** — Astro sites use `mdx` since Astro's `.mdx` files use standard MDX component syntax.
-
-**Filtering imports:** `true` imports all default snippets for that format, which may include unwanted matches (e.g. MDX defaults match fenced code blocks as snippets). Use `include` to import only specific defaults, or `include: []` to import no defaults while still making the template types available:
-
-```yaml
-_snippets_imports:
-  mdx:
-    include: []
-```
-
-This is the recommended approach when you're defining all snippets manually — you get the templates without default snippet instances interfering with your content.
+> **Note:** `_snippets_imports` exists but should not be used during migrations. It auto-imports pre-built snippet instances for an SSG which can match content incorrectly (e.g. fenced code blocks, CSS/JS blocks). Custom `_snippets` entries give full control and work without any imports — built-in templates like `mdx_component` resolve automatically. Users can add `_snippets_imports` later if they want the pre-built defaults.
 
 ---
 
 ## Which approach?
 
-- **Template-based** → component syntax matches an imported template exactly (no extra directives, standard attribute format). See [template-based.md](snippets/template-based.md).
+- **Template-based** → component syntax matches a built-in template exactly (no extra directives, standard attribute format). See [template-based.md](snippets/template-based.md).
 - **Raw** → extra syntax needs to appear literally, or non-standard attribute format, or fine-grained parsing control needed. See [raw.md](snippets/raw.md).
 
 Most migrations use template-based for simple components and raw for anything with SSG-specific directives.
@@ -107,6 +80,12 @@ _editables:
     bold: true
     snippet: true
 ```
+
+---
+
+## When NOT to use a snippet
+
+If a rich text field contains structured HTML with a fixed layout and only a few changing values (e.g. a banner with specific classes for centering and link styling), don't define it as a snippet. Instead, decompose the HTML into explicit props and let the component own the markup. See [astro/visual-editing.md > Structured props over rich text](astro/visual-editing.md#structured-props-over-rich-text) for the full pattern.
 
 ---
 

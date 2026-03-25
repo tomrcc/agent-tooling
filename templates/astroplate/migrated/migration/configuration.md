@@ -70,7 +70,7 @@ Global structures for: `social` (author social links), `features` (homepage feat
 
 ### Snippets
 
-Seven MDX components from `elements.mdx` configured as snippets via `_snippets_imports: mdx: true` and custom `_snippets` entries:
+Seven MDX components from `elements.mdx` configured as custom `_snippets` entries (no `_snippets_imports` — built-in templates resolve automatically):
 
 - **Template-based** (no `client:load`): `button` (`mdx_component`), `video` (`mdx_component`), `notice` (`mdx_paired_component`)
 - **Raw snippet syntax** (need `client:load` in output): `youtube`, `accordion`
