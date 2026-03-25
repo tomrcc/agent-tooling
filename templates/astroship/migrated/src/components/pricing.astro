@@ -2,39 +2,34 @@
 import { Tick } from "@/components/ui/icons";
 import Link from "@/components/ui/link.astro";
 
-const { plan } = Astro.props;
+const { name, price, popular, features, button } = Astro.props;
 ---
 
 <div>
   <div
     class="flex flex-col w-full order-first lg:order-none border-2 border-[#D8DEE9] border-opacity-50 py-5 px-6 rounded-md">
     <div class="text-center">
-      <h4 class="text-lg font-medium text-gray-400">{plan.name}</h4>      <p
-        class="mt-3 text-4xl font-bold text-black md:text-4xl">
-        {plan.price}
+      <h4 class="text-lg font-medium text-gray-400" data-editable="text" data-prop="name">{name}</h4>
+      <p class="mt-3 text-4xl font-bold text-black md:text-4xl" data-editable="text" data-prop="price">
+        {price}
       </p>
-      <!-- {
-        plan.price.original && (
-          <p class="mt-1 text-xl font-medium text-gray-400 line-through md:text-2xl">
-            {plan.price.original}
-          </p>
-        )
-      } -->
-    </div><ul class="grid mt-8 text-left gap-y-4">
+    </div>
+    <ul class="grid mt-8 text-left gap-y-4" data-editable="array" data-prop="features">
       {
-        plan.features.map((item) => (
-          <li class="flex items-start gap-3 text-gray-800">
+        features.map((item) => (
+          <li class="flex items-start gap-3 text-gray-800" data-editable="array-item">
             <Tick class="w-6 h-6" />
-            <span>{item}</span>
+            <span data-editable="text" data-prop="">{item}</span>
           </li>
         ))
       }
-    </ul><div class="flex mt-8">
+    </ul>
+    <div class="flex mt-8">
       <Link
-        href={plan.button.link || "#"}
+        href={button.link || "#"}
         block
-        style={plan.popular ? "primary" : "outline"}>
-        {plan.button.text || "Get Started"}
+        style={popular ? "primary" : "outline"}>
+        <span data-editable="text" data-prop="button.text">{button.text || "Get Started"}</span>
       </Link>
     </div>
   </div>

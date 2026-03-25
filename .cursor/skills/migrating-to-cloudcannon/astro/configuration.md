@@ -390,6 +390,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `_snippets` entries exist for each MDX component used in content files (no `_snippets_imports` needed). See [snippets.md](snippets.md)
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 - [ ] `add_options` restricts the Add button to only creatable schemas (excludes index pages and one-off pages with dedicated routes)
+- [ ] Collections using `.md` files with no rendered body content have `_enabled_editors: [data]`
 - [ ] If the site has 3+ reusable block components, a page builder schema with `content_blocks` array is available
 
 ## Patterns and gotchas
@@ -508,6 +509,17 @@ _inputs:
         text:
           - key: name
         icon: tab
+```
+
+### Data-only markdown collections
+
+When `.md` files are used purely for frontmatter (team members, testimonials, authors) with no body content rendered on any page, set `_enabled_editors: [data]` to restrict editing to the data editor. Without this, editors see the content editor with an empty body area that does nothing. Alternatively, convert these files to `.yml` or `.json`.
+
+```yaml
+team:
+  path: src/content/team
+  _enabled_editors:
+    - data
 ```
 
 ### `_inputs` key collision across nesting levels

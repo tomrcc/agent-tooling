@@ -2,17 +2,15 @@
 import Link from "./ui/link.astro";
 
 interface Props {
-  cta: {
-    title: string;
-    description: string;
-    button: {
-      label: string;
-      link: string;
-    };
+  title: string;
+  description: string;
+  button: {
+    label: string;
+    link: string;
   };
 }
 
-const { cta } = Astro.props;
+const { title, description, button } = Astro.props;
 ---
 
 <div
@@ -21,17 +19,17 @@ const { cta } = Astro.props;
     class="text-white text-4xl md:text-6xl tracking-tight"
     data-editable="text"
     data-prop="title">
-    {cta.title}
+    {title}
   </h2>
   <p
     class="text-slate-400 mt-4 text-lg md:text-xl"
     data-editable="text"
     data-prop="description">
-    {cta.description}
+    {description}
   </p>
   <div class="flex mt-5">
-    <Link href={cta.button.link} style="inverted">
-      <span data-editable="text" data-prop="button.label">{cta.button.label}</span>
+    <Link href={button.link} style="inverted">
+      <span data-editable="text" data-prop="button.label">{button.label}</span>
     </Link>
   </div>
 </div>

@@ -15,14 +15,14 @@ const { banner, features, cta } = page.data;
 <Layout title="">
   <Container>
     <editable-component data-component="hero" data-prop="banner">
-      <Hero banner={banner} />
+      <Hero {...banner} />
     </editable-component>
     <editable-component data-component="features" data-prop="features">
-      <Features features={features} />
+      <Features {...features} />
     </editable-component>
     <Logos />
     <editable-component data-component="cta" data-prop="cta">
-      <Cta cta={cta} />
+      <Cta {...cta} />
     </editable-component>
   </Container>
 </Layout>

@@ -96,6 +96,16 @@ For block-level rich text (paragraphs, headings, lists), add `data-type="block"`
 
 The `@content` path targets the file's markdown body (not frontmatter).
 
+**Editables inside slot content:** `<Fragment>` elements can't carry HTML attributes. When passing editable text into a slot, use a concrete element (e.g. `<span>`) instead:
+
+```astro
+<!-- Won't work: Fragment can't carry data-editable -->
+<Fragment slot="title">{title}</Fragment>
+
+<!-- Works: span carries the editable attribute into the slot -->
+<span slot="title" data-editable="text" data-prop="title">{title}</span>
+```
+
 ### Image editing
 
 Wrap an image with `data-editable="image"` and a data path attribute. The editable region looks for a child `<img>` element. There are two binding modes depending on the shape of the data:
@@ -158,6 +168,26 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 
 ## Data path patterns
 
+### Empty data-prop (pass-through scope)
+
+An empty `data-prop=""` passes the current data scope through without navigating deeper. This is useful when the parent's data IS the value the child needs — for example, an array editable inside an array-bound component:
+
+```astro
+<!-- Component data-prop points to an array -->
+<editable-component data-component="pricing" data-prop="plans">
+  <PricingSection {...plans} />
+</editable-component>
+
+<!-- Inside PricingSection.astro: data-prop="" passes the array through -->
+<div data-editable="array" data-prop="">
+  {plans.map((plan) => (
+    <div data-editable="array-item">...</div>
+  ))}
+</div>
+```
+
+Without `data-prop=""`, using `data-prop="plans"` here would resolve to `plans.plans` (looking up `plans` on the array), which doesn't exist.
+
 ### Relative paths (same file)
 
 When the editable region is on the same page as the file being edited, use simple relative paths:
@@ -217,6 +247,27 @@ data-prop="image"    -> features[N].image
 data-prop="content"  -> features[N].content
 ```
 
+### Cross-collection items on a page
+
+When a page template fetches and renders items from a different collection (e.g. team members on an about page, testimonials on a landing page), add `@file` editables so those items are editable inline:
+
+```astro
+{teamMembers.map((member) => (
+  <div>
+    <div data-editable="image" data-prop={`@file[src/content/team/${member.id}].avatar`}>
+      <img src={member.data.avatar.src} alt={member.data.avatar.alt} />
+    </div>
+    <h3 data-editable="text" data-prop={`@file[src/content/team/${member.id}].name`}>
+      {member.data.name}
+    </h3>
+  </div>
+))}
+```
+
+Note: `entry.id` in Astro content collections already includes the file extension (e.g. `janette-lynch.md`), so don't append `.md` again.
+
+This only works when the target collection has no `url` pattern in its config. If it does, CloudCannon resolves the URL and navigates away from the current page.
+
 ## When to use a component editable region
 
 Primitive editables (text, image, array, source) handle their own DOM updates but can't trigger re-rendering of the surrounding template. This matters when a section contains data-driven behaviour beyond simple content — see [editable-regions.md > When to use component editable regions](../editable-regions.md#when-to-use-component-editable-regions) for the general principle.
@@ -233,25 +284,41 @@ A features section where each item has an optional button controlled by `button.
 
 ```astro
 <editable-component data-component="features" data-prop="features">
-  <Features features={features} />
+  <Features {...features} />
 </editable-component>
 ```
 
 Inside `Features.astro`, the array editables and text/image editables still work for inline editing and CRUD. The component handles the re-rendering.
 
-**Props for array-bound components:** When `data-prop` points to an array, the client-side renderer passes the array directly as props. Astro's template syntax can't pass a raw array, so spread the array and use `Object.values()` — this works identically for both SSR and client re-render:
+### Component prop contract
+
+When `editable-component` re-renders a component, it passes the value at `data-prop` directly as the component's props. The component **must accept spread props, not a named wrapper prop**. If the component expects `const { banner } = Astro.props` but the re-renderer passes `{ title, description, image }`, `banner` will be `undefined`.
+
+**Object-bound components** (where `data-prop` points to an object in the frontmatter):
 
 ```astro
-<!-- Page template -->
-<editable-component data-component="features" data-prop="features">
-  <Features {...features} />
+<!-- Page template: spread the object -->
+<editable-component data-component="hero" data-prop="banner">
+  <Hero {...banner} />
 </editable-component>
 
-<!-- Features.astro -->
-const features = Object.values(Astro.props);
+<!-- Hero.astro: destructure the object's fields directly -->
+const { title, description, image, buttons } = Astro.props;
 ```
 
-This doesn't apply to object-bound components (like Banner) where spreading the object naturally matches what the renderer passes.
+**Array-bound components** (where `data-prop` points to an array):
+
+The client-side renderer passes the array directly as props. Astro's template syntax can't pass a raw array, so spread the array and use `Object.values()` — this works identically for both SSR and client re-render:
+
+```astro
+<!-- Page template: spread the array -->
+<editable-component data-component="pricing" data-prop="plans">
+  <PricingSection {...plans} />
+</editable-component>
+
+<!-- PricingSection.astro: recover the array from spread indices -->
+const plans = Object.values(Astro.props);
+```
 
 **Array items inside a component don't take over the re-rendering boundary.** The component renderer produces the full HTML for the section, including all array items. The array editables provide CRUD controls, but visual output comes from the component renderer. This is more useful than array items re-rendering independently, since cross-item concerns (alternating layouts, index-based styles) are handled correctly.
 
@@ -430,6 +497,9 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] `@cloudcannon/editable-regions` is in `package.json` dependencies
 - [ ] The Astro integration is registered in `astro.config.mjs`
 - [ ] `src/cloudcannon/registerComponents.ts` exists and is imported from the base layout
+- [ ] Registered components accept spread props matching the shape of their `data-prop` value -- not a named wrapper prop (see [Component prop contract](#component-prop-contract))
+- [ ] Pages that render items from other collections have `@file` editables on those items (when the target collection has no `url` pattern). Remember `entry.id` includes the file extension — don't double it.
+- [ ] Slot content that should be editable uses concrete elements (e.g. `<span>`) instead of `<Fragment>`
 - [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
 
 ---

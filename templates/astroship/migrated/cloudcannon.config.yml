@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+source: templates/astroship/migrated
 
 paths:
   static: public
@@ -36,16 +36,16 @@ collections_config:
       - data
     schemas:
       homepage:
-        path: .cloudcannon/schemas/homepage.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/homepage.md
         name: Homepage
       about:
-        path: .cloudcannon/schemas/about.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/about.md
         name: About Page
       pricing:
-        path: .cloudcannon/schemas/pricing.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/pricing.md
         name: Pricing Page
       contact:
-        path: .cloudcannon/schemas/contact.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/contact.md
         name: Contact Page
     add_options: []
   blog:
@@ -58,7 +58,7 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/post.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/post.md
         name: Blog Post
     add_options:
       - name: Blog Post
@@ -67,9 +67,11 @@ collections_config:
   team:
     path: src/content/team
     icon: people
+    _enabled_editors:
+      - data
     schemas:
       default:
-        path: .cloudcannon/schemas/team-member.md
+        path: templates/astroship/migrated/.cloudcannon/schemas/team-member.md
         name: Team Member
     add_options:
       - name: Team Member

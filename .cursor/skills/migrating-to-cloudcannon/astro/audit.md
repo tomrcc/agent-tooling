@@ -27,6 +27,7 @@ Read `src/content.config.ts` (Astro 5+) or `src/content/config.ts` (older versio
 - **Schema fields** with Zod types, defaults (`z.default()`), and optionality (`z.optional()`)
 - **File naming conventions** (e.g. `-index.md` for listing page metadata -- these get renamed to `index.md` in the content phase)
 - **How it's consumed**: `getCollection()`, `getEntry()`, or helper functions wrapping these
+- **Body content usage**: Is the markdown body rendered on any page, or is the file used only for its frontmatter? Flag data-only `.md` collections (e.g. team members, testimonials, authors) -- these need `_enabled_editors: [data]` in the configuration phase.
 
 Also check for data files outside collections (JSON, YAML in `src/config/` or similar) that contain editable site configuration.
 
