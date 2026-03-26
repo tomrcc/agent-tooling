@@ -21,7 +21,7 @@ content_blocks:
     prices:
       - title: basic
         subtitle: Optimal choice for personal use
-        price: 29
+        price: "29"
         period: per month
         items:
           - description: Etiam in libero, et volutpat
@@ -34,7 +34,7 @@ content_blocks:
           href: "#"
       - title: standard
         subtitle: Optimal choice for small teams
-        price: 69
+        price: "69"
         period: Per Month
         items:
           - description: Proin vel laoreet
@@ -50,7 +50,7 @@ content_blocks:
         ribbonTitle: popular
       - title: premium
         subtitle: Optimal choice for companies
-        price: 199
+        price: "199"
         period: Per Month
         items:
           - description: Curabitur suscipit risus

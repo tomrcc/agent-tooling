@@ -214,7 +214,7 @@ Read the component's Props interface (or destructuring) to determine all fields:
 
 1. **Strings** — bare key with no value (e.g. `title:`) which YAML parses as `null`
 2. **Booleans** — `false`
-3. **Numbers** — `0` or a sensible default from the component (e.g. `columns: 3`)
+3. **Numbers** — `0` or a sensible default from the component (e.g. `columns: 3`). The input must be `type: number` for bare numeric values. If the input is `type: text` (or untyped), quote the value as a string instead (e.g. `price: "29"`). Bare numbers with text inputs cause a "misconfigured" error in CloudCannon.
 4. **Arrays** — `[]`
 5. **Objects** — nested shape with empty fields (e.g. `image:\n  src:\n  alt:`). This gives CloudCannon the field structure for the object input.
 

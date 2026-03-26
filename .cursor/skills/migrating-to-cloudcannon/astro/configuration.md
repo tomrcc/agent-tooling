@@ -438,14 +438,15 @@ After generating and customizing the config, work through these checks before mo
 - [ ] No collections contain only a single file -- consolidate or group as needed
 - [ ] `collection_groups` organise collections into logical sidebar groups
 - [ ] `_inputs` is configured for common field types (images, dates, dropdowns, hidden fields)
-- [ ] Icon fields use `type: select` with `allow_create: true` and a curated values list (not plain `text`)
+- [ ] Icon fields use `type: select` with `allow_create: true`, `value_key: id`, and named values (`name` + `id`) for friendly display names
+- [ ] Numeric values in content frontmatter that map to `text` inputs are quoted as strings (e.g. `price: "29"` not `price: 29`)
 - [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
 - [ ] `file_config` entries exist for files with inputs not covered by global or collection-level config
-- [ ] Object inputs have `type: object` with `preview.icon` for a clean editor UI
+- [ ] Object inputs have `type: object` with `preview.icon` — both top-level data file objects and nested objects inside structures (`callToAction`, `image`, etc.)
 - [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures` (don't rely on naming conventions)
 - [ ] Structures use both `picker_preview` and `preview` (see [../structures.md](../structures.md))
 - [ ] Sites with 5+ block types use the split co-located approach (`values_from_glob`)
@@ -462,12 +463,16 @@ This section grows as we complete more migrations. Document template-specific fi
 
 ### Configure icon fields as select inputs
 
-When a template uses an icon library (e.g. `astro-icon` with Iconify sets like `tabler:*` and `flat-color-icons:*`), configure the `icon` input as a `select` with `allow_create: true` rather than a plain `text` field. Non-technical editors can't guess icon names, but they can pick from a curated list.
+When a template uses an icon library (e.g. `astro-icon` with Iconify sets like `tabler:*` and `flat-color-icons:*`), configure the `icon` input as a `select` with `allow_create: true` rather than a plain `text` field. Non-technical editors can't guess icon names, but they can pick from a curated list with friendly display names.
 
 1. Grep the content files for every unique `icon:` value used in the template.
-2. Add them all as the `values` list in the select input.
-3. Set `allow_create: true` so developers can still type custom icon names.
-4. Add a `comment` linking to the icon set's browser (e.g. Iconify) so developers know where to find new names.
+2. Add them as object values with `name` (human-readable label) and `id` (the actual Iconify value).
+3. Set `value_key: id` so the stored value is the Iconify ID, not the whole object.
+4. Set `preview.text` to show the friendly name in the dropdown.
+5. Set `allow_create: true` so developers can still type custom icon names.
+6. Add a `comment` linking to the icon set's browser (e.g. Iconify) so developers know where to find new names.
+
+Derive friendly names from the icon ID: strip the collection prefix (`tabler:`, `flat-color-icons:`), replace hyphens with spaces, title-case. For icons from secondary collections, add a suffix to distinguish them (e.g. "Template (Color)" for `flat-color-icons:template` vs "Template" for `tabler:template`).
 
 ```yaml
 _inputs:
@@ -476,16 +481,33 @@ _inputs:
     comment: "Pick an icon or type a custom [Iconify](https://icon-sets.iconify.design/) name"
     options:
       allow_create: true
+      value_key: id
+      preview:
+        text:
+          - key: name
       values:
-        - tabler:rocket
-        - tabler:check
-        - flat-color-icons:template
+        - name: Rocket
+          id: tabler:rocket
+        - name: Check
+          id: tabler:check
+        - name: Template (Color)
+          id: flat-color-icons:template
         # ... all icons used in the template's content
 ```
 
 This applies to any field that accepts icon names — items in features, steps, stats, buttons, etc. A single global `icon` input definition covers all of them since the key name is the same.
 
 A data file isn't worth the complexity here. Adding new icons requires knowing the icon set's naming scheme, which is a developer task. The hardcoded list is easy for a developer to extend directly in config.
+
+### Quote numeric values that map to text inputs
+
+YAML parses bare numbers (`price: 29`) as integers, not strings. If the corresponding CloudCannon input is `type: text` (or defaults to text), CC throws "This text input is misconfigured. This input must have a text value." This affects both structure default values and content file frontmatter.
+
+**Fix:** Either quote the value as a string (`price: "29"`) or configure the input as `type: number`. Quoting as a string is usually better — it's simpler and avoids breaking component code that does string operations on the value.
+
+This is easy to miss during content migration — agents must check every numeric value in frontmatter and ask: is this field's input type `text` or `number`? If it's `text` (or unspecified), quote it. Common culprits: `price`, `amount`, `count`, `order`, `rating`.
+
+Structure default values follow the same rule. If a structure defines `price:` (null/empty), no problem. But if it has a numeric default like `columns: 3`, the input must be `type: number` or the value must be quoted.
 
 ### Verify Gadget's `source` path
 
@@ -550,7 +572,9 @@ preview:
 
 ### Configure object inputs with preview icons
 
-When a data or config file has top-level object keys (e.g. `site`, `settings`, `metadata`), configure them as `type: object` with a `preview.icon` so they display a meaningful icon in the data editor instead of the default generic object icon:
+Object inputs without a `preview.icon` show a generic icon in the data editor. Configure `type: object` with `options.preview.icon` on any object key that editors will see — both top-level data file objects and nested objects inside structures.
+
+**Top-level objects in data/config files** — use `file_config` to scope the input:
 
 ```yaml
 file_config:
@@ -568,7 +592,25 @@ file_config:
             icon: manage_search
 ```
 
-Use [Material Icons](https://fonts.google.com/icons) names. Pick icons that reflect the object's purpose (e.g. `tune` for settings, `analytics` for tracking, `forum` for comments).
+**Nested objects inside structures** — common objects like `callToAction`, `image`, `textarea`, etc. appear inside structure values. Define them in global `_inputs` so the icon applies everywhere the key name appears:
+
+```yaml
+_inputs:
+  callToAction:
+    type: object
+    options:
+      preview:
+        icon: ads_click
+  image:
+    type: object
+    options:
+      preview:
+        icon: image
+```
+
+Use [Material Icons](https://fonts.google.com/icons) names. Pick icons that reflect the object's purpose (e.g. `tune` for settings, `analytics` for tracking, `ads_click` for CTAs, `image` for media objects).
+
+**Watch for key collisions.** A key like `image` may be a string path (`type: image`) in some contexts and an object (`{ src, alt }`) in others. You can't define both `type: image` and `type: object` for the same key in global `_inputs`. In these cases, keep the `type: image` definition (which serves the simpler/more common case) and skip the object icon — the nested structure value already defines the object's fields.
 
 ### Array item previews go on `[*]`, not on the array
 

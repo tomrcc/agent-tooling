@@ -142,93 +142,206 @@ _inputs:
     comment: "Pick an icon or type a custom [Iconify](https://icon-sets.iconify.design/) name"
     options:
       allow_create: true
+      value_key: id
+      preview:
+        text:
+          - key: name
       values:
-        - tabler:accessible
-        - tabler:adjustments-horizontal
-        - tabler:arrow-big-up-lines
-        - tabler:arrows-right-left
-        - tabler:artboard
-        - tabler:article
-        - tabler:award
-        - tabler:brand-behance
-        - tabler:brand-dribbble
-        - tabler:brand-pinterest
-        - tabler:brand-tailwind
-        - tabler:brand-twitter
-        - tabler:briefcase
-        - tabler:building-store
-        - tabler:bulb
-        - tabler:carousel-horizontal
-        - tabler:check
-        - tabler:chevron-right
-        - tabler:chevrons-right
-        - tabler:chevrons-up
-        - tabler:clock
-        - tabler:coin
-        - tabler:components
-        - tabler:download
-        - tabler:eyeglass
-        - tabler:file-download
-        - tabler:flip-vertical
-        - tabler:globe
-        - tabler:headset
-        - tabler:heart
-        - tabler:home-star
-        - tabler:info-square
-        - tabler:layers-union
-        - tabler:letter-case
-        - tabler:list-check
-        - tabler:mail
-        - tabler:map-pin
-        - tabler:message-circle
-        - tabler:message-star
-        - tabler:messages
-        - tabler:number-1
-        - tabler:number-2
-        - tabler:number-3
-        - tabler:number-4
-        - tabler:number-5
-        - tabler:number-6
-        - tabler:number-7
-        - tabler:package
-        - tabler:paint
-        - tabler:phone
-        - tabler:photo
-        - tabler:picture-in-picture
-        - tabler:plug-connected
-        - tabler:podium
-        - tabler:presentation
-        - tabler:refresh
-        - tabler:rocket
-        - tabler:school
-        - tabler:settings
-        - tabler:shield-lock
-        - tabler:shopping-cart
-        - tabler:square-number-1
-        - tabler:square-number-2
-        - tabler:square-number-3
-        - tabler:square-number-4
-        - tabler:square-rounded-arrow-right
-        - tabler:stairs
-        - tabler:template
-        - tabler:tie
-        - tabler:user-star
-        - tabler:users
-        - tabler:vaccine
-        - tabler:wand
-        - tabler:wifi-off
-        - tabler:writing
-        - flat-color-icons:advertising
-        - flat-color-icons:approval
-        - flat-color-icons:business-contact
-        - flat-color-icons:currency-exchange
-        - flat-color-icons:database
-        - flat-color-icons:document
-        - flat-color-icons:gallery
-        - flat-color-icons:template
-        - flat-color-icons:voice-presentation
+        - name: Accessible
+          id: tabler:accessible
+        - name: Adjustments Horizontal
+          id: tabler:adjustments-horizontal
+        - name: Arrow Big Up Lines
+          id: tabler:arrow-big-up-lines
+        - name: Arrows Right Left
+          id: tabler:arrows-right-left
+        - name: Artboard
+          id: tabler:artboard
+        - name: Article
+          id: tabler:article
+        - name: Award
+          id: tabler:award
+        - name: Brand Behance
+          id: tabler:brand-behance
+        - name: Brand Dribbble
+          id: tabler:brand-dribbble
+        - name: Brand Pinterest
+          id: tabler:brand-pinterest
+        - name: Brand Tailwind
+          id: tabler:brand-tailwind
+        - name: Brand Twitter
+          id: tabler:brand-twitter
+        - name: Briefcase
+          id: tabler:briefcase
+        - name: Building Store
+          id: tabler:building-store
+        - name: Bulb
+          id: tabler:bulb
+        - name: Carousel Horizontal
+          id: tabler:carousel-horizontal
+        - name: Check
+          id: tabler:check
+        - name: Chevron Right
+          id: tabler:chevron-right
+        - name: Chevrons Right
+          id: tabler:chevrons-right
+        - name: Chevrons Up
+          id: tabler:chevrons-up
+        - name: Clock
+          id: tabler:clock
+        - name: Coin
+          id: tabler:coin
+        - name: Components
+          id: tabler:components
+        - name: Download
+          id: tabler:download
+        - name: Eyeglass
+          id: tabler:eyeglass
+        - name: File Download
+          id: tabler:file-download
+        - name: Flip Vertical
+          id: tabler:flip-vertical
+        - name: Globe
+          id: tabler:globe
+        - name: Headset
+          id: tabler:headset
+        - name: Heart
+          id: tabler:heart
+        - name: Home Star
+          id: tabler:home-star
+        - name: Info Square
+          id: tabler:info-square
+        - name: Layers Union
+          id: tabler:layers-union
+        - name: Letter Case
+          id: tabler:letter-case
+        - name: List Check
+          id: tabler:list-check
+        - name: Mail
+          id: tabler:mail
+        - name: Map Pin
+          id: tabler:map-pin
+        - name: Message Circle
+          id: tabler:message-circle
+        - name: Message Star
+          id: tabler:message-star
+        - name: Messages
+          id: tabler:messages
+        - name: Number 1
+          id: tabler:number-1
+        - name: Number 2
+          id: tabler:number-2
+        - name: Number 3
+          id: tabler:number-3
+        - name: Number 4
+          id: tabler:number-4
+        - name: Number 5
+          id: tabler:number-5
+        - name: Number 6
+          id: tabler:number-6
+        - name: Number 7
+          id: tabler:number-7
+        - name: Package
+          id: tabler:package
+        - name: Paint
+          id: tabler:paint
+        - name: Phone
+          id: tabler:phone
+        - name: Photo
+          id: tabler:photo
+        - name: Picture in Picture
+          id: tabler:picture-in-picture
+        - name: Plug Connected
+          id: tabler:plug-connected
+        - name: Podium
+          id: tabler:podium
+        - name: Presentation
+          id: tabler:presentation
+        - name: Refresh
+          id: tabler:refresh
+        - name: Rocket
+          id: tabler:rocket
+        - name: School
+          id: tabler:school
+        - name: Settings
+          id: tabler:settings
+        - name: Shield Lock
+          id: tabler:shield-lock
+        - name: Shopping Cart
+          id: tabler:shopping-cart
+        - name: Square Number 1
+          id: tabler:square-number-1
+        - name: Square Number 2
+          id: tabler:square-number-2
+        - name: Square Number 3
+          id: tabler:square-number-3
+        - name: Square Number 4
+          id: tabler:square-number-4
+        - name: Square Rounded Arrow Right
+          id: tabler:square-rounded-arrow-right
+        - name: Stairs
+          id: tabler:stairs
+        - name: Template
+          id: tabler:template
+        - name: Tie
+          id: tabler:tie
+        - name: User Star
+          id: tabler:user-star
+        - name: Users
+          id: tabler:users
+        - name: Vaccine
+          id: tabler:vaccine
+        - name: Wand
+          id: tabler:wand
+        - name: Wifi Off
+          id: tabler:wifi-off
+        - name: Writing
+          id: tabler:writing
+        - name: Advertising (Color)
+          id: flat-color-icons:advertising
+        - name: Approval (Color)
+          id: flat-color-icons:approval
+        - name: Business Contact (Color)
+          id: flat-color-icons:business-contact
+        - name: Currency Exchange (Color)
+          id: flat-color-icons:currency-exchange
+        - name: Database (Color)
+          id: flat-color-icons:database
+        - name: Document (Color)
+          id: flat-color-icons:document
+        - name: Gallery (Color)
+          id: flat-color-icons:gallery
+        - name: Template (Color)
+          id: flat-color-icons:template
+        - name: Voice Presentation (Color)
+          id: flat-color-icons:voice-presentation
   href:
     type: url
+  callToAction:
+    type: object
+    options:
+      preview:
+        icon: ads_click
+  callToAction2:
+    type: object
+    options:
+      preview:
+        icon: ads_click
+  textarea:
+    type: object
+    options:
+      preview:
+        icon: text_fields
+  disclaimer:
+    type: object
+    options:
+      preview:
+        icon: policy
+  button:
+    type: object
+    options:
+      preview:
+        icon: smart_button
   isDark:
     type: switch
   isReversed:

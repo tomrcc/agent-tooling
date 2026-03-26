@@ -134,7 +134,7 @@ content_blocks:
           href: "#"
       - title: pro
         subtitle: Premium templates and advanced customization
-        price: 15
+        price: "15"
         period: "/ Month"
         callToAction:
           target: _blank
@@ -144,7 +144,7 @@ content_blocks:
         ribbonTitle: popular
       - title: Enterprise
         subtitle: Tailored solutions for large-scale projects
-        price: 45
+        price: "45"
         period: "/ Month"
         callToAction:
           target: _blank
