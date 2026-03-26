@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+
+paths:
+  static: public
+  uploads: public
+
+markdown:
+  engine: commonmark
+  options:
+    gfm: true
+    table: true
+
+_editables:
+  content:
+    blockquote: true
+    bold: true
+    bulletedlist: true
+    format: p h1 h2 h3 h4 h5 h6
+    image: true
+    italic: true
+    link: true
+    numberedlist: true
+    removeformat: true
+    table: true
+    code: true
+    horizontalrule: true
+
+collection_groups:
+  - heading: Content
+    collections:
+      - blog
+  - heading: Pages
+    collections:
+      - pages
+
+collections_config:
+  blog:
+    path: src/data/blog
+    icon: rss_feed
+    url: "/posts/{slug}/"
+    glob:
+      - "**/*.md"
+    _enabled_editors:
+      - visual
+      - content
+      - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/post.md
+        name: Blog Post
+    add_options:
+      - name: Blog Post
+        schema: default
+        icon: post_add
+  pages:
+    path: src/pages
+    icon: wysiwyg
+    url: "/[slug]/"
+    glob:
+      - "*.md"
+      - "index.astro"
+    _enabled_editors:
+      - visual
+    add_options: []
+
+_inputs:
+  title:
+    type: text
+  description:
+    type: textarea
+  author:
+    type: text
+  pubDatetime:
+    type: datetime
+    comment: Publication date
+  modDatetime:
+    type: datetime
+    comment: Last modified date
+  tags:
+    type: multiselect
+    options:
+      allow_create: true
+  featured:
+    type: switch
+  draft:
+    type: switch
+  ogImage:
+    type: image
+    comment: Custom Open Graph image for social sharing
+  canonicalURL:
+    hidden: true
+  hideEditPost:
+    hidden: true
+  timezone:
+    hidden: true
+  slug:
+    type: text
+    comment: URL slug for this post. Controls the /posts/{slug}/ URL path.
+  layout:
+    hidden: true

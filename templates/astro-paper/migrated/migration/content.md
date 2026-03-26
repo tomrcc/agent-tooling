@@ -1,0 +1,34 @@
+# Content — astro-paper
+
+## Summary
+
+No content file changes needed. Blog posts have consistent frontmatter and clean markdown bodies.
+
+## Frontmatter consistency
+
+All posts have the required fields (`title`, `pubDatetime`, `description`). Optional fields are used consistently:
+
+- `draft` — present and explicit in most posts (good for CC toggle visibility)
+- `featured` — present in most posts, some omit it (schema default handles it)
+- `modDatetime` — present when applicable, correctly nullable
+- `tags` — always present as a key, sometimes with no values (defaults to `["others"]` at runtime)
+- `author` — present in all posts, defaults to `SITE.author` via schema
+
+## `slug` in frontmatter
+
+Most posts include `slug` but it's not in the Zod schema. URLs are derived from file paths via `getPath()`. The `slug` field is effectively ignored at build time. Hidden in CC config to avoid confusion.
+
+## No `-index.md` files
+
+The blog collection has no index files. No renaming needed.
+
+## Markdown bodies
+
+- No MDX components or shortcodes
+- Some inline HTML (`<figure>`, `<figcaption>`) — standard, round-trips fine
+- 5 posts contain markdown tables — handled by `markdown.options.table: true` in CC config
+- Empty bodies on some posts (frontmatter-only) — normal
+
+## About page
+
+`src/pages/about.md` has clean frontmatter (`layout`, `title`) and a prose body. No changes needed.

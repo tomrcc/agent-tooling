@@ -36,7 +36,7 @@ Also check for data files outside collections (JSON, YAML in `src/config/` or si
 Map every page route in `src/pages/` and how it gets its data:
 
 - **Static pages** (`index.astro`, `about.astro`) and which collection/data they read
-- **Dynamic routes** (`[slug].astro`, `[...path].astro`) and their `getStaticPaths()` logic
+- **Dynamic routes** (`[slug].astro`, `[...path].astro`) and their `getStaticPaths()` logic. Check whether the route param comes from `post.id`, `post.data.slug`, or the filename -- this determines whether the CC `url` pattern needs `[slug]` (filename) or `{slug}` (frontmatter). Note that Astro's `glob()` loader uses frontmatter `slug` to override `post.id` when present, so `post.id` may not match the filename.
 - **Pagination routes** using `paginate()`
 - **Taxonomy routes** (tags, categories) -- these are typically generated from frontmatter values, not backed by their own collections
 
@@ -53,6 +53,8 @@ Document the component hierarchy:
 - **Shortcode components** auto-imported for MDX (check `astro.config.mjs` for MDX `remarkPlugins` or custom components)
 
 Flag components that are good candidates for visual editing (hero banners, feature sections, CTAs) vs. those better suited to the data panel (navigation, social links, theme settings).
+
+Also flag **hardcoded text in page templates** as source editable candidates. Common locations: homepage hero sections, CTA copy, section headings on listing pages. These don't need a content collection or data file -- they use `EditableSource` to edit the raw `.astro` file directly. See [visual-editing.md § Source editables](visual-editing.md#source-editables-for-hardcoded-content).
 
 ## 5. Build pipeline
 

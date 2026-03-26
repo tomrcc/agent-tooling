@@ -9,12 +9,14 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
+import editableRegions from "@cloudcannon/editable-regions/astro-integration";
 import { SITE } from "./src/config";
 
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
   integrations: [
+    editableRegions(),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),

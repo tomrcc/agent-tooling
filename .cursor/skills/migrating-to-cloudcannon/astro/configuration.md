@@ -59,6 +59,14 @@ After generation, read `cloudcannon.config.yml` and check:
 
 ## Customize the config
 
+### Targeted content fixes during configuration
+
+The migration phases are sequential, but don't treat them as rigid boundaries. When a CC config pattern requires content files to have a field that's inconsistent or missing, **add it** rather than settling for a worse config. Examples: adding `slug` frontmatter so `{slug}` URL patterns work, adding `_schema` to disambiguate collection schemas, normalizing a `date` field format. These are small, mechanical changes in service of the configuration — not a restructuring of the content model (which belongs in the content phase).
+
+The decision rule: if skipping the change means the config is wrong or fragile, make the change now. If the change is structural (moving files, adding new fields that alter rendering, reorganizing collections), defer to the content phase.
+
+### Customization checklist
+
 Gadget produces a structural baseline. The following customizations are almost always needed, informed by the Phase 1 audit:
 
 - **`_inputs`** -- configure how fields appear in the editor (dropdowns, date pickers, image uploaders, comments, hidden fields). Map these from the Zod schemas discovered in the audit.
@@ -200,11 +208,18 @@ Data files appear in the sidebar under their own collection group (typically "Da
 
 ## Collection URLs
 
-Collections that produce pages need a `url` pattern so CloudCannon can open them in the visual editor and display the correct URL in the collection file list.
+Collections that produce pages need a `url` pattern so CloudCannon can open them in the visual editor and display the correct URL in the collection file list. **A wrong `url` is the most common reason a page fails to load in the visual editor.** If the visual editor shows a blank page or the wrong page for a supported file type, check the `url` pattern first -- including the trailing slash.
 
-### Syntax
+### Fixed placeholders
 
-Use `[slug]` as a placeholder for the filename (minus extension):
+Use square brackets for fixed (filename-based) placeholders:
+
+- `[slug]` -- filename without extension. If the filename is `index`, resolves to an empty string.
+- `[filename]` -- filename with extension.
+- `[relative_base_path]` -- file path without extension, relative to the collection path.
+- `[full_slug]` -- alias for `[relative_base_path]/[slug]`.
+- `[collection]` -- the collection key name.
+- `[ext]` -- the file extension.
 
 ```yaml
 pages:   url: "/[slug]/"
@@ -212,15 +227,60 @@ blog:    url: "/blog/[slug]/"
 authors: url: "/authors/[slug]/"
 ```
 
-If the filename is `index`, `[slug]` resolves to an empty string. So a `pages` collection with `url: "/[slug]/"` produces `/` for `index.md` and `/about/` for `about.md`.
+A `pages` collection with `url: "/[slug]/"` produces `/` for `index.md` and `/about/` for `about.md`.
+
+### Data placeholders (frontmatter fields)
+
+Use curly braces to reference frontmatter data. This is essential when the output URL is derived from a frontmatter field rather than the filename -- a common pattern where templates use a `slug`, `permalink`, or `title` field to control the output path.
+
+```yaml
+blog:    url: "/posts/{slug}/"
+news:    url: "/news/{category|slugify}/{title|slugify}/"
+```
+
+**Filters** are applied with `|` after the key name. Multiple filters can be chained. Full reference: [CloudCannon template strings docs](https://cloudcannon.com/documentation/developer-articles/configure-your-template-strings/).
+
+Common filters for URLs:
+
+- `slugify` -- converts non-alphanumeric characters to hyphens, collapses sequential hyphens, strips leading/trailing hyphens
+- `lowercase` / `uppercase` -- case transformation
+- `year`, `month`, `day` -- extract date parts (2-digit month/day, 4-digit year)
+- `default=value` -- fallback when the field is empty
+- `truncate=N` -- limit to N characters
+
+**Nested keys and arrays** are supported: `{seo.description}` for nested objects, `{tags[0]}` for specific array items, `{tags[*]}` for all items (joined with `, `).
+
+**When to use data placeholders:** During the audit, check how the SSG generates output URLs. If the routing uses a frontmatter field (e.g. `getStaticPaths` returns `params: { slug: post.data.slug }` rather than using the filename), use `{field}` in the CloudCannon `url`. Compare a few filenames against their build output paths in `dist/` -- if they don't match, the URL is frontmatter-driven.
+
+### Astro glob loader and `slug` frontmatter
+
+Astro's `glob()` loader has a built-in feature: if a content file's frontmatter contains a `slug` field, it overrides the auto-generated `id` (which is normally the filename without extension). This means `post.id` — which most templates use for routing — can come from either:
+
+1. The frontmatter `slug` field (when present)
+2. The filename (when `slug` is absent)
+
+This is easy to miss because the `slug` field doesn't need to be in the Zod schema — the glob loader consumes it before validation. The application code doesn't reference `data.slug` either; it's already baked into `post.id`.
+
+**Implications for CC URLs:** When a template uses `post.id` for routing (common pattern: `params: { slug: post.id }` in `getStaticPaths`), and some content files have a `slug` frontmatter that differs from the filename, CC's `[slug]` placeholder (filename-based) will produce the wrong URL. Use `{slug}` (frontmatter-based) instead.
+
+**Ensuring consistency:** If only some posts have `slug` frontmatter, add it to the rest (matching the filename) so `{slug}` works uniformly. Also add `slug` to the CC schema template so new posts get the field, and make the `slug` input visible so editors can control their URL.
 
 ### Trailing slash rule
 
-The URL must match the built output path. Check `astro.config.mjs` for `trailingSlash` and `build.format`:
+The URL must match the built output path exactly. Check `astro.config.mjs` for `trailingSlash` and `build.format`:
 
 - **`build.format: "directory"` (default)** -- Astro builds pages as `dir/index.html`. URLs need a trailing slash: `/about/`, `/blog/my-post/`. This is the default even when `trailingSlash` is set to `"never"`.
 - **`build.format: "file"`** -- Astro builds pages as `page.html`. URLs do not have a trailing slash: `/about`, `/blog/my-post`.
 - **`build.format: "preserve"`** -- matches the source file structure. Check the output to determine the pattern.
+
+### Troubleshooting
+
+If a page doesn't load in the visual editor:
+
+1. **Check the `url` pattern** -- compare the configured URL against the actual build output in `dist/`. The most common issues are wrong placeholders (`[slug]` vs `{slug}`) and wrong prefix paths.
+2. **Check the trailing slash** -- a missing or extra trailing slash causes a mismatch. Compare against the `build.format` setting.
+3. **Check fixed vs data placeholders** -- `[slug]` is the filename; `{slug}` is the frontmatter `slug` field. If the SSG uses a frontmatter field for routing, you need curly braces.
+4. **Build and inspect** -- when in doubt, build the site and inspect the `dist/` directory to see the actual output paths.
 
 ## Schemas for index pages
 
@@ -244,6 +304,28 @@ The `default` schema controls what editors see when creating or editing regular 
 The `[slug]` collapse behavior means no special URL handling is needed -- `index.md` resolves to `/blog/` while `post-1.md` resolves to `/blog/post-1/`.
 
 Create the schema template files in `.cloudcannon/schemas/` with representative frontmatter for each type. These serve as blueprints when editors create new files from within CloudCannon.
+
+## New preview URL for schemas
+
+When an editor creates a new file from a schema, it hasn't been built yet so it has no output URL. CloudCannon needs an existing page to show in the visual editor while the editor fills in the initial content. The `new_preview_url` key on a schema tells CloudCannon which page to load as the preview for newly created files.
+
+```yaml
+schemas:
+  default:
+    path: .cloudcannon/schemas/page.md
+    name: Page
+    new_preview_url: /elements/
+  page_builder:
+    path: .cloudcannon/schemas/page-builder.md
+    name: Page Builder
+    new_preview_url: /services/
+```
+
+Pick a `new_preview_url` that uses the same layout or template as the schema. For a page builder schema, choose an existing page builder page; for a standard page schema, choose an existing standard page. This gives editors a representative preview while editing.
+
+If the page used as the preview URL is later deleted or renamed, newly created files will show a broken preview. The editor-facing `.cloudcannon/README.md` should explain this to editors so they know what happened and can ask a developer to update the setting.
+
+`new_preview_url` is optional. If omitted, CloudCannon falls back to showing the site's homepage for new files.
 
 ## Controlling the Add button with `add_options`
 
@@ -427,6 +509,24 @@ This runs before the build command on CloudCannon. Alternatively, chain the scri
 node scripts/themeGenerator.js && node scripts/jsonGenerator.js && astro build
 ```
 
+## Editor README
+
+Create `.cloudcannon/README.md` as an editor-facing guide that appears on the Site Dashboard when the site is opened in CloudCannon. This is the first thing editors see, so it should orient non-technical users.
+
+The README should cover:
+
+- **Welcome and site overview** -- what the site is and what content it manages
+- **Quick links** -- `cloudcannon:collections/<name>` links to each collection for one-click navigation
+- **Collections guide** -- for each collection, explain what it contains and how to create, edit, and delete items. Mention which editing views are available (visual, content, data)
+- **Data files** -- if the site has `data_config` entries, explain what each file controls (e.g. "Navigation controls the header and footer links")
+- **Site settings** -- where to find site-wide config (theme, navigation, social links)
+- **New preview URL** -- if any schemas use `new_preview_url`, explain in plain language that newly created pages show a temporary preview of an existing page, and that deleting that page will break the preview for new files
+- **Rich text components** -- if the site has `_snippets`, briefly list the available components editors can insert
+
+Write in plain language throughout. Avoid technical terms like YAML, frontmatter, Zod, schema, SSG, or Astro. Use `cloudcannon:` protocol links where helpful (e.g. `[Blog posts](cloudcannon:collections/blog)`).
+
+The README is purely for editors. Developer notes belong in the project's own `readme.md` or migration notes.
+
 ## Verification checklist
 
 After generating and customizing the config, work through these checks before moving to the next phase:
@@ -441,7 +541,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Icon fields use `type: select` with `allow_create: true`, `value_key: id`, and named values (`name` + `id`) for friendly display names
 - [ ] Numeric values in content frontmatter that map to `text` inputs are quoted as strings (e.g. `price: "29"` not `price: 29`)
 - [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
-- [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`
+- [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`. Compare a few filenames against `dist/` output paths -- if they differ, the URL is frontmatter-driven and needs `{data_field}` placeholders instead of `[slug]`
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
@@ -456,6 +556,8 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `add_options` restricts the Add button to only creatable schemas (excludes index pages and one-off pages with dedicated routes)
 - [ ] Collections using `.md` files with no rendered body content have `_enabled_editors: [data]`
 - [ ] If the site has 3+ reusable block components, a page builder schema with `content_blocks` array is available
+- [ ] Schemas for creatable page types have `new_preview_url` pointing to an existing page with the same layout
+- [ ] `.cloudcannon/README.md` exists with editor-facing documentation (collections, data files, settings, quick links)
 
 ## Patterns and gotchas
 
@@ -679,4 +781,48 @@ _inputs:
   font_family.primary:
     type: text
 ```
+
+### TypeScript config files are not CC-editable
+
+Some Astro templates store site configuration in TypeScript files with `as const` objects (e.g. `src/config.ts` with site title, author, feature flags). These cannot be edited in CloudCannon's data editor because CC only handles JSON/YAML/Markdown files.
+
+Options, in order of preference:
+1. **Leave as-is** — document as developer-only. Best for small blogs where the config rarely changes.
+2. **Convert to JSON** — extract the config into a `.json` file, import it in TypeScript, configure as `data_config` in CC. Requires updating all imports across the project. Worth it for templates where site owners need to change titles, descriptions, or feature flags.
+3. **Hybrid** — move frequently-edited fields (title, description, social links) to JSON while keeping developer-only settings (build flags, pagination counts) in TypeScript.
+
+The same applies to `constants.ts` files with hardcoded arrays (social links, navigation). If these need to be editor-accessible, extract to JSON and configure `data_config`.
+
+### Pages collection: including `.astro` pages
+
+The pages collection should include both `.md` content pages and `.astro` template pages that have editable content. Set the collection to visual-only editing since that's the only editor that works for both file types:
+
+```yaml
+pages:
+  path: src/pages
+  icon: wysiwyg
+  url: "/[slug]/"
+  glob:
+    - "*.md"
+    - "index.astro"
+  _enabled_editors:
+    - visual
+  add_options: []
+```
+
+Only include `.astro` pages that actually have editable regions (source editables or other `data-editable` attributes). Pages with no visually editable content (e.g. search, 404, tag listing) should be excluded -- they just clutter the collection with unopenable items.
+
+The `[slug]` pattern handles `index.astro` correctly -- `[slug]` resolves to an empty string for `index` filenames, producing `/`.
+
+`add_options: []` prevents creating new pages since the routes are hardcoded. Hide the `layout` field in `_inputs` for `.md` pages.
+
+#### When to use source editables vs. refactoring to `.md`
+
+Many `.astro` pages have hardcoded text (hero titles, descriptions, CTA copy) that editors should be able to change. There are two approaches:
+
+**Source editables (preferred for most cases):** Add `data-editable="source"` attributes directly to elements in the `.astro` file. Low effort, no structural changes needed. See [visual-editing.md § Source editables](visual-editing.md#source-editables-for-hardcoded-content).
+
+**Refactor to `.md` with layouts (for component-heavy pages):** When a page is composed of many distinct sections/components, extract the content into a `.md` file with structured frontmatter and render it through a layout. This enables array-based page building where editors can reorder, add, and remove sections. Worth the effort when the page has 3+ distinct component sections.
+
+**Decision rule:** If the page has a few pieces of hardcoded text in a fixed layout, use source editables. If the page is built from many components that editors might want to rearrange, refactor to `.md` with a `content_blocks` array approach.
 

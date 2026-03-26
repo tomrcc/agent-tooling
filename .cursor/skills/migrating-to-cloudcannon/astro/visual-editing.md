@@ -466,16 +466,80 @@ const plans = Object.values(Astro.props);
 
 **When in doubt, make it a component.** The cost is one `registerAstroComponent()` call and a wrapper element. The benefit is that every data-driven change live-updates.
 
+## Source editables for hardcoded content
+
+Not all editable content lives in frontmatter or data files. Many templates have hardcoded text in `.astro` page templates -- hero headings, taglines, descriptions, CTA copy. These should still be visually editable using `EditableSource`.
+
+Source editables work by reading and writing the raw source file (e.g. `src/pages/index.astro`) directly. They don't need a content collection or data file -- just a `data-path` pointing to the source file and a `data-key` to identify the region within it.
+
+### When to use source editables
+
+- Hardcoded text in `.astro` page templates (homepage hero, taglines, section headings)
+- Static content that isn't backed by a content collection or data file
+- Any visible text on a page that an editor should be able to change
+
+**Do not dismiss content as "developer-only" just because it's hardcoded.** If an editor can see it on the page, they should be able to edit it. Source editables make this possible without refactoring to a data file or content collection.
+
+### Including `.astro` pages in collections
+
+Pages with source editables should be included in the pages collection so editors can find and open them. Add specific `.astro` filenames to the collection's glob alongside `"*.md"` -- only include pages that actually have editable regions. Pages with no visually editable content (search, 404, tag listings) should be excluded. Set `_enabled_editors: [visual]` for the collection -- `.astro` files can only use the visual editor (their JS frontmatter isn't parseable as data), and `.md` pages work well in the visual editor too when they have editable regions. See [configuration.md § Pages collection](configuration.md#pages-collection-including-astro-pages) for the full config pattern.
+
+### Syntax
+
+```astro
+<h1
+  class="text-4xl font-bold"
+  data-editable="source"
+  data-path="src/pages/index.astro"
+  data-key="hero-title"
+>
+  Welcome to My Site
+</h1>
+
+<p
+  data-editable="source"
+  data-path="src/pages/index.astro"
+  data-key="hero-description"
+  data-type="block"
+>
+  A description paragraph that editors can change.
+</p>
+```
+
+### How it works
+
+1. CloudCannon reads the full source file via `CloudCannon.file(path).get()`
+2. Finds the editable region by locating the `data-key` attribute in the raw HTML
+3. When the editor changes the text, splices the new content back into the source file at the same location
+4. Writes the entire file back via `file.set(content)`
+
+### Limitations
+
+- **Astro component syntax inside the editable region will not survive editing.** If a paragraph contains `<LinkButton>` or other Astro components, the rich text editor can't handle them. Keep source editables on elements with plain HTML content only.
+- **`data-key` must be unique within the file.** Use descriptive keys like `hero-title`, `hero-description`, `cta-heading`.
+- **`data-path` is relative to the project root**, not the current file. Use the full path from the repo root (e.g. `src/pages/index.astro`).
+
+### Identifying source editable candidates during audit
+
+During Phase 1, flag hardcoded text in page templates as source editable candidates. Common locations:
+
+- Homepage hero sections (title, subtitle, description)
+- CTA sections with static copy
+- Section headings on listing pages
+- Footer taglines or copyright text
+- Any page that has visible text not sourced from frontmatter or a data file
+
 ## What to make editable vs. what to leave for the sidebar
 
 Not everything benefits from visual editing. Guidelines:
 
-**Good for visual editing (inline text/image):**
+**Good for visual editing (inline text/image/source):**
 - Page titles, headings, descriptions
-- Hero/banner content
+- Hero/banner content (from frontmatter via `data-prop`, or hardcoded via `data-editable="source"`)
 - Images (hero, feature, author avatar)
 - Content body (`@content`)
 - CTA copy
+- Hardcoded text in page templates
 
 **Better for sidebar/data editor:**
 - Navigation menus (complex nested structures)
@@ -644,6 +708,7 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] Pages that render items from other collections have `@file` editables on those items (when the target collection has no `url` pattern). Remember `entry.id` includes the file extension — don't double it.
 - [ ] Slot content that should be editable uses concrete elements (e.g. `<span>`) instead of `<Fragment>`
 - [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
+- [ ] **Source editables**: Hardcoded text in page templates (hero headings, descriptions, CTA copy) has `data-editable="source"` with `data-path` and `data-key` attributes -- don't skip content just because it's not in a content collection
 - [ ] **Page builder array wrapper** has `data-component-key="_type"` and `data-id-key="_type"` alongside `data-editable="array"` and `data-prop="content_blocks"`
 - [ ] **Page builder blocks** use a plain HTML element (`<section>`) with `data-editable="array-item"`, `data-component={_type}`, and `data-id={_type}` — NOT the `<editable-component>` custom element
 - [ ] **Page builder blocks**: Widget components rendered inside blocks have nested `data-editable="text"` / `data-editable="image"` attributes on their key text and image elements

@@ -3,9 +3,9 @@ description: Track migration metrics after completing a migration. Apply when a 
 applyIntelligently: true
 ---
 
-After completing a migration, remind the user to log metrics so we can track whether skill improvements reduce migration effort over time.
+After completing a migration, the agent must log metrics and archive transcripts. This is mandatory, not optional.
 
-## How to log
+## 1. Log metrics
 
 Run from the repo root:
 
@@ -20,9 +20,19 @@ Optional flags:
 
 This appends a row to `metrics/migration-log.csv` with proxy metrics (word count, turns, subagent usage) extracted from the agent transcript.
 
+## 2. Archive transcripts
+
+Copy the raw transcript JSONL file(s) into the template's migration directory:
+
+```bash
+cp ~/.cursor/projects/<project-dir>/agent-transcripts/<uuid>.jsonl templates/<name>/migrated/migration/transcripts/
+```
+
+This preserves the full conversation alongside the migration for future reference. Include subagent transcripts if any were created.
+
 ## Finding the transcript ID
 
-Transcript IDs are UUIDs visible in the agent-transcripts directory. The current conversation's transcript ID can be cited from the agent transcripts folder.
+The agent can find transcript IDs by listing files in the agent-transcripts directory. The most recently modified `.jsonl` file is typically the current conversation.
 
 ## What gets tracked
 
@@ -32,6 +42,6 @@ Transcript IDs are UUIDs visible in the agent-transcripts directory. The current
 - Total transcript size in bytes
 - Optional manual token count from Cursor UI
 
-## Archiving transcripts
+## When to prompt
 
-Also archive the raw transcript files into the template's migration folder — see the `migration-transcripts` rule.
+The agent should remind the user to provide a token count from the Cursor usage panel after the migration is complete. The user can also provide notes about the run.

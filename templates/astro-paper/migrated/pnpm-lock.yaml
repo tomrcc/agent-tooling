@@ -14,6 +14,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.6.0
         version: 3.6.0
+      '@cloudcannon/editable-regions':
+        specifier: ^0.0.12
+        version: 0.0.12
       '@resvg/resvg-js':
         specifier: ^2.6.2
         version: 2.6.2
@@ -163,6 +166,9 @@ packages:
   '@capsizecss/unpack@3.0.1':
     resolution: {integrity: sha512-8XqW8xGn++Eqqbz3e9wKuK7mxryeRjs4LOHLxbh2lwKeSbuNR4NFifDZT4KzvjU6HMOPbiNTsWpniK5EJfTWkg==}
     engines: {node: '>=18'}
+
+  '@cloudcannon/editable-regions@0.0.12':
+    resolution: {integrity: sha512-CWRiAshcP+GmZcFwIGZaYdEy7w0k6uVtWYAbho8gMoVdKwS4XVCFw83yr66rDoexa/qyipYceSX8DNedJj7xTw==}
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -2999,6 +3005,8 @@ snapshots:
   '@capsizecss/unpack@3.0.1':
     dependencies:
       fontkit: 2.0.4
+
+  '@cloudcannon/editable-regions@0.0.12': {}
 
   '@emmetio/abbreviation@2.3.3':
     dependencies:

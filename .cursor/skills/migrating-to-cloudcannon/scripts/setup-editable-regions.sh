@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Sets up @cloudcannon/editable-regions boilerplate for an Astro site.
-# Installs the package, adds the integration to astro.config.mjs,
+# Installs the package, adds the integration to astro.config.{mjs,ts},
 # and creates the registerComponents script.
 #
 # Usage: bash setup-editable-regions.sh [project-dir]
@@ -12,8 +12,16 @@ PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"
 
 PACKAGE="@cloudcannon/editable-regions"
-CONFIG="astro.config.mjs"
 REGISTER_DIR="src/cloudcannon"
+
+# --- Detect astro config file (mjs or ts) ---
+if [ -f "astro.config.mjs" ]; then
+  CONFIG="astro.config.mjs"
+elif [ -f "astro.config.ts" ]; then
+  CONFIG="astro.config.ts"
+else
+  CONFIG=""
+fi
 REGISTER_FILE="$REGISTER_DIR/registerComponents.ts"
 
 # --- Detect package manager ---
@@ -44,9 +52,9 @@ else
 fi
 echo ""
 
-# --- Add integration to astro.config.mjs ---
-if [ ! -f "$CONFIG" ]; then
-  echo "WARNING: $CONFIG not found. Add the integration manually."
+# --- Add integration to astro config ---
+if [ -z "$CONFIG" ]; then
+  echo "WARNING: No astro.config.mjs or astro.config.ts found. Add the integration manually."
 else
   if grep -q "editable-regions/astro-integration" "$CONFIG"; then
     echo "Integration already present in $CONFIG"

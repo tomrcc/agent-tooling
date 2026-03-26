@@ -13,7 +13,13 @@ We pick existing site templates that have no knowledge of CloudCannon, use agent
 
 **Scripts first**: Use scripts for any migration step that is deterministic and repetitive. Reserve AI agents for judgment calls. The fewer places we need an agent, the better -- it saves tokens and improves consistency.
 
-**Reference migrations**: Completed migrations in `templates/` serve as reference implementations. When working on a new migration, look at prior completed examples (e.g. `templates/astroplate/migrated/`) to see how phases were executed, what migration notes look like, and how the final config/components are structured. You must tell the user you have referenced a previous migration, so the prompter knows it wasn't 'purely' by the skill itself. Referencing back is fine while we're developing the skill, but end-user agents are not going to have that luxury. If you do reference a migration for some information it is likely a great candidate for something to add to the self contained `migrating-cloudcannon-skill`. If you're still not sure whether to add it, at the very least **ASK THE USER IF THEY WANT TO ADD SOMETHING TO THE SKILLS**.
+**Reference migrations**: Completed migrations in `templates/` serve as reference implementations. When working on a new migration, look at prior completed examples (e.g. `templates/astroplate/migrated/`) to see how phases were executed, what migration notes look like, and how the final config/components are structured. Any time you read a file from a completed migration (even a quick lookup), you must follow this checklist:
+
+1. **Disclose**: Tell the user you referenced a previous migration and what you learned from it.
+2. **Evaluate**: Consider whether the pattern/information you found should be added to the skill docs so future migrations don't need to reference back.
+3. **Ask or act**: Either add the learning to the relevant skill doc, or ask the user if they want you to.
+
+Referencing back is fine while we're developing the skill, but end-user agents won't have that luxury. Every reference is a signal that the skill docs may be incomplete.
 
 **Living documents**: Skills, rules, and reference docs are actively maintained. Don't treat them as read-only. Every plan must include a final todo for reviewing and updating skill/rule docs -- this is not optional. If the task introduced a new pattern, changed an existing recommendation, or uncovered an edge case, update the relevant docs as part of the same task -- not as a separate follow-up. Aim to add any general learnings to these general skills, rules, and docs so that they can help *all* future migrations -- while project-specific things can be added in the migration directory for record keeping.
 
