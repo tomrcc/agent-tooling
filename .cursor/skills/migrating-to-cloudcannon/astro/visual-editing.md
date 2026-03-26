@@ -60,7 +60,30 @@ Create `src/cloudcannon/registerComponents.ts`. This is where Astro components a
 // registerAstroComponent("call-to-action", CallToAction);
 ```
 
-This keeps component registrations in one place rather than scattering them across individual pages.
+When the site uses a page builder with a `BlockRenderer`, create a shared `src/cloudcannon/componentMap.ts` that maps `_type` keys to their Astro component imports. Both `registerComponents.ts` and `BlockRenderer.astro` import from it, keeping the mapping in one place:
+
+```typescript
+// componentMap.ts
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+// ...
+
+export const componentMap: Record<string, any> = {
+  hero: Hero,
+  features: Features,
+  // ...
+};
+```
+
+```typescript
+// registerComponents.ts
+import { registerAstroComponent } from '@cloudcannon/editable-regions/astro';
+import { componentMap } from './componentMap';
+
+for (const [key, component] of Object.entries(componentMap)) {
+  registerAstroComponent(key, component);
+}
+```
 
 ### Package exports reference
 
@@ -72,6 +95,20 @@ This keeps component registrations in one place rather than scattering them acro
 | `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering — **unreliable, use Astro display fallback instead** |
 
 ## Adding editable regions
+
+### Guard optional fields
+
+Every element with a `data-editable` attribute must be conditionally rendered if its field can be undefined or null. CloudCannon's editable regions actively inspect the resolved value — rendering an element with `data-prop="subtitle"` when `subtitle` is undefined causes a runtime error, even if the original template rendered unconditionally.
+
+```astro
+<!-- Bad: errors if subtitle is undefined -->
+<p set:html={subtitle} data-editable="text" data-prop="subtitle" />
+
+<!-- Good: only renders when subtitle exists -->
+{subtitle && <p set:html={subtitle} data-editable="text" data-prop="subtitle" />}
+```
+
+This applies to text, image, and any other editable type. When a shared sub-component like `Headline.astro` renders the editable elements, the guards belong in that sub-component.
 
 ### Text editing
 
@@ -165,6 +202,103 @@ Wrap the container with `data-editable="array"` and each item with `data-editabl
 ```
 
 Array items get CRUD controls (reorder, add, delete) automatically. Without a registered component renderer, items won't visually re-render after data changes -- the user saves and refreshes. Text/image editable regions within items still work in real-time. If the array contains conditional elements, style bindings, or computed content, wrap the parent section as a component -- see [When to use a component editable region](#when-to-use-a-component-editable-region) below.
+
+### Page builder blocks
+
+When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference.
+
+**Layer 1: Array wrapper** on the catch-all route. The wrapper needs `data-component-key` and `data-id-key` to tell CloudCannon which frontmatter key identifies the component type and unique ID for each item:
+
+```astro
+<div
+  data-editable="array"
+  data-prop="content_blocks"
+  data-component-key="_type"
+  data-id-key="_type"
+>
+  {data.content_blocks.map((block) => (
+    <BlockRenderer block={block} />
+  ))}
+</div>
+```
+
+Without `data-component-key`, CloudCannon cannot match array items to registered components. Without `data-id-key`, CloudCannon cannot uniquely identify items for reordering.
+
+**Layer 2: Array items with component behaviour** in BlockRenderer. Each item must be a **plain HTML element** (like `<section>`) with `data-editable="array-item"`, `data-component`, and `data-id`. Use the shared `componentMap` (see below) to look up the component dynamically instead of a long conditional chain:
+
+```astro
+<!-- BlockRenderer.astro -->
+---
+import { componentMap } from '~/cloudcannon/componentMap';
+
+interface Props {
+  block: Record<string, unknown>;
+}
+
+const { block } = Astro.props;
+const { _type, ...props } = block;
+const Component = componentMap[_type as string];
+---
+
+{Component && (
+  <section data-editable="array-item" data-component={_type} data-id={_type}>
+    <Component {...props} />
+  </section>
+)}
+```
+
+`EditableArrayItem` extends `EditableComponent`, so `data-component` on an array-item element gives both array CRUD controls (add, remove, reorder) and component re-rendering — no separate wrapper needed.
+
+**Do NOT use the `<editable-component>` custom element for array items.** That element self-hydrates as `EditableComponent`, which conflicts with the `EditableArrayItem` hydration triggered by `data-editable="array-item"`. `<editable-component>` is only for standalone component regions that are NOT inside an array (e.g. a fixed hero section on a page: `<editable-component data-component="hero" data-prop="banner">`).
+
+**Layer 3: Nested editables** inside widget components — add `data-editable="text"` / `data-editable="image"` to the elements that render editable fields:
+
+```astro
+<!-- Inside Hero.astro -->
+{title && <h1 set:html={title} data-editable="text" data-prop="title" />}
+{subtitle && <p set:html={subtitle} data-editable="text" data-prop="subtitle" />}
+{image && (
+  <div data-editable="image" data-prop="image">
+    <Image {...image} />
+  </div>
+)}
+```
+
+Paths are relative to the component's data scope (the array item), so `data-prop="title"` resolves to `content_blocks[n].title`.
+
+**Registration:** Every `_type` value must have a matching `registerAstroComponent` call. The key string must match the `_type` value exactly (e.g., `_type: call_to_action` → `registerAstroComponent('call_to_action', CallToAction)`, not `'call-to-action'`).
+
+**Shared sub-components (e.g. Headline):** When a shared component like `Headline.astro` renders title/subtitle for many widgets, adding `data-editable` attributes to it is acceptable — inside a page builder block, the editables are scoped to the parent component, so `data-prop="title"` resolves correctly to the block's title.
+
+### Sub-arrays within widget components
+
+Widget components often contain their own arrays — an `items` list in a Features or Content widget, an `actions` list of buttons in a Hero, a `steps` timeline, etc. These sub-arrays need `data-editable="array"` / `data-editable="array-item"` attributes just like the top-level page builder array. Without them, the user can only edit sub-array items via the sidebar modal — there are no inline CRUD controls (add, remove, reorder, drag-and-drop).
+
+Inside a registered component, the component renderer handles visual updates for the entire subtree. The array editables layer on CRUD controls without interfering with re-rendering.
+
+**On the array container**, add `data-editable="array"` and `data-prop` pointing to the array field name. **On each item**, add `data-editable="array-item"`. **Inside each item**, add primitive editables (`data-editable="text"`, `data-editable="image"`) on the editable fields.
+
+```astro
+<!-- Shared UI component: ItemGrid.astro -->
+<div
+  class="grid gap-8"
+  data-editable="array"
+  data-prop="items"
+>
+  {items.map(({ title, description, icon }) => (
+    <div data-editable="array-item">
+      <h3 data-editable="text" data-prop="title">{title}</h3>
+      <p set:html={description} data-editable="text" data-prop="description" />
+    </div>
+  ))}
+</div>
+```
+
+Since the sub-array lives inside a registered component (e.g. Features3 rendered as a page builder block), `data-prop="items"` resolves relative to the block's data scope — e.g. `content_blocks[n].items`. The array item paths then resolve to `content_blocks[n].items[m].title`, etc.
+
+**Shared UI components:** When a shared component like `ItemGrid.astro` always receives the array as the same prop name (`items`), hardcode `data-prop="items"` directly. If different callers use different field names, accept the prop name as a component parameter instead.
+
+**Don't forget sub-arrays.** This is a common omission — agents add the page builder array and primitives (text/image) inside widgets but skip internal arrays. Every array rendered by a widget component should get array editables unless the array structure is too complex for inline editing (e.g. deeply nested objects better suited to the sidebar).
 
 ## Data path patterns
 
@@ -346,6 +480,7 @@ Not everything benefits from visual editing. Guidelines:
 
 **Provide visual editing fallbacks with `ENV_CLIENT`:**
 - Components with complex DOM management (Swiper carousels, etc.) -- their JavaScript conflicts with editable region DOM manipulation, and often are hard to edit if functioning like they do on prod.
+- Components using server-only APIs (`import.meta.glob`, `getImage` from `astro:assets`, data fetching) -- guard with `import.meta.env.ENV_CLIENT` to provide a simplified client-side path that skips optimization and renders plain HTML. For example, an `Image` component that uses `findImage()` and `getImagesOptimized()` should render a plain `<img>` with the raw `src` prop when `ENV_CLIENT` is true.
 
 **Skip visual editing entirely:**
 - MDX content with shortcodes -- shortcodes won't render in the visual editor
@@ -391,7 +526,7 @@ For full live preview (not just text/image), components need to be registered so
 
 ### Astro components
 
-Add registrations to `src/cloudcannon/registerComponents.ts`:
+For page builder sites, add the component to `src/cloudcannon/componentMap.ts` -- it will be registered automatically by `registerComponents.ts` (see [setup step 3](#3-create-the-registercomponents-script)). For standalone components not in the page builder, add individual registrations directly in `registerComponents.ts`:
 
 ```typescript
 import { registerAstroComponent } from "@cloudcannon/editable-regions/astro";
@@ -501,6 +636,16 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] Pages that render items from other collections have `@file` editables on those items (when the target collection has no `url` pattern). Remember `entry.id` includes the file extension — don't double it.
 - [ ] Slot content that should be editable uses concrete elements (e.g. `<span>`) instead of `<Fragment>`
 - [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
+- [ ] **Page builder array wrapper** has `data-component-key="_type"` and `data-id-key="_type"` alongside `data-editable="array"` and `data-prop="content_blocks"`
+- [ ] **Page builder blocks** use a plain HTML element (`<section>`) with `data-editable="array-item"`, `data-component={_type}`, and `data-id={_type}` — NOT the `<editable-component>` custom element
+- [ ] **Page builder blocks**: Widget components rendered inside blocks have nested `data-editable="text"` / `data-editable="image"` attributes on their key text and image elements
+- [ ] **Sub-arrays within widgets**: Widget components that render internal arrays (`items`, `actions`, `steps`, etc.) have `data-editable="array"` + `data-prop` on the container and `data-editable="array-item"` on each item
+- [ ] **Sub-array item editables**: Array items within widget sub-arrays have nested `data-editable="text"` / `data-editable="image"` on their editable fields (title, description, image, etc.)
+- [ ] **Shared component map**: Page builder sites have a `src/cloudcannon/componentMap.ts` that both `BlockRenderer.astro` and `registerComponents.ts` import from — no duplicated mapping
+- [ ] **Registration keys match `_type`**: Every key in `componentMap` (or direct `registerAstroComponent` call) uses the exact `_type` string from the content files (e.g., `call_to_action` not `call-to-action`)
+- [ ] **All block types registered**: Every `_type` value that appears in content files has a corresponding entry in `componentMap` — missing entries mean no edit button and no live re-rendering for that block type
+- [ ] **Conditional guards**: Every `data-editable` element whose field can be undefined/null is wrapped in a conditional (`{field && (...)}`) — missing guards cause runtime errors in the visual editor
+- [ ] Build output contains `data-component-key`, `data-id-key`, `data-component=`, `data-id=`, and `data-editable="array-item"` attributes (grep `dist/` to verify)
 
 ---
 

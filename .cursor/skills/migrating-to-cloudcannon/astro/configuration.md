@@ -330,25 +330,46 @@ _structures:
 
 **Reference blocks vs inline blocks**: Blocks like CTA and Testimonial that pull from global JSON data files are "reference" blocks -- they have no inline data, just a `_type` marker. The rendering code imports the global data and passes it to the component. This keeps the data DRY (edited once in the Data section) while letting editors place these sections anywhere on the page. Visual editing still works via `@data[key]` editable regions.
 
-**Rendering**: The catch-all route detects `content_blocks` in the page data and switches between plain body rendering and block-based rendering:
+**Rendering**: The catch-all route detects `content_blocks` in the page data and switches between plain body rendering and block-based rendering. Each block must be a **component editable region** — this is integral to the rendering pattern, not a separate visual-editing step. Create a `BlockRenderer.astro` component that maps `_type` to the matching widget:
 
 ```astro
+<!-- [...slug].astro -->
 {isPageBuilder ? (
-  <>
-    {/* Hero section with h1 */}
-    {contentBlocks.map((block) => {
-      if (block._type === "banner") return <Banner {...block} />;
-      if (block._type === "call_to_action") return <CallToAction call_to_action={callToActionData} />;
-      // ...
-    })}
-  </>
+  <div
+    data-editable="array"
+    data-prop="content_blocks"
+    data-component-key="_type"
+    data-id-key="_type"
+  >
+    {data.content_blocks.map((block) => (
+      <BlockRenderer block={block} />
+    ))}
+  </div>
 ) : (
   <>
-    <PageHeader title={title} />
-    <Content />
+    <h1 data-editable="text" data-prop="title">{title}</h1>
+    <div data-editable="text" data-type="block" data-prop="@content"><Content /></div>
   </>
 )}
 ```
+
+```astro
+<!-- BlockRenderer.astro -->
+---
+const { block } = Astro.props;
+const { _type, ...props } = block;
+---
+<section data-editable="array-item" data-component={_type} data-id={_type}>
+  {_type === 'banner' && <Banner {...props} />}
+  {_type === 'features' && <Features {...props} />}
+  {_type === 'call_to_action' && <CallToAction {...props} />}
+  <!-- ...other block types... -->
+</section>
+```
+
+The array wrapper uses `data-component-key` and `data-id-key` to tell CloudCannon which frontmatter key identifies the component type and item identity. Each array item uses a plain HTML element (`<section>`) with `data-editable="array-item"`, `data-component`, and `data-id`. `EditableArrayItem` inherits from `EditableComponent`, so `data-component` on an array-item element gives both array CRUD controls and component re-rendering. Do not use `<editable-component>` for array items — see [visual-editing.md § Page builder blocks](../astro/visual-editing.md#page-builder-blocks) for the full pattern and rationale.
+
+Every widget component inside also needs nested `data-editable` attributes (text, image). Every `_type` value used in content files must have a matching `registerAstroComponent(_type, Component)` call in `registerComponents.ts`.
 
 ## Prebuild script
 

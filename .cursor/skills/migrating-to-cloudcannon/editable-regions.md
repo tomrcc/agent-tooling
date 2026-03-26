@@ -77,6 +77,29 @@ Manages ordered lists of items with full CRUD and drag-and-drop.
 - Cross-array drag-and-drop support via structure matching
 - Dispatches `move-array-item`, `remove-array-item`, `add-array-item` actions
 
+**Complex arrays (page building):** When array items have different structures (e.g., different block types in a page builder), the array and its items need additional attributes beyond `data-editable` and `data-prop`. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference.
+
+Required attributes on the **array wrapper**:
+
+| Attribute | Purpose | Example |
+|---|---|---|
+| `data-editable="array"` | Identifies the element as an array region | |
+| `data-prop` | Path to the array in the file's data | `"content_blocks"` |
+| `data-component-key` | Which frontmatter key identifies the registered component name | `"_type"` |
+| `data-id-key` | Which frontmatter key provides a unique ID per item | `"_type"` |
+
+Required attributes on each **array item**:
+
+| Attribute | Purpose | Example |
+|---|---|---|
+| `data-editable="array-item"` | Identifies the element as an array item | |
+| `data-component` | The registered component name for this item (must match a `registerAstroComponent` key) | `"hero"` |
+| `data-id` | Unique identifier for this item (used for stable reordering) | `"hero"` |
+
+Array items must use a **plain HTML element** (`<section>`, `<div>`, etc.) — not the `<editable-component>` custom element. Since `EditableArrayItem` extends `EditableComponent`, the `data-component` attribute on an array-item element enables component re-rendering without needing a separate wrapper. Using `<editable-component>` for array items causes a hydration conflict between `EditableComponent` and `EditableArrayItem`.
+
+`<editable-component>` is reserved for **standalone component regions** that are NOT inside an array (e.g., a fixed hero section on a non-page-builder page).
+
 ### EditableSource
 
 A specialisation of `EditableText` that edits raw HTML source files rather than front matter values.

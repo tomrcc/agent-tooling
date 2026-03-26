@@ -1,23 +1,5 @@
 ---
-import Hero from '~/components/widgets/Hero.astro';
-import Hero2 from '~/components/widgets/Hero2.astro';
-import HeroText from '~/components/widgets/HeroText.astro';
-import Note from '~/components/widgets/Note.astro';
-import Features from '~/components/widgets/Features.astro';
-import Features2 from '~/components/widgets/Features2.astro';
-import Features3 from '~/components/widgets/Features3.astro';
-import Content from '~/components/widgets/Content.astro';
-import Steps from '~/components/widgets/Steps.astro';
-import Steps2 from '~/components/widgets/Steps2.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
-import FAQs from '~/components/widgets/FAQs.astro';
-import Stats from '~/components/widgets/Stats.astro';
-import Pricing from '~/components/widgets/Pricing.astro';
-import Testimonials from '~/components/widgets/Testimonials.astro';
-import Brands from '~/components/widgets/Brands.astro';
-import Contact from '~/components/widgets/Contact.astro';
-import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
-import BlogHighlightedPosts from '~/components/widgets/BlogHighlightedPosts.astro';
+import { componentMap } from '~/cloudcannon/componentMap';
 
 interface Props {
   block: Record<string, unknown>;
@@ -25,26 +7,11 @@ interface Props {
 
 const { block } = Astro.props;
 const { _type, ...props } = block;
+const Component = componentMap[_type as string];
 ---
 
-<div data-editable="array-item">
-  {_type === 'hero' && <Hero {...props} />}
-  {_type === 'hero2' && <Hero2 {...props} />}
-  {_type === 'hero_text' && <HeroText {...props} />}
-  {_type === 'note' && <Note {...props} />}
-  {_type === 'features' && <Features {...props} />}
-  {_type === 'features2' && <Features2 {...props} />}
-  {_type === 'features3' && <Features3 {...props} />}
-  {_type === 'content' && <Content {...props} />}
-  {_type === 'steps' && <Steps {...props} />}
-  {_type === 'steps2' && <Steps2 {...props} />}
-  {_type === 'call_to_action' && <CallToAction {...props} />}
-  {_type === 'faqs' && <FAQs {...props} />}
-  {_type === 'stats' && <Stats {...props} />}
-  {_type === 'pricing' && <Pricing {...props} />}
-  {_type === 'testimonials' && <Testimonials {...props} />}
-  {_type === 'brands' && <Brands {...props} />}
-  {_type === 'contact' && <Contact {...props} />}
-  {_type === 'blog_latest_posts' && <BlogLatestPosts {...props} />}
-  {_type === 'blog_highlighted_posts' && <BlogHighlightedPosts {...props} />}
-</div>
+{Component && (
+  <section data-editable="array-item" data-component={_type} data-id={_type}>
+    <Component {...props} />
+  </section>
+)}
