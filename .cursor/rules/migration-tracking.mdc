@@ -31,3 +31,7 @@ Transcript IDs are UUIDs visible in the agent-transcripts directory. The current
 - Subagent count and word volume
 - Total transcript size in bytes
 - Optional manual token count from Cursor UI
+
+## Archiving transcripts
+
+Also archive the raw transcript files into the template's migration folder — see the `migration-transcripts` rule.

@@ -24,6 +24,8 @@ The skills and rules are **living documents** -- agents are expected to update t
     tone.md                           # Agent tone and coding conventions (alwaysApply)
     testing.md                        # What agents vs. humans should test (alwaysApply)
     casing.md                         # Naming conventions (applyIntelligently)
+    migration-tracking.md             # Post-migration metrics logging (applyIntelligently)
+    migration-transcripts.md          # Post-migration transcript archiving (applyIntelligently)
   skills/
     migrating-to-cloudcannon/         # Main migration workflow skill
       SKILL.md                        # Entry point -- detects SSG, routes to SSG guide
@@ -42,10 +44,18 @@ The skills and rules are **living documents** -- agents are expected to update t
         rename-dash-index.sh          # Phase 3: Rename -index.md to index.md
         setup-editable-regions.sh     # Phase 4: Install + configure editable regions
 
+scripts/
+  transcript-metrics.py               # Extract proxy metrics from agent transcripts
+
+metrics/
+  migration-log.csv                   # One row per migration attempt
+
 templates/
   astroplate/
     pristine/                         # Untouched original (never modify)
     migrated/                         # Agent works here
+      migration/
+        transcripts/                  # Archived agent transcripts (.jsonl)
 ```
 
 ## Agent reading order
@@ -65,6 +75,8 @@ flowchart TD
 
     subgraph "Intelligently-applied rules (injected by context)"
         R5[casing.mdc]
+        R6[migration-tracking.mdc]
+        R7[migration-transcripts.mdc]
     end
 
     SKILL[SKILL.md] -->|detects SSG| OV[astro/overview.md]
@@ -87,6 +99,8 @@ flowchart TD
     style R3 fill:#e0f0e0
     style R4 fill:#e0f0e0
     style R5 fill:#fff3cd
+    style R6 fill:#fff3cd
+    style R7 fill:#fff3cd
     style S1 fill:#e0e0f0
     style S2 fill:#e0e0f0
     style S3 fill:#e0e0f0
@@ -103,7 +117,7 @@ flowchart TD
 | 5. Scripts | `audit-astro.sh`, `rename-dash-index.sh`, `setup-editable-regions.sh` | Invoked by phase docs during execution |
 | 6. Reference docs | `gadget-guide`, `editable-regions` | On-demand when a phase doc references them |
 | 7. Debug reference | `editable-regions-lifecycle` | Only if debugging unexpected editable region behavior |
-| 8. Intelligent rules | `casing` | Cursor injects when it deems relevant |
+| 8. Intelligent rules | `casing`, `migration-tracking`, `migration-transcripts` | Cursor injects when it deems relevant |
 
 The ideal agent reads phase docs just-in-time rather than front-loading all reference docs at once. The lifecycle doc should only be read when troubleshooting.
 
@@ -142,6 +156,30 @@ The files in `.cursor/rules/` and `.cursor/skills/` are the primary output of th
 | Template | SSG | Status |
 |----------|-----|--------|
 | [astroplate](templates/astroplate/) | Astro | Ready for migration |
+
+## Tracking migrations
+
+We track each migration attempt to measure whether skill improvements reduce effort over time.
+
+### Metrics (`metrics/migration-log.csv`)
+
+After a migration, `scripts/transcript-metrics.py` extracts proxy metrics from the agent transcript and appends a row to the CSV. Tracked fields include word count, conversation turns, subagent usage, and transcript size in bytes.
+
+**Caveats:**
+- Token counts are proxied via word count from the transcript text. This undercounts because it misses system prompts, tool call overhead, and context injected by Cursor (rules, open files, etc.).
+- An optional `manual_token_count` column exists for the number shown in Cursor's usage panel, but this requires manual entry and is easy to forget.
+- Subagent words are counted separately but summed into `total_words`. Subagent-heavy migrations will show high word counts that don't map linearly to "main conversation effort".
+- Word counts from transcripts include both user and assistant text -- not just model output.
+
+### Transcripts (`migration/transcripts/`)
+
+Raw `.jsonl` transcript files are copied into each template's `migrated/migration/transcripts/` directory so they're preserved in the repo. The `transcript_id` in the CSV links back to these files.
+
+**Caveats:**
+- Transcripts only capture the text content of messages. File contents that Cursor attaches as context (open files, linter output, terminal state) are referenced by path but the actual content is not always embedded in the transcript.
+- Subagent transcripts are stored in a `subagents/` subfolder. These are separate conversations spawned by the main agent -- they contain useful context but their relationship to the parent conversation is only loosely linked (by UUID, not by a structured parent/child reference).
+- Cursor's own transcript storage (`~/.cursor/projects/`) is not guaranteed to persist across updates or workspace changes, which is why we copy them into the repo.
+- If a migration spans multiple chat sessions, each session produces a separate transcript that needs to be archived independently.
 
 ## Current state
 
