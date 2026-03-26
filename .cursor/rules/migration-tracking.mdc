@@ -1,0 +1,33 @@
+---
+description: Track migration metrics after completing a migration. Apply when a migration has just finished or the user asks about tracking migration effort.
+applyIntelligently: true
+---
+
+After completing a migration, remind the user to log metrics so we can track whether skill improvements reduce migration effort over time.
+
+## How to log
+
+Run from the repo root:
+
+```bash
+python3 scripts/transcript-metrics.py <transcript-uuid> <template-name>
+```
+
+Optional flags:
+- `--tokens N` — manual token count from the Cursor usage panel
+- `--notes "..."` — any context about this run (e.g. "first attempt", "re-run after skill updates")
+- `--dry-run` — preview without writing to CSV
+
+This appends a row to `metrics/migration-log.csv` with proxy metrics (word count, turns, subagent usage) extracted from the agent transcript.
+
+## Finding the transcript ID
+
+Transcript IDs are UUIDs visible in the agent-transcripts directory. The current conversation's transcript ID can be cited from the agent transcripts folder.
+
+## What gets tracked
+
+- Word count (main + subagents) as a proxy for token usage
+- Conversation turns (user and assistant)
+- Subagent count and word volume
+- Total transcript size in bytes
+- Optional manual token count from Cursor UI

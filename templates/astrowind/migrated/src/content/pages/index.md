@@ -8,6 +8,8 @@ content_blocks:
   - _type: hero
     title: "Free template for <span class=\"hidden xl:inline\">creating websites with</span> <span class=\"text-accent dark:text-white\"> Astro 5.0</span> + Tailwind CSS"
     subtitle: "<span class=\"hidden sm:inline\"><span class=\"font-semibold\">AstroWind</span> is a free, customizable and production-ready template for Astro 5.0 + Tailwind CSS.</span> <span class=\"block mb-1 sm:hidden font-bold text-blue-600\">AstroWind: Production-ready.</span> Suitable for Startups, Small Business, SaaS websites, Professional Portfolios, Marketing websites, Landing Pages &amp; Blogs."
+    tagline:
+    content:
     actions:
       - variant: primary
         text: Get template
@@ -22,6 +24,7 @@ content_blocks:
   - _type: note
     title: "Philosophy:"
     description: "Simplicity, Best Practices and High Performance"
+    icon: "tabler:info-square"
   - _type: features
     id: features
     tagline: Features
@@ -46,11 +49,15 @@ content_blocks:
       - title: Open to new ideas and contributions
         description: "Embracing a culture that is open to new ideas and contributions is integral fostering innovation, collaboration, and a dynamic user experience."
         icon: "tabler:bulb"
+    columns: 2
   - _type: content
-    isReversed: true
-    tagline: Inside template
     title: "AstroWind's Blueprint: Fun Meets Functionality!"
+    subtitle:
+    tagline: Inside template
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Building on modern foundations</h3> Gain a competitive advantage by incorporating industry leading practices"
+    callToAction:
+      text:
+      href:
     items:
       - title: Built on top of Astro 5.0
         description: "Benefiting from the performance and developer-friendly features of this modern static site generator."
@@ -61,9 +68,17 @@ content_blocks:
     image:
       src: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
       alt: Colorful Image
+    columns:
+    isReversed: true
+    isAfterContent: false
   - _type: content
-    isAfterContent: true
+    title:
+    subtitle:
+    tagline:
     content: "Ensure your online presence truly represents you."
+    callToAction:
+      text:
+      href:
     items:
       - title: High level of customization
         description: "Tailor the template effortlessly to match your brand's identity and requirements, making your website distinct and saving you time."
@@ -76,10 +91,17 @@ content_blocks:
     image:
       src: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2194&q=80"
       alt: Blueprint Image
-  - _type: content
-    isReversed: true
+    columns:
+    isReversed: false
     isAfterContent: true
+  - _type: content
+    title:
+    subtitle:
+    tagline:
     content: "Designed to foster growth and success."
+    callToAction:
+      text:
+      href:
     items:
       - title: Enhanced user engagement
         description: "Captivate your audience with interactive elements, intuitive navigation, and visually appealing layouts, encouraging longer visits."
@@ -92,8 +114,13 @@ content_blocks:
     image:
       src: "https://images.unsplash.com/photo-1611462985358-60d3498e0364?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
       alt: Astronauts Image
+    columns:
+    isReversed: true
+    isAfterContent: true
   - _type: steps
     title: "Get your dream website up and running in no time with AstroWind."
+    subtitle:
+    tagline:
     items:
       - title: "Step 1: <span class=\"font-medium\">Download</span>"
         description: "Kickstart with GitHub! Either fork the AstroWind template or simply click 'Use this template'. Your canvas awaits, ready for your digital masterpiece. In just a few clicks, you've already set the foundation."
@@ -109,6 +136,7 @@ content_blocks:
     image:
       src: "https://images.unsplash.com/photo-1616198814651-e71f960c3180?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80"
       alt: Steps image
+    isReversed: false
   - _type: features2
     title: Most used widgets
     subtitle: "Provides frequently used components for building websites using Tailwind CSS"
@@ -141,9 +169,11 @@ content_blocks:
       - title: Footers
         description: "The footer's like the credits of a movie but sprinkled with easter eggs. Time to hunt!"
         icon: "flat-color-icons:database"
+    columns: 3
   - _type: blog_latest_posts
     title: Find out more content in our Blog
     information: "The blog is used to display AstroWind documentation. Each new article will be an important step that you will need to know to be an expert in creating a website using Astro + Tailwind CSS. Astro is a very interesting technology. Thanks."
+    count: 4
   - _type: faqs
     title: Frequently Asked Questions
     subtitle: "Dive into the following questions to gain insights into the powerful features that AstroWind offers and how it can elevate your web development journey."
@@ -161,7 +191,11 @@ content_blocks:
         description: "A business big enough that it could be listed on the NASDAQ goes belly up. Disappears! It ceases to exist without me. No, you clearly don't know who you're talking to, so let me clue you in."
       - title: If you could only ask one question to each person you meet, what would that question be?
         description: "This is not about revenge. This is about justice. A lot of things can change in twelve years, Admiral. Well, that's certainly good to know. About four years. I got tired of hearing how young I looked."
+    columns: 2
   - _type: stats
+    title:
+    subtitle:
+    tagline:
     stats:
       - title: Downloads
         amount: "132K"
@@ -174,6 +208,7 @@ content_blocks:
   - _type: call_to_action
     title: "Astro&nbsp;+&nbsp;<br class=\"block sm:hidden\" /><span class=\"sm:whitespace-nowrap\">Tailwind CSS</span>"
     subtitle: "Be very surprised by these huge fake numbers you are seeing on this page. <br class=\"hidden md:inline\" />Don't waste more time! :P"
+    tagline:
     actions:
       - variant: primary
         text: Get template

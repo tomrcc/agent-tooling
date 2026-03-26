@@ -7,6 +7,7 @@ content_blocks:
     tagline: "Subscription Landing Demo"
     title: "Subscription Landing Page: Turn Casual Browsers into Loyal Subscribers!"
     subtitle: "Unlock the formula for a Subscription Landing Page that keeps your audience coming back for more."
+    content:
     actions:
       - variant: primary
         text: "Call to Action"
@@ -20,6 +21,7 @@ content_blocks:
   - _type: call_to_action
     title: "Coming soon"
     subtitle: "We are working on the content of these demo pages. You will see them very soon. Stay tuned Stay tuned!"
+    tagline:
     actions:
       - variant: primary
         text: "Download Template"

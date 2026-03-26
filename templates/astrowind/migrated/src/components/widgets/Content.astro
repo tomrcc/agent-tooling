@@ -55,7 +55,7 @@ const {
         )}
 
         {
-          callToAction && (
+          callToAction?.text && (
             <div class="mt-[-40px] mb-8 text-primary">
               <Button variant="link" {...callToAction} />
             </div>
@@ -78,7 +78,7 @@ const {
       </div>
       <div aria-hidden="true" class="mt-10 md:mt-0 md:basis-1/2">
         {
-          image && (
+          image?.src && (
             <div class="relative m-auto max-w-4xl" data-editable="image" data-prop="image">
               {typeof image === 'string' ? (
                 <Fragment set:html={image} />

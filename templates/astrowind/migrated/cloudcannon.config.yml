@@ -136,7 +136,9 @@ _inputs:
   content_blocks:
     type: array
     options:
-      structures: _structures.content_blocks
+      structures:
+        values_from_glob:
+          - /src/components/widgets/*.cloudcannon.structure-value.yml
   metadata:
     type: object
     options:
@@ -162,183 +164,16 @@ _inputs:
     type: text
 
 _structures:
-  content_blocks:
-    values:
-      - label: Hero
-        icon: flag
-        value:
-          _type: hero
-          title:
-          subtitle:
-          tagline:
-          actions: []
-          image:
-            src:
-            alt:
-      - label: Hero 2
-        icon: flag
-        value:
-          _type: hero2
-          title:
-          subtitle:
-          tagline:
-          actions: []
-          image:
-            src:
-            alt:
-      - label: Hero Text
-        icon: title
-        value:
-          _type: hero_text
-          title:
-          subtitle:
-          tagline:
-      - label: Note
-        icon: sticky_note_2
-        value:
-          _type: note
-          title:
-          description:
-          icon:
-      - label: Features
-        icon: auto_awesome
-        value:
-          _type: features
-          title:
-          subtitle:
-          tagline:
-          items: []
-          columns: 3
-      - label: Features 2
-        icon: auto_awesome
-        value:
-          _type: features2
-          title:
-          subtitle:
-          tagline:
-          items: []
-          columns: 3
-      - label: Features 3
-        icon: auto_awesome
-        value:
-          _type: features3
-          title:
-          subtitle:
-          tagline:
-          items: []
-          columns: 3
-          image:
-            src:
-            alt:
-      - label: Content
-        icon: article
-        value:
-          _type: content
-          title:
-          subtitle:
-          tagline:
-          content:
-          items: []
-          image:
-            src:
-            alt:
-          isReversed: false
-          isAfterContent: false
-      - label: Steps
-        icon: format_list_numbered
-        value:
-          _type: steps
-          title:
-          subtitle:
-          tagline:
-          items: []
-          image:
-            src:
-            alt:
-      - label: Steps 2
-        icon: format_list_numbered
-        value:
-          _type: steps2
-          title:
-          subtitle:
-          tagline:
-          items: []
-          callToAction:
-            text:
-            href:
-      - label: Call to Action
-        icon: ads_click
-        value:
-          _type: call_to_action
-          title:
-          subtitle:
-          actions: []
-      - label: FAQs
-        icon: quiz
-        value:
-          _type: faqs
-          title:
-          subtitle:
-          tagline:
-          items: []
-          columns: 1
-      - label: Stats
-        icon: bar_chart
-        value:
-          _type: stats
-          title:
-          subtitle:
-          stats: []
-      - label: Pricing
-        icon: payments
-        value:
-          _type: pricing
-          title:
-          subtitle:
-          prices: []
-      - label: Testimonials
-        icon: format_quote
-        value:
-          _type: testimonials
-          title:
-          subtitle:
-          testimonials: []
-      - label: Brands
-        icon: handshake
-        value:
-          _type: brands
-          title:
-          subtitle:
-          images: []
-      - label: Contact
-        icon: contact_mail
-        value:
-          _type: contact
-          title:
-          subtitle:
-          inputs: []
-          textarea:
-            label:
-          disclaimer:
-            label:
-          description:
-      - label: Blog Latest Posts
-        icon: rss_feed
-        value:
-          _type: blog_latest_posts
-          title:
-          information:
-      - label: Blog Highlighted Posts
-        icon: star
-        value:
-          _type: blog_highlighted_posts
-          title:
-          information:
-          postIds: []
   actions:
     values:
       - label: Action
         icon: ads_click
+        preview:
+          text:
+            - key: text
+            - Action
+          icon:
+            - ads_click
         value:
           text:
           href:
@@ -349,6 +184,13 @@ _structures:
     values:
       - label: Item
         icon: list
+        preview:
+          text:
+            - key: title
+            - Item
+          icon:
+            - key: icon
+            - list
         value:
           title:
           description:
@@ -357,6 +199,13 @@ _structures:
     values:
       - label: Stat
         icon: bar_chart
+        preview:
+          text:
+            - key: title
+            - Stat
+          icon:
+            - key: icon
+            - bar_chart
         value:
           amount:
           title:
@@ -365,6 +214,12 @@ _structures:
     values:
       - label: Price
         icon: payments
+        preview:
+          text:
+            - key: title
+            - Price
+          icon:
+            - payments
         value:
           title:
           subtitle:
@@ -376,10 +231,21 @@ _structures:
             href:
           hasRibbon: false
           ribbonTitle:
+        _inputs:
+          hasRibbon:
+            type: switch
   testimonials:
     values:
       - label: Testimonial
         icon: format_quote
+        preview:
+          text:
+            - key: name
+            - Testimonial
+          icon:
+            - format_quote
+          image:
+            - key: image.src
         value:
           testimonial:
           name:
@@ -391,6 +257,12 @@ _structures:
     values:
       - label: Input
         icon: input
+        preview:
+          text:
+            - key: label
+            - Input
+          icon:
+            - input
         value:
           type: text
           name:
@@ -400,6 +272,11 @@ _structures:
     values:
       - label: Image
         icon: image
+        preview:
+          image:
+            - key: src
+          icon:
+            - image
         value:
           src:
           alt:
@@ -407,11 +284,23 @@ _structures:
     values:
       - label: Link
         icon: link
+        preview:
+          text:
+            - key: text
+            - Link
+          icon:
+            - link
         value:
           text:
           href:
       - label: Dropdown
         icon: arrow_drop_down
+        preview:
+          text:
+            - key: text
+            - Dropdown
+          icon:
+            - arrow_drop_down
         value:
           text:
           links: []
@@ -419,6 +308,12 @@ _structures:
     values:
       - label: Link Group
         icon: folder
+        preview:
+          text:
+            - key: title
+            - Link Group
+          icon:
+            - folder
         value:
           title:
           links: []
@@ -426,6 +321,12 @@ _structures:
     values:
       - label: Social Link
         icon: share
+        preview:
+          text:
+            - key: ariaLabel
+            - Social Link
+          icon:
+            - share
         value:
           ariaLabel:
           icon:

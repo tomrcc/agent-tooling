@@ -98,6 +98,8 @@ for (const [key, component] of Object.entries(componentMap)) {
 
 ### Guard optional fields
 
+The primary defence against `undefined` errors is ensuring all fields exist in the content frontmatter via structure definitions (see [../structures.md](../structures.md) — field completeness rule). Conditional guards are the safety net for cases where a field is legitimately optional even when the structure defines it.
+
 Every element with a `data-editable` attribute must be conditionally rendered if its field can be undefined or null. CloudCannon's editable regions actively inspect the resolved value — rendering an element with `data-prop="subtitle"` when `subtitle` is undefined causes a runtime error, even if the original template rendered unconditionally.
 
 ```astro
@@ -109,6 +111,8 @@ Every element with a `data-editable` attribute must be conditionally rendered if
 ```
 
 This applies to text, image, and any other editable type. When a shared sub-component like `Headline.astro` renders the editable elements, the guards belong in that sub-component.
+
+**Object fields**: Guard on a meaningful inner field, not the object itself. Empty objects from content files (e.g. `image: { src: null, alt: null }`) are truthy. Use `image?.src &&` instead of `image &&`, and `callToAction?.text &&` instead of `callToAction &&`. See [../structures.md](../structures.md#guarding-empty-objects-in-components).
 
 ### Text editing
 
@@ -205,7 +209,7 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 
 ### Page builder blocks
 
-When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference.
+When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference. For the structure definitions that back these blocks, see [../structures.md](../structures.md).
 
 **Layer 1: Array wrapper** on the catch-all route. The wrapper needs `data-component-key` and `data-id-key` to tell CloudCannon which frontmatter key identifies the component type and unique ID for each item:
 
@@ -644,7 +648,7 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] **Shared component map**: Page builder sites have a `src/cloudcannon/componentMap.ts` that both `BlockRenderer.astro` and `registerComponents.ts` import from — no duplicated mapping
 - [ ] **Registration keys match `_type`**: Every key in `componentMap` (or direct `registerAstroComponent` call) uses the exact `_type` string from the content files (e.g., `call_to_action` not `call-to-action`)
 - [ ] **All block types registered**: Every `_type` value that appears in content files has a corresponding entry in `componentMap` — missing entries mean no edit button and no live re-rendering for that block type
-- [ ] **Conditional guards**: Every `data-editable` element whose field can be undefined/null is wrapped in a conditional (`{field && (...)}`) — missing guards cause runtime errors in the visual editor
+- [ ] **Conditional guards**: Every `data-editable` element whose field can be undefined/null is wrapped in a conditional — object fields check an inner key (`{image?.src && ...}`, `{callToAction?.text && ...}`), scalar fields check the value directly (`{title && ...}`)
 - [ ] Build output contains `data-component-key`, `data-id-key`, `data-component=`, `data-id=`, and `data-editable="array-item"` attributes (grep `dist/` to verify)
 
 ---

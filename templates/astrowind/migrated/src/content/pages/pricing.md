@@ -7,9 +7,17 @@ content_blocks:
     tagline: Pricing
     title: Stellar Pricing for Every Journey
     subtitle: Choose the perfect plan that aligns with your cosmic goals.
+    content:
+    callToAction:
+      text:
+      href:
+    callToAction2:
+      text:
+      href:
   - _type: pricing
     title: Our prices
     subtitle: Only pay for what you need
+    tagline:
     prices:
       - title: basic
         subtitle: Optimal choice for personal use
@@ -56,6 +64,7 @@ content_blocks:
   - _type: features3
     title: Price-related features
     subtitle: Discover the advantages of choosing our plans
+    tagline:
     columns: 2
     items:
       - title: Tiered Pricing Plans
@@ -76,8 +85,14 @@ content_blocks:
       - title: 24H support
         description: Questions answered via live chat, email or phone, every calendar day.
         icon: tabler:headset
+    image:
+      src:
+      alt:
+    isBeforeContent: false
+    isAfterContent: false
   - _type: steps
     title: A guided journey from plans to creativity
+    subtitle:
     tagline: simplified process
     isReversed: true
     items:
@@ -101,6 +116,7 @@ content_blocks:
   - _type: faqs
     title: Pricing FAQs
     subtitle: "Choosing the right plan is important, and we're here to answer your questions. If you have queries about our pricing options, you're in the right place."
+    tagline:
     columns: 1
     items:
       - title: Do the plans come with customer support?
@@ -116,6 +132,7 @@ content_blocks:
   - _type: call_to_action
     title: Ready to boost your projects?
     subtitle: Join our community of satisfied customers who have transformed their work with our templates.
+    tagline:
     actions:
       - variant: primary
         text: Get started now

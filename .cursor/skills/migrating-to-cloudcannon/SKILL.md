@@ -48,6 +48,16 @@ Each template has two directories: `templates/<name>/pristine/` (the untouched o
 
 Store migration notes in `templates/<name>/migrated/migration/`, with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in SSG-specific directories contain only generic guidance -- template-specific findings go in the template's migration directory.
 
+## Tracking migration effort
+
+After completing a migration, log metrics so we can measure whether skill improvements reduce effort over time. Run from the repo root:
+
+```bash
+python3 scripts/transcript-metrics.py <transcript-uuid> <template-name>
+```
+
+This extracts proxy metrics (word count, turns, subagent usage) from the agent transcript and appends a row to `metrics/migration-log.csv`. Use `--tokens N` to include a manual token count from the Cursor UI, and `--notes "..."` for context. See the `migration-tracking` rule for details.
+
 ## Notes
 
 - Update these docs and reference files as you discover new patterns or better approaches.

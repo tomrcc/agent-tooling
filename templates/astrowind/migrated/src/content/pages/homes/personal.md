@@ -7,6 +7,10 @@ content_blocks:
     id: hero
     title: Sarah Johnson
     tagline: Personal Web Demo
+    content:
+    image:
+      src:
+      alt:
     actions:
       - variant: primary
         text: Hire me
@@ -14,7 +18,15 @@ content_blocks:
     subtitle: "I'm a Graphic Designer passionate about crafting visual stories. <br /> With 5 years of experience and a degree from New York University's School of Design. I infuse vitality into brands and designs, transforming concepts into captivating realities."
   - _type: content
     id: about
+    title:
+    subtitle:
+    tagline:
     columns: 3
+    isReversed: false
+    isAfterContent: false
+    callToAction:
+      text:
+      href:
     content: "<h2 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">About me</h2><p>Welcome to my creative journey. My work is a testament to my commitment to bringing ideas to life, where each pixel becomes a brushstroke in the canvas of imagination.</p><br /><p>I find inspiration in the world around me, whether through the pages of a captivating novel, the intricate details of typography, or the vibrant hues of nature during my outdoor escapades.</p><br /><p>If you're curious to dive deeper into my work, you can follow me:</p>"
     items:
       - icon: tabler:brand-dribbble
@@ -38,6 +50,12 @@ content_blocks:
   - _type: steps
     id: resume
     title: Work experience
+    subtitle:
+    tagline:
+    image:
+      src:
+      alt:
+    isReversed: false
     items:
       - title: "Graphic Designer <br /> <span class=\"font-normal\">ABC Design Studio, New York, NY</span> <br /> <span class=\"text-sm font-normal\">2021 - Present</span>"
         description: "Collaborate with clients to understand design requirements and objectives. <br /> Develop branding solutions, including logos, color palettes, and brand guidelines. <br /> Design marketing materials such as brochures, posters, and digital assets. <br /> Create visually appealing user interfaces for websites and applications."
@@ -48,6 +66,12 @@ content_blocks:
   - _type: steps
     id: resume
     title: Education
+    subtitle:
+    tagline:
+    image:
+      src:
+      alt:
+    isReversed: false
     items:
       - title: "Master of Fine Arts in Graphic Design <br /> <span class=\"font-normal\">New York University's School of Design</span> <br /> <span class=\"text-sm font-normal\">2018 - 2020</span>"
         icon: tabler:school
@@ -56,7 +80,13 @@ content_blocks:
   - _type: features3
     title: Skills
     subtitle: Discover the proficiencies that allow me to bring imagination to life through design.
+    tagline:
     columns: 3
+    image:
+      src:
+      alt:
+    isBeforeContent: false
+    isAfterContent: false
     defaultIcon: tabler:point-filled
     items:
       - title: Graphic design
@@ -81,7 +111,10 @@ content_blocks:
     id: porfolio
     title: Elevating visual narratives
     subtitle: Embark on a design journey that surpasses pixels, entering a realm of imagination. Explore my portfolio, where passion and creativity converge to shape enthralling visual narratives.
+    tagline:
+    columns:
     isReversed: true
+    isAfterContent: false
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Project 1: <br /><span class=\"text-2xl\">Brand identity for tech innovators</span></h3>"
     items:
       - title: "Description:"
@@ -97,6 +130,10 @@ content_blocks:
       icon: tabler:chevron-right
       href: "#"
   - _type: content
+    title:
+    subtitle:
+    tagline:
+    columns:
     isReversed: true
     isAfterContent: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Project 2: <br /><span class=\"text-2xl\">Event poster for art &amp; music festival</span></h3>"
@@ -114,6 +151,10 @@ content_blocks:
       icon: tabler:chevron-right
       href: "#"
   - _type: content
+    title:
+    subtitle:
+    tagline:
+    columns:
     isReversed: true
     isAfterContent: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Project 3: <br /><span class=\"text-2xl\">E-commerce website redesign for fashion brand</span></h3>"
@@ -133,6 +174,10 @@ content_blocks:
   - _type: testimonials
     title: Client testimonials
     subtitle: Discover what clients have to say about their experiences working with me.
+    tagline:
+    callToAction:
+      text:
+      href:
     testimonials:
       - testimonial: She took our vague concept and turned it into a visual masterpiece that perfectly aligned with our goals. Her attention to detail and ability to translate ideas into compelling visuals exceeded our expectations.
         name: Mark Thompson
@@ -173,6 +218,7 @@ content_blocks:
   - _type: call_to_action
     title: "Let's create together"
     subtitle: Ready to transform your vision into captivating designs?
+    tagline:
     actions:
       - variant: primary
         text: Hire me
@@ -181,4 +227,5 @@ content_blocks:
     id: blog
     title: Explore my insightful articles on my blog
     information: "Dive into a realm of design wisdom and creative inspiration, where you'll find invaluable insights, practical tips, and captivating narratives that elevate and enrich your creative journey."
+    count: 4
 ---

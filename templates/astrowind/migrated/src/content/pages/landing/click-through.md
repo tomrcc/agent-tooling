@@ -7,6 +7,7 @@ content_blocks:
     tagline: "Click-through Demo"
     title: "Click-through Landing Page: The Perfect Bridge to Conversion!"
     subtitle: "Learn how to design a Click-Through Landing Page that seamlessly guides visitors to your main offer."
+    content:
     actions:
       - variant: primary
         text: "Call to Action"
@@ -20,6 +21,7 @@ content_blocks:
   - _type: call_to_action
     title: "Coming soon"
     subtitle: "We are working on the content of these demo pages. You will see them very soon. Stay tuned Stay tuned!"
+    tagline:
     actions:
       - variant: primary
         text: "Download Template"

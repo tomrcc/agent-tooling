@@ -7,6 +7,7 @@ content_blocks:
     tagline: Services
     title: Elevate your projects with our stunning templates
     subtitle: Explore our meticulously crafted templates tailored to various industries and purposes. From captivating presentations to functional website designs, we offer the tools you need to succeed.
+    content:
     actions:
       - variant: primary
         target: _blank
@@ -18,6 +19,7 @@ content_blocks:
   - _type: features2
     title: Explore our diverse templates
     subtitle: Discover our selection below to streamline and elevate your projects.
+    tagline:
     columns: 3
     items:
       - title: Educational
@@ -48,8 +50,14 @@ content_blocks:
         description: With attention to detail, customization, and contemporary design, they empower designers to showcase ideas cohesively. Ideal for all levels of designers.
         icon: tabler:tie
   - _type: content
+    title:
+    subtitle:
+    tagline:
     isReversed: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Main Features</h3>"
+    callToAction:
+      text:
+      href:
     items:
       - title: High-Quality Designs
         description: Our templates feature top-tier designs that ensure a professional and polished appearance for your projects.
@@ -63,12 +71,20 @@ content_blocks:
       - title: Preview and Mockup Views
         description: Visualize the final outcome before making any changes using our preview and mockup views, ensuring your projects meet your expectations.
         icon: tabler:carousel-horizontal
+    columns:
     image:
       src: "https://images.unsplash.com/photo-1525909002-1b05e0c869d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
       alt: Features Image
+    isAfterContent: false
   - _type: content
+    title:
+    subtitle:
+    tagline:
     isAfterContent: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Benefits</h3>"
+    callToAction:
+      text:
+      href:
     items:
       - title: Time Savings
         description: Streamline your workflow, enabling you to create stunning materials efficiently and allocate more time to your core tasks.
@@ -82,11 +98,15 @@ content_blocks:
       - title: Instant Download
         description: Enjoy immediate access to your chosen templates upon purchase, enabling you to begin working on your projects without delay.
         icon: tabler:file-download
+    columns:
     image:
       src: "https://images.unsplash.com/photo-1552664688-cf412ec27db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
       alt: Benefits Image
+    isReversed: false
   - _type: testimonials
     title: Words from real customers
+    subtitle:
+    tagline:
     testimonials:
       - testimonial: The designs are not only visually appealing but also highly professional. The templates have saved me a significant amount of time while helping me make a lasting impression on my clients.
         name: Emily Kennedy
@@ -114,6 +134,7 @@ content_blocks:
   - _type: call_to_action
     title: Dive into our template collection
     subtitle: "Whether you're in business, design, or education, our templates are here to elevate your projects."
+    tagline:
     actions:
       - variant: primary
         text: Start exploring

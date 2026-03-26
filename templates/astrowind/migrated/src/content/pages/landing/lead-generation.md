@@ -7,6 +7,7 @@ content_blocks:
     tagline: "Lead Generation Landing Demo"
     title: "Effective Lead Generation Landing Page: Unlock the Secrets"
     subtitle: "Discover the secrets to creating a Landing Page that turns curious visitors into eager leads. (Your Hero should grab attention instantly. Use a powerful headline that speaks directly to your target audience.)"
+    content:
     actions:
       - variant: primary
         text: "Call to Action"
@@ -20,6 +21,7 @@ content_blocks:
   - _type: call_to_action
     title: "Coming soon"
     subtitle: "We are working on the content of these demo pages. You will see them very soon. Stay tuned Stay tuned!"
+    tagline:
     actions:
       - variant: primary
         text: "Download Template"

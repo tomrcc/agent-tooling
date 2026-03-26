@@ -7,11 +7,15 @@ content_blocks:
     tagline: About us
     title: "Elevate your online presence with our <br /><span class=\"text-accent dark:text-white\"> Beautiful Website Templates</span>"
     subtitle: "Donec efficitur, ipsum quis congue luctus, mauris magna convallis mauris, eu auctor nisi lectus non augue. Donec quis lorem non massa vulputate efficitur ac at turpis. Sed tincidunt ex a nunc convallis, et lobortis nisi tempus. Suspendisse vitae nisi eget tortor luctus maximus sed non lectus."
+    content:
+    actions:
     image:
       src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
       alt: Caos Image
   - _type: stats
     title: Statistics about us
+    subtitle:
+    tagline:
     stats:
       - title: Offices
         amount: "4"
@@ -24,6 +28,7 @@ content_blocks:
   - _type: features3
     title: Our templates
     subtitle: "Etiam scelerisque, enim eget vestibulum luctus, nibh mauris blandit nulla, nec vestibulum risus justo ut enim. Praesent lacinia diam et ante imperdiet euismod."
+    tagline:
     columns: 3
     isBeforeContent: true
     items:
@@ -36,8 +41,16 @@ content_blocks:
       - title: Photography
         description: "Duis sed lectus in nisl vehicula porttitor eget quis odio. Aliquam erat volutpat. Nulla eleifend nulla id sem fermentum."
         icon: "tabler:template"
+    image:
+      src:
+      alt:
+    isAfterContent: false
   - _type: features3
+    title:
+    subtitle:
+    tagline:
     columns: 3
+    isBeforeContent: false
     isAfterContent: true
     items:
       - title: E-commerce
@@ -64,6 +77,7 @@ content_blocks:
   - _type: steps2
     title: Our values
     subtitle: "Maecenas eu tellus eget est scelerisque lacinia et a diam. Aliquam velit lorem, vehicula id fermentum et, rhoncus et purus. Nulla facilisi. Vestibulum malesuada lacus."
+    tagline:
     items:
       - title: Customer-centric approach
         description: "Donec id nibh neque. Quisque et fermentum tortor. Fusce vitae dolor a mauris dignissim commodo. Ut eleifend luctus condimentum."
@@ -71,9 +85,14 @@ content_blocks:
         description: "Phasellus laoreet fermentum venenatis. Vivamus dapibus pulvinar arcu eget mattis. Fusce eget mauris leo."
       - title: Ethical Practices
         description: "Vestibulum imperdiet libero et lectus molestie, et maximus augue porta. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
+    callToAction:
+      text:
+      href:
+    isReversed: false
   - _type: steps2
     title: Achievements
     subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla, sed porttitor est nibh at nulla."
+    tagline:
     isReversed: true
     callToAction:
       text: See more
@@ -90,6 +109,7 @@ content_blocks:
         icon: "tabler:award"
   - _type: features2
     title: Our locations
+    subtitle:
     tagline: Find us
     columns: 4
     items:
@@ -103,6 +123,7 @@ content_blocks:
         description: "3456 Lorem Ipsum St, 34567, São Paulo"
   - _type: features2
     title: Technical Support
+    subtitle:
     tagline: Contact us
     columns: 2
     items:

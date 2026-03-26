@@ -7,6 +7,7 @@ content_blocks:
     tagline: Mobile App Web Demo
     title: "<span class=\"text-accent dark:text-white\">AstroWind App</span>: <br /> professional websites <span class=\"hidden xl:inline\">made easy</span>"
     subtitle: "<span class=\"hidden sm:inline\">Unlock boundless creativity at your fingertips: your gateway to innovative design.</span> Download now and embark on a journey to elevate your projects like never before."
+    content:
     image:
       src: "https://images.unsplash.com/photo-1535303311164-664fc9ec6532?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80"
       alt: AstroWind Hero Image
@@ -23,6 +24,8 @@ content_blocks:
     subtitle: Tired of spending hours crafting documents from scratch? Our app offers an innovative solution. With a wide array of professionally designed templates, you can now create stunning documents in minutes. Explore our templates now and experience the difference.
     tagline: Step-by-step guide
     columns: 2
+    isBeforeContent: false
+    isAfterContent: false
     items:
       - title: Download and install the app
         description: "Begin your journey by downloading our user-friendly app from your device's app store or our official website."
@@ -40,8 +43,16 @@ content_blocks:
       src: "https://images.unsplash.com/photo-1521517407911-565264e7d82d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
       alt: Colorful Image
   - _type: content
-    isReversed: true
+    title:
+    subtitle:
+    tagline:
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Main Features</h3>"
+    callToAction:
+      text:
+      href:
+    columns:
+    isReversed: true
+    isAfterContent: false
     items:
       - title: User-friendly interface
         description: An intuitive and easy-to-navigate interface that allows users to quickly browse and find the templates they need.
@@ -59,8 +70,16 @@ content_blocks:
       src: "https://images.unsplash.com/photo-1576153192621-7a3be10b356e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1674&q=80"
       alt: Colorful Image
   - _type: content
-    isAfterContent: true
+    title:
+    subtitle:
+    tagline:
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Other features</h3>"
+    callToAction:
+      text:
+      href:
+    columns:
+    isReversed: false
+    isAfterContent: true
     items:
       - title: Offline Access
         description: Offer the option for users to download purchased templates for offline use.
@@ -79,6 +98,8 @@ content_blocks:
       alt: Vintage Image
   - _type: stats
     title: Statistics of our app
+    subtitle:
+    tagline:
     stats:
       - amount: 20K
         icon: tabler:download
@@ -88,6 +109,8 @@ content_blocks:
         icon: tabler:user-star
   - _type: testimonials
     title: What our users say?
+    subtitle:
+    tagline:
     testimonials:
       - testimonial: "It's made exploring and downloading website templates a breeze. The interface is intuitive, and I had no trouble finding the perfect template for my project. It's an app that truly empowers users."
         name: Cary Kennedy
@@ -114,6 +137,9 @@ content_blocks:
       icon: tabler:chevron-right
   - _type: faqs
     title: Still have some doubts?
+    subtitle:
+    tagline:
+    columns: 2
     items:
       - title: What does this app do?
         description: This app provides a platform for you to easily browse, purchase, download, and use a wide range of website templates for your projects.
@@ -129,6 +155,7 @@ content_blocks:
     id: download
     title: Download our app now!
     subtitle: Access a variety of stunning templates, simplify your creative process, and elevate your online presence.
+    tagline:
     actions:
       - variant: primary
         text: App Store

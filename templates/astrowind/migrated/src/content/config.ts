@@ -50,89 +50,89 @@ const metadataDefinition = () =>
 
 const callToActionSchema = z
   .object({
-    variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).optional(),
-    text: z.string().optional(),
-    href: z.string().optional(),
-    target: z.string().optional(),
-    icon: z.string().optional(),
-    type: z.enum(['button', 'submit', 'reset']).optional(),
+    variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).nullish(),
+    text: z.string().nullish(),
+    href: z.string().nullish(),
+    target: z.string().nullish(),
+    icon: z.string().nullish(),
+    type: z.enum(['button', 'submit', 'reset']).nullish(),
   })
-  .optional();
+  .nullish();
 
 const imageSchema = z
   .object({
-    src: z.string(),
-    alt: z.string().optional(),
+    src: z.string().nullish(),
+    alt: z.string().nullish(),
   })
-  .optional();
+  .nullish();
 
 const itemSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  icon: z.string().optional(),
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  icon: z.string().nullish(),
   callToAction: callToActionSchema,
   image: imageSchema,
 });
 
 const statSchema = z.object({
-  amount: z.union([z.number(), z.string()]).optional(),
-  title: z.string().optional(),
-  icon: z.string().optional(),
+  amount: z.union([z.number(), z.string()]).nullish(),
+  title: z.string().nullish(),
+  icon: z.string().nullish(),
 });
 
 const priceSchema = z.object({
-  title: z.string().optional(),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  price: z.union([z.number(), z.string()]).optional(),
-  period: z.string().optional(),
-  items: z.array(itemSchema).optional(),
+  title: z.string().nullish(),
+  subtitle: z.string().nullish(),
+  description: z.string().nullish(),
+  price: z.union([z.number(), z.string()]).nullish(),
+  period: z.string().nullish(),
+  items: z.array(itemSchema).nullish(),
   callToAction: callToActionSchema,
-  hasRibbon: z.boolean().optional(),
-  ribbonTitle: z.string().optional(),
+  hasRibbon: z.boolean().nullish(),
+  ribbonTitle: z.string().nullish(),
 });
 
 const testimonialSchema = z.object({
-  title: z.string().optional(),
-  testimonial: z.string().optional(),
-  name: z.string().optional(),
-  job: z.string().optional(),
+  title: z.string().nullish(),
+  testimonial: z.string().nullish(),
+  name: z.string().nullish(),
+  job: z.string().nullish(),
   image: z
-    .union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })])
-    .optional(),
+    .union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })])
+    .nullish(),
 });
 
 const inputSchema = z.object({
   type: z.string(),
   name: z.string(),
-  label: z.string().optional(),
-  autocomplete: z.string().optional(),
-  placeholder: z.string().optional(),
+  label: z.string().nullish(),
+  autocomplete: z.string().nullish(),
+  placeholder: z.string().nullish(),
 });
 
 const textareaSchema = z
   .object({
-    label: z.string().optional(),
-    name: z.string().optional(),
-    placeholder: z.string().optional(),
-    rows: z.number().optional(),
+    label: z.string().nullish(),
+    name: z.string().nullish(),
+    placeholder: z.string().nullish(),
+    rows: z.number().nullish(),
   })
-  .optional();
+  .nullish();
 
 const disclaimerSchema = z
   .object({
-    label: z.string().optional(),
+    label: z.string().nullish(),
   })
-  .optional();
+  .nullish();
 
 // Common block fields
 const blockBase = {
-  id: z.string().optional(),
-  isDark: z.boolean().optional(),
-  bg: z.string().optional(),
-  tagline: z.string().optional(),
-  title: z.string().optional(),
-  subtitle: z.string().optional(),
+  id: z.string().nullish(),
+  isDark: z.boolean().nullish(),
+  bg: z.string().nullish(),
+  tagline: z.string().nullish(),
+  title: z.string().nullish(),
+  subtitle: z.string().nullish(),
 };
 
 // 19 block type schemas
@@ -140,162 +140,162 @@ const contentBlockSchema = z.discriminatedUnion('_type', [
   z.object({
     _type: z.literal('hero'),
     ...blockBase,
-    content: z.string().optional(),
+    content: z.string().nullish(),
     actions: z.array(z.object({
-      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).optional(),
-      text: z.string().optional(),
-      href: z.string().optional(),
-      target: z.string().optional(),
-      icon: z.string().optional(),
-    })).optional(),
-    image: z.union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })]).optional(),
+      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).nullish(),
+      text: z.string().nullish(),
+      href: z.string().nullish(),
+      target: z.string().nullish(),
+      icon: z.string().nullish(),
+    })).nullish(),
+    image: z.union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })]).nullish(),
   }),
   z.object({
     _type: z.literal('hero2'),
     ...blockBase,
-    content: z.string().optional(),
+    content: z.string().nullish(),
     actions: z.array(z.object({
-      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).optional(),
-      text: z.string().optional(),
-      href: z.string().optional(),
-      target: z.string().optional(),
-      icon: z.string().optional(),
-    })).optional(),
-    image: z.union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })]).optional(),
+      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).nullish(),
+      text: z.string().nullish(),
+      href: z.string().nullish(),
+      target: z.string().nullish(),
+      icon: z.string().nullish(),
+    })).nullish(),
+    image: z.union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })]).nullish(),
   }),
   z.object({
     _type: z.literal('hero_text'),
     ...blockBase,
-    content: z.string().optional(),
+    content: z.string().nullish(),
     callToAction: callToActionSchema,
     callToAction2: callToActionSchema,
   }),
   z.object({
     _type: z.literal('note'),
     ...blockBase,
-    icon: z.string().optional(),
-    description: z.string().optional(),
+    icon: z.string().nullish(),
+    description: z.string().nullish(),
   }),
   z.object({
     _type: z.literal('features'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
-    columns: z.number().optional(),
-    defaultIcon: z.string().optional(),
+    items: z.array(itemSchema).nullish(),
+    columns: z.number().nullish(),
+    defaultIcon: z.string().nullish(),
   }),
   z.object({
     _type: z.literal('features2'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
-    columns: z.number().optional(),
+    items: z.array(itemSchema).nullish(),
+    columns: z.number().nullish(),
   }),
   z.object({
     _type: z.literal('features3'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
-    columns: z.number().optional(),
-    defaultIcon: z.string().optional(),
-    image: z.union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })]).optional(),
-    isBeforeContent: z.boolean().optional(),
-    isAfterContent: z.boolean().optional(),
+    items: z.array(itemSchema).nullish(),
+    columns: z.number().nullish(),
+    defaultIcon: z.string().nullish(),
+    image: z.union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })]).nullish(),
+    isBeforeContent: z.boolean().nullish(),
+    isAfterContent: z.boolean().nullish(),
   }),
   z.object({
     _type: z.literal('content'),
     ...blockBase,
-    content: z.string().optional(),
-    items: z.array(itemSchema).optional(),
-    columns: z.number().optional(),
-    image: z.union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })]).optional(),
-    isReversed: z.boolean().optional(),
-    isAfterContent: z.boolean().optional(),
+    content: z.string().nullish(),
+    items: z.array(itemSchema).nullish(),
+    columns: z.number().nullish(),
+    image: z.union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })]).nullish(),
+    isReversed: z.boolean().nullish(),
+    isAfterContent: z.boolean().nullish(),
     callToAction: callToActionSchema,
   }),
   z.object({
     _type: z.literal('steps'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
-    image: z.union([z.string(), z.object({ src: z.string(), alt: z.string().optional() })]).optional(),
-    isReversed: z.boolean().optional(),
+    items: z.array(itemSchema).nullish(),
+    image: z.union([z.string(), z.object({ src: z.string().nullish(), alt: z.string().nullish() })]).nullish(),
+    isReversed: z.boolean().nullish(),
   }),
   z.object({
     _type: z.literal('steps2'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
+    items: z.array(itemSchema).nullish(),
     callToAction: callToActionSchema,
-    isReversed: z.boolean().optional(),
+    isReversed: z.boolean().nullish(),
   }),
   z.object({
     _type: z.literal('call_to_action'),
     ...blockBase,
     actions: z.array(z.object({
-      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).optional(),
-      text: z.string().optional(),
-      href: z.string().optional(),
-      target: z.string().optional(),
-      icon: z.string().optional(),
-    })).optional(),
+      variant: z.enum(['primary', 'secondary', 'tertiary', 'link']).nullish(),
+      text: z.string().nullish(),
+      href: z.string().nullish(),
+      target: z.string().nullish(),
+      icon: z.string().nullish(),
+    })).nullish(),
   }),
   z.object({
     _type: z.literal('faqs'),
     ...blockBase,
-    items: z.array(itemSchema).optional(),
-    columns: z.number().optional(),
+    items: z.array(itemSchema).nullish(),
+    columns: z.number().nullish(),
   }),
   z.object({
     _type: z.literal('stats'),
     ...blockBase,
-    stats: z.array(statSchema).optional(),
+    stats: z.array(statSchema).nullish(),
   }),
   z.object({
     _type: z.literal('pricing'),
     ...blockBase,
-    prices: z.array(priceSchema).optional(),
+    prices: z.array(priceSchema).nullish(),
   }),
   z.object({
     _type: z.literal('testimonials'),
     ...blockBase,
-    testimonials: z.array(testimonialSchema).optional(),
+    testimonials: z.array(testimonialSchema).nullish(),
     callToAction: callToActionSchema,
   }),
   z.object({
     _type: z.literal('brands'),
     ...blockBase,
-    icons: z.array(z.string()).optional(),
-    images: z.array(z.object({ src: z.string(), alt: z.string().optional() })).optional(),
+    icons: z.array(z.string()).nullish(),
+    images: z.array(z.object({ src: z.string().nullish(), alt: z.string().nullish() })).nullish(),
   }),
   z.object({
     _type: z.literal('contact'),
     ...blockBase,
-    inputs: z.array(inputSchema).optional(),
+    inputs: z.array(inputSchema).nullish(),
     textarea: textareaSchema,
     disclaimer: disclaimerSchema,
-    button: z.string().optional(),
-    description: z.string().optional(),
+    button: z.string().nullish(),
+    description: z.string().nullish(),
   }),
   z.object({
     _type: z.literal('blog_latest_posts'),
     ...blockBase,
-    linkText: z.string().optional(),
-    linkUrl: z.string().optional(),
-    information: z.string().optional(),
-    count: z.number().optional(),
+    linkText: z.string().nullish(),
+    linkUrl: z.string().nullish(),
+    information: z.string().nullish(),
+    count: z.number().nullish(),
   }),
   z.object({
     _type: z.literal('blog_highlighted_posts'),
     ...blockBase,
-    linkText: z.string().optional(),
-    linkUrl: z.string().optional(),
-    information: z.string().optional(),
-    postIds: z.array(z.string()).optional(),
+    linkText: z.string().nullish(),
+    linkUrl: z.string().nullish(),
+    information: z.string().nullish(),
+    postIds: z.array(z.string()).nullish(),
   }),
 ]);
 
 // Page schemas
 const commonPageFields = {
   title: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   metadata: metadataDefinition(),
-  _schema: z.string().optional(),
+  _schema: z.string().nullish(),
 };
 
 const pageBuilderSchema = z.object({

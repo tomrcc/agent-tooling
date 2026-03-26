@@ -6,10 +6,19 @@ content_blocks:
   - _type: hero_text
     tagline: Contact
     title: "Let's Connect!"
+    subtitle:
+    content:
+    callToAction:
+      text:
+      href:
+    callToAction2:
+      text:
+      href:
   - _type: contact
     id: form
     title: Drop us a message today!
     subtitle: "For quicker answers, explore our FAQs section. You may find the solution you're looking for right there! If not, our support team is delighted to help you."
+    tagline:
     inputs:
       - type: text
         name: name
@@ -22,8 +31,12 @@ content_blocks:
     disclaimer:
       label: "By submitting this contact form, you acknowledge and agree to the collection of your personal information."
     description: Our support team typically responds within 24 business hours.
+    button:
   - _type: features2
     title: We are here to help!
+    subtitle:
+    tagline:
+    columns: 3
     items:
       - title: General support
         description: "Chat with us for inquiries related to account management, website navigation, payment issues, accessing purchased templates or general questions about the website's functionality."

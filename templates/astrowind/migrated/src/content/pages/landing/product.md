@@ -7,6 +7,7 @@ content_blocks:
     tagline: "Product Details Demo"
     title: "Product Landing Page: Showcase with Precision and Passion!"
     subtitle: "Step-by-step guide to designing a Landing Page that highlights every facet of your product or service."
+    content:
     actions:
       - variant: primary
         text: "Call to Action"
@@ -20,6 +21,7 @@ content_blocks:
   - _type: call_to_action
     title: "Coming soon"
     subtitle: "We are working on the content of these demo pages. You will see them very soon. Stay tuned Stay tuned!"
+    tagline:
     actions:
       - variant: primary
         text: "Download Template"

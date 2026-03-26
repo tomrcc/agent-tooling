@@ -85,7 +85,7 @@ const {
         class="intersect-once intersect-no-queue intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
       >
         {
-          image && (
+          image?.src && (
             <div class="relative m-auto max-w-5xl" data-editable="image" data-prop="image">
               {typeof image === 'string' ? (
                 <Fragment set:html={image} />

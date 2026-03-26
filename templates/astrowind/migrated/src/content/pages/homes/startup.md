@@ -7,6 +7,10 @@ content_blocks:
     tagline: Startup Web Demo
     title: "Improve <span class=\"hidden sm:inline\">the online presence of</span> your <span class=\"text-accent dark:text-white\">Startup</span> with Astrowind templates"
     subtitle: "Step into the spotlight with <span class=\"font-semibold\">Astrowind</span> templates, your pathway to fortifying your startup's digital footprint, fostering credibility, and expanding your reach."
+    content:
+    image:
+      src:
+      alt:
     actions:
       - variant: primary
         target: _blank
@@ -18,9 +22,13 @@ content_blocks:
   - _type: features2
     title: About us
     subtitle: We believe in the magic of turning dreams into stunning realities. Founded by passionate developers with a shared vision, we set out to simplify the website creation process. Our templates bring together the innovation of Astro 5.0 and the versatility of Tailwind CSS, enabling you to express your unique brand identity like never before.
+    tagline:
+    items: []
+    columns: 3
   - _type: stats
     title: Discover the impressive impact of Astrowind
     subtitle: "The numbers below reflect the trust our users have placed in us and the remarkable outcomes we've helped them achieve."
+    tagline:
     stats:
       - title: Downloads
         amount: 182K
@@ -33,6 +41,7 @@ content_blocks:
   - _type: brands
     title: Partnerships & Collaborations
     subtitle: At Astrowind, we believe in the power of collaboration to drive innovation and create exceptional experiences.
+    tagline:
     icons: []
     images:
       - src: "https://cdn.pixabay.com/photo/2015/05/26/09/37/paypal-784404_1280.png"
@@ -56,6 +65,8 @@ content_blocks:
   - _type: features2
     title: What services do we provide?
     subtitle: We offer a wide range of website templates that suit various industries and purposes such as business, portfolio, e-commerce, blog, etc.
+    tagline:
+    columns: 3
     items:
       - title: Installation Instructions
         description: Offer clear instructions on how to download the purchased templates and install them on various website platforms or content management systems.
@@ -70,6 +81,7 @@ content_blocks:
     id: features
     title: Main features of our templates
     subtitle: Possess several key characteristics to effectively cater to the needs of startups and entrepreneurs.
+    tagline:
     columns: 3
     items:
       - title: Modern and Professional Design
@@ -92,6 +104,9 @@ content_blocks:
         icon: tabler:plug-connected
   - _type: faqs
     title: Frequently Asked Questions
+    subtitle:
+    tagline:
+    columns: 2
     items:
       - title: What are landing page templates?
         description: Landing page templates are pre-designed web page layouts that are specifically created to serve as a foundation for building effective landing pages. These templates are designed to capture the attention of visitors and guide them towards a specific action or goal, such as signing up for a newsletter, making a purchase, or downloading a resource.
@@ -108,7 +123,13 @@ content_blocks:
   - _type: features3
     title: Let us know how we can help
     subtitle: "We're here to help and answer any question you might have."
+    tagline:
     columns: 4
+    image:
+      src:
+      alt:
+    isBeforeContent: false
+    isAfterContent: false
     items:
       - title: Phone
         icon: tabler:phone
@@ -141,6 +162,7 @@ content_blocks:
   - _type: call_to_action
     title: Be a part of our vision
     subtitle: Discover a dynamic work environment, unparalleled growth opportunities, and the chance to make a meaningful impact.
+    tagline:
     actions:
       - variant: primary
         target: _blank

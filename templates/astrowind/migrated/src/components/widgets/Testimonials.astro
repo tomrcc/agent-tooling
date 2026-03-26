@@ -38,7 +38,7 @@ const {
               <hr class="border-slate-200 dark:border-slate-600 my-4" />
 
               <div class="flex items-center">
-                {image && (
+                {image?.src && (
                   <div class="h-10 w-10 rounded-full border border-slate-200 dark:border-slate-600">
                     {typeof image === 'string' ? (
                       <Fragment set:html={image} />
@@ -66,7 +66,7 @@ const {
     }
   </div>
   {
-    callToAction && (
+    callToAction?.text && (
       <div class="flex justify-center mx-auto w-fit mt-8 md:mt-12 font-medium">
         <Button {...callToAction} />
       </div>

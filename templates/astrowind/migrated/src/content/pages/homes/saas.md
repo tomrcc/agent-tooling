@@ -7,6 +7,7 @@ content_blocks:
     tagline: SaaS Web Demo
     title: "Simplify web design with Astrowind: <br /> your ultimate <span class=\"text-accent dark:text-white\">SaaS</span> companion<br />"
     subtitle: "<span class=\"hidden sm:inline\">Elevate your website creation process with <span class=\"font-semibold\">AstroWind</span>'s SaaS solutions.</span> Seamlessly blend the power of Astro 5.0 and Tailwind CSS to craft websites that resonate with your brand and audience."
+    content:
     actions:
       - variant: primary
         target: _blank
@@ -21,6 +22,7 @@ content_blocks:
     id: features
     title: Why choose AstroWind?
     subtitle: "Each of the following features enhances AstroWind's value proposition."
+    tagline:
     columns: 2
     items:
       - title: Integration of Astro 5.0 and Tailwind CSS
@@ -44,7 +46,13 @@ content_blocks:
   - _type: content
     title: Use cases
     subtitle: "Discover how AstroWind's versatile template serves as the ideal solution for various use cases, providing tailored solutions to drive success."
+    tagline:
+    callToAction:
+      text:
+      href:
+    columns:
     isReversed: true
+    isAfterContent: false
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Startup success stories: <br /><span class=\"text-2xl\">Launching with AstroWind</span></h3>"
     items:
       - title: "Description:"
@@ -55,6 +63,14 @@ content_blocks:
       src: "https://images.unsplash.com/photo-1620558138198-cfb9b4f3c294?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1671&q=80"
       alt: Startup Image
   - _type: content
+    title:
+    subtitle:
+    tagline:
+    callToAction:
+      text:
+      href:
+    columns:
+    isReversed: false
     isAfterContent: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">SaaS showcase: <br /><span class=\"text-2xl\">Streamlining user experience</span></h3>"
     items:
@@ -66,6 +82,13 @@ content_blocks:
       src: "https://images.unsplash.com/photo-1531973486364-5fa64260d75b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1658&q=80"
       alt: SaaS Businesses Image
   - _type: content
+    title:
+    subtitle:
+    tagline:
+    callToAction:
+      text:
+      href:
+    columns:
     isReversed: true
     isAfterContent: true
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Creative portfolios: <br /><span class=\"text-2xl\">Highlighting your work</span></h3>"
@@ -78,6 +101,15 @@ content_blocks:
       src: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
       alt: Portfolio Image
   - _type: content
+    title:
+    subtitle:
+    tagline:
+    callToAction:
+      text:
+      href:
+    columns:
+    isReversed: false
+    isAfterContent: false
     content: "<h3 class=\"text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2\">Small business growth: <br /><span class=\"text-2xl\">Converting visitors into customers</span></h3>"
     items:
       - title: "Description:"
@@ -89,6 +121,8 @@ content_blocks:
       alt: Small Business Image
   - _type: pricing
     title: Flexible pricing plans
+    subtitle:
+    tagline:
     prices:
       - title: free
         subtitle: Access to core features and a wide range of templates
@@ -118,6 +152,9 @@ content_blocks:
           href: "#"
   - _type: faqs
     title: Frequently Asked Questions
+    subtitle:
+    tagline:
+    columns: 2
     items:
       - title: Is AstroWind compatible with the latest versions of Astro and Tailwind CSS?
         description: Yes, AstroWind is designed to be compatible with the latest versions of both Astro and Tailwind CSS. This ensures that you can harness the full capabilities of these technologies while benefiting from the features offered by AstroWind.
@@ -134,6 +171,8 @@ content_blocks:
   - _type: steps2
     title: Reach out to us
     subtitle: "Have questions? Feel free to contact us using the form below. We're here to help!"
+    tagline:
+    isReversed: false
     callToAction:
       text: Contact us
       href: /
@@ -151,4 +190,5 @@ content_blocks:
     id: blog
     title: "Stay informed with AstroWind's blog"
     information: Explore our collection of articles, guides, and tutorials on web development, design trends, and using AstroWind effectively for your projects.
+    count: 4
 ---

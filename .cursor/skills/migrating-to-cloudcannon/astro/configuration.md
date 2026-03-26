@@ -256,7 +256,9 @@ When `add_options` is defined, **only** the listed options appear. Schemas not l
 
 ## Page building patterns
 
-Two approaches for letting editors create new pages, which can coexist:
+Two approaches for letting editors create new pages, which can coexist.
+
+For the full structures reference (inline vs split, field completeness, previews, deriving from components), see [../structures.md](../structures.md). Structures must be defined during the configuration phase because the content phase uses them as the blueprint for field completeness — every block in a content file must include all fields from its structure definition.
 
 ### Schema-based pages (fixed layouts)
 
@@ -303,9 +305,19 @@ const pageBuilderSchema = z.object({
 
 Place `pageBuilderSchema` before the generic `pageSchema` in the union so it matches before the catch-all.
 
-**CC structures**: Define `_structures.content_blocks` with a value for each block type. Use `_type` as the discriminator field:
+**CC structures**: Define structures for each block type using `_type` as the discriminator. For sites with 5+ block types, use the split co-located approach (see [../structures.md](../structures.md)):
 
 ```yaml
+# Split approach — one file per component
+_inputs:
+  content_blocks:
+    type: array
+    options:
+      structures:
+        values_from_glob:
+          - /src/components/widgets/*.cloudcannon.structure-value.yml
+
+# Inline approach — for sites with fewer than 5 block types
 _structures:
   content_blocks:
     values:
@@ -315,17 +327,10 @@ _structures:
           title:
           content:
           image:
-          button:
-            enable: true
-            label:
-            link:
       - label: Rich Text
         value:
           _type: rich_text
           content:
-      - label: Call to Action
-        value:
-          _type: call_to_action
 ```
 
 **Reference blocks vs inline blocks**: Blocks like CTA and Testimonial that pull from global JSON data files are "reference" blocks -- they have no inline data, just a `_type` marker. The rendering code imports the global data and passes it to the component. This keeps the data DRY (edited once in the Data section) while letting editors place these sections anywhere on the page. Visual editing still works via `@data[key]` editable regions.
@@ -407,6 +412,8 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `file_config` entries exist for files with inputs not covered by global or collection-level config
 - [ ] Object inputs have `type: object` with `preview.icon` for a clean editor UI
 - [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures` (don't rely on naming conventions)
+- [ ] Structures use both `picker_preview` and `preview` (see [../structures.md](../structures.md))
+- [ ] Sites with 5+ block types use the split co-located approach (`values_from_glob`)
 - [ ] Structure previews have `icon` fallbacks where `image` may be empty
 - [ ] `_snippets` entries exist for each MDX component used in content files (no `_snippets_imports` needed). See [snippets.md](snippets.md)
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables

@@ -68,6 +68,22 @@ Check for:
 - **Empty content bodies.** Index files and section data often have no body content (all data lives in frontmatter). This is normal and CloudCannon handles it fine.
 - **Remark/rehype plugin output.** If custom remark or rehype plugins transform markdown in ways that affect the content structure (e.g. adding IDs to headings, wrapping images), note them but don't change the content. The plugins run at build time.
 
+### Page-builder content migration
+
+When converting hardcoded pages to markdown with `content_blocks`, the agent must reference the structure definition for each block type and include ALL fields — even empty ones. The structure `value` is the canonical list of fields.
+
+**Pattern for each block:**
+
+1. Identify the block's `_type` from the original hardcoded page
+2. Look up the structure definition (either in `cloudcannon.config.yml` under `_structures.content_blocks` or in the co-located `*.cloudcannon.structure-value.yml` file)
+3. Copy the full field list from the structure `value`
+4. Populate fields that have content from the original page
+5. Leave remaining fields at their default/empty values (strings empty, booleans `false`, arrays `[]`, objects with empty nested fields)
+
+**Why this matters:** The visual editor throws `undefined` errors when editable regions reference fields missing from frontmatter. Getting field completeness right during the initial content migration avoids a backfill step later. See [../structures.md](../structures.md) for the full field completeness rule.
+
+**Null values in YAML:** Bare keys with no value (`tagline:`) parse as `null`. The Zod schema must use `.nullish()` instead of `.optional()` on optional fields, otherwise `null` values fail validation and `z.union` silently falls through to a non-page-builder schema — stripping `content_blocks` from the data. See [../structures.md](../structures.md#handling-null-values-from-empty-yaml-fields) for details on aligning the Zod schema and CloudCannon config.
+
 ### Data files (JSON/YAML config)
 
 Site configuration stored in JSON or YAML files outside content collections (e.g. `src/config/` directory with navigation, social links, theme settings) is editable in CloudCannon as "data" collections. Verify:
@@ -75,6 +91,13 @@ Site configuration stored in JSON or YAML files outside content collections (e.g
 - JSON is valid and well-formatted
 - Nested structures aren't so deep that CloudCannon's editor becomes unwieldy (3+ levels of nesting is a flag)
 - Arrays of objects have consistent shapes across items
+
+## Review checklist addendum
+
+In addition to the checks above, verify:
+
+- [ ] Every block in `content_blocks` includes all fields from its structure definition (see [../structures.md](../structures.md))
+- [ ] Empty/default values are used for fields not present in the original page (strings empty, booleans `false`, arrays `[]`)
 
 ---
 
