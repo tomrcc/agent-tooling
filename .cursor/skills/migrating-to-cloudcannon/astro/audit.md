@@ -79,4 +79,5 @@ Note anything that needs special handling in later phases:
 - Existing CMS or deployment configuration (`.sitepins/`, `netlify.toml`, `vercel.json`)
 - `set:html` directives in templates (these render raw HTML and affect how content editing works)
 - Pre-build code generation that must run for the site to build
+- **Inline HTML in markdown content that has no markdown equivalent** -- scan `.md` content files for HTML blocks like `<figure>`, `<video>`, `<details>`, `<iframe>`, etc. For each pattern, ask: can this be expressed in standard markdown? If not, it's a snippet candidate. Document each pattern (tag structure, attributes, which values vary between instances) and note it as input for `_snippets` configuration in Phase 2. This applies to `.md` files only -- MDX component usage is covered separately above. See [../snippets.md § Raw snippets for inline HTML](../snippets.md#raw-snippets-for-inline-html-in-md-files).
 

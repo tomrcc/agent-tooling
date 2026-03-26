@@ -265,6 +265,22 @@ This is easy to miss because the `slug` field doesn't need to be in the Zod sche
 
 **Ensuring consistency:** If only some posts have `slug` frontmatter, add it to the rest (matching the filename) so `{slug}` works uniformly. Also add `slug` to the CC schema template so new posts get the field, and make the `slug` input visible so editors can control their URL.
 
+### Content in subdirectories within a collection
+
+When a collection has subdirectories (e.g. `blog/examples/`, `blog/releases/`) and the SSG routing preserves the subdirectory in the output URL (e.g. `/posts/examples/my-post/`), the `{slug}` placeholder alone won't match — it only contains the slug portion, not the directory prefix.
+
+**How to detect this:** Compare the build output paths in `dist/` against the `{slug}` values. If a post's output URL is `/posts/examples/my-post/` but `{slug}` resolves to just `my-post`, there's a mismatch. Check any SSG routing utilities (like `getPath()`) that construct URLs from both file paths and entry IDs — these often prepend the subdirectory.
+
+**Two fixes:**
+
+1. **Prefix the frontmatter `slug`** — include the subdirectory in the slug value (e.g. `slug: examples/my-post` instead of `slug: my-post`). This keeps the collection unified and the `{slug}` URL template working. Check that the SSG's routing utility still produces the correct output — many (like AstroPaper's `getPath`) take the last segment of `post.id` as the slug and derive the directory from the file path, so prefixing the slug doesn't double up the directory.
+
+2. **Split into separate collections** — give the subdirectory its own CC collection with a URL pattern that includes the prefix (e.g. `url: "/posts/examples/{slug}/"`). Better when the subdirectory represents a genuinely different content type with its own editorial workflow.
+
+Prefer option 1 for small subdirectories within a content collection (example posts, archived posts). Prefer option 2 when the subdirectory is large enough to warrant its own sidebar entry.
+
+Note: directories prefixed with `_` (e.g. `_releases/`) are often excluded from routing by the SSG — their posts get URLs without the directory prefix. These work fine with plain `{slug}`. Check the SSG's path utility for `_`-prefix filtering before deciding.
+
 ### Trailing slash rule
 
 The URL must match the built output path exactly. Check `astro.config.mjs` for `trailingSlash` and `build.format`:
@@ -542,6 +558,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Numeric values in content frontmatter that map to `text` inputs are quoted as strings (e.g. `price: "29"` not `price: 29`)
 - [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`. Compare a few filenames against `dist/` output paths -- if they differ, the URL is frontmatter-driven and needs `{data_field}` placeholders instead of `[slug]`
+- [ ] Collections with content in subdirectories: compare `dist/` output for nested files against the URL template. If the SSG routing preserves the subdirectory in the output path, ensure `{slug}` values include the directory prefix (or split into separate collections)
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
@@ -552,6 +569,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Sites with 5+ block types use the split co-located approach (`values_from_glob`)
 - [ ] Structure previews have `icon` fallbacks where `image` may be empty
 - [ ] `_snippets` entries exist for each MDX component used in content files (no `_snippets_imports` needed). See [snippets.md](snippets.md)
+- [ ] `_snippets` entries exist for inline HTML in `.md` content that has no markdown equivalent (`<figure>`, `<video>`, `<details>`, etc.), identified during audit. See [../snippets.md § Raw snippets for inline HTML](../snippets.md#raw-snippets-for-inline-html-in-md-files)
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 - [ ] `add_options` restricts the Add button to only creatable schemas (excludes index pages and one-off pages with dedicated routes)
 - [ ] Collections using `.md` files with no rendered body content have `_enabled_editors: [data]`

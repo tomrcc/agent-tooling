@@ -2,7 +2,7 @@
 title: Example Draft Post
 author: Sat Naing
 pubDatetime: 2022-06-06T04:06:31Z
-slug: example-draft-post
+slug: examples/example-draft-post
 featured: false
 draft: true
 tags:

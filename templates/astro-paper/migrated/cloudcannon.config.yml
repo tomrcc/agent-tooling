@@ -24,6 +24,7 @@ _editables:
     table: true
     code: true
     horizontalrule: true
+    snippet: true
 
 collection_groups:
   - heading: Content
@@ -98,3 +99,71 @@ _inputs:
     comment: URL slug for this post. Controls the /posts/{slug}/ URL path.
   layout:
     hidden: true
+
+_snippets:
+  figure:
+    snippet: "<figure>\n<img src=\"[[src]]\" alt=\"[[alt]]\" />\n<figcaption>\n[[caption]]\n</figcaption>\n</figure>"
+    inline: false
+    preview:
+      text: Figure
+      icon: image
+    params:
+      src:
+        parser: argument
+        options:
+          model:
+            editor_key: src
+            type: string
+      alt:
+        parser: argument
+        options:
+          model:
+            editor_key: alt
+            type: string
+      caption:
+        parser: content
+        options:
+          editor_key: caption
+    _inputs:
+      src:
+        type: image
+      alt:
+        type: text
+        comment: Accessible description of the image
+      caption:
+        type: html
+        comment: Caption displayed below the image
+  video_controls:
+    snippet: "<video autoplay muted=\"muted\" controls plays-inline=\"true\" class=\"border border-skin-line\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    inline: false
+    preview:
+      text: Video
+      icon: videocam
+    params:
+      src:
+        parser: argument
+        options:
+          model:
+            editor_key: src
+            type: string
+    _inputs:
+      src:
+        type: url
+        comment: URL to the video file
+  video_loop:
+    snippet: "<video autoplay loop=\"loop\" muted=\"muted\" plays-inline=\"true\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    inline: false
+    preview:
+      text: Looping Video
+      icon: loop
+    params:
+      src:
+        parser: argument
+        options:
+          model:
+            editor_key: src
+            type: string
+    _inputs:
+      src:
+        type: url
+        comment: URL to the video file

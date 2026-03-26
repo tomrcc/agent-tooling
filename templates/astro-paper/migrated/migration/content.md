@@ -25,9 +25,16 @@ The blog collection has no index files. No renaming needed.
 ## Markdown bodies
 
 - No MDX components or shortcodes
-- Some inline HTML (`<figure>`, `<figcaption>`) — standard, round-trips fine
 - 5 posts contain markdown tables — handled by `markdown.options.table: true` in CC config
 - Empty bodies on some posts (frontmatter-only) — normal
+
+### Inline HTML snippets
+
+Several posts contain inline HTML that has no markdown equivalent. These were normalized to consistent patterns and configured as raw snippets in `cloudcannon.config.yml`:
+
+- **`<figure>`** (3 instances) — image with figcaption. Removed `class="text-center"` from `<figcaption>` on 2 instances to standardize. Snippet exposes `src`, `alt`, and `caption` fields to editors.
+- **`<video>` with controls** (2 instances) — interactive demo video. Snippet exposes `src` field; presentation attributes (`autoplay`, `muted`, `controls`) are hardcoded.
+- **`<video>` with loop** (4 instances) — short animated clip. Removed `class="border border-skin-line"` from 1 instance to match the other 3. Snippet exposes `src` field; presentation attributes hardcoded.
 
 ## About page
 

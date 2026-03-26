@@ -89,5 +89,104 @@ If a rich text field contains structured HTML with a fixed layout and only a few
 
 ---
 
+## Raw snippets for inline HTML in `.md` files
+
+Snippets aren't just for MDX components. Plain `.md` content files often contain HTML blocks that have no markdown equivalent -- `<figure>` with `<figcaption>`, `<video>`, `<details>`/`<summary>`, `<iframe>`, etc. Without a snippet config, editors see raw HTML in the content editor. With a snippet, they get a structured panel with named fields.
+
+No MDX integration or auto-import setup is needed. Raw snippets match the HTML pattern directly in the source text.
+
+### When to create an HTML snippet
+
+During the audit, scan content files for HTML blocks and ask: can this be expressed in standard markdown? If not, it's a snippet candidate. Simple inline elements like `<sup>`, `<br>`, `<mark>` are fine as raw HTML -- they're small and editors rarely need to modify them. Block-level HTML with multiple attributes or nested elements should become snippets.
+
+### Workflow
+
+1. **Inventory** (audit phase) -- grep content directories for HTML tags. Document each pattern, its attributes, and which values vary between instances.
+2. **Normalize** (content phase) -- standardize all instances of each pattern to a consistent format. Remove class attributes that belong in CSS, collapse unnecessary whitespace, ensure all instances use the same attribute order. This is essential -- the snippet pattern must match every instance.
+3. **Configure** (configuration phase) -- write raw snippet configs. Identify which parts are fixed structure (literal text in the `snippet` string) vs editable values (`[[placeholder]]` markers with parsers).
+
+### Pattern design
+
+Separate **editor concerns** from **developer concerns**. Attributes like `src`, `alt`, caption text, and `href` are editor concerns -- expose them as snippet fields. Presentation attributes like `autoplay`, `muted`, `class`, `loop` are developer concerns -- hardcode them in the literal portion of the snippet pattern.
+
+When a pattern has multiple variants (e.g. video with controls vs video with loop), create separate snippets rather than trying to make attributes optional. Each snippet has a fixed structure with only content values as placeholders.
+
+### Example: `<figure>` with image and caption
+
+Source pattern in markdown:
+
+```html
+<figure>
+<img src="https://example.com/photo.jpg" alt="Description" />
+<figcaption>
+Photo by <a href="https://example.com">Author</a>
+</figcaption>
+</figure>
+```
+
+Snippet config:
+
+```yaml
+_snippets:
+  figure:
+    snippet: "<figure>\n<img src=\"[[src]]\" alt=\"[[alt]]\" />\n<figcaption>\n[[caption]]\n</figcaption>\n</figure>"
+    inline: false
+    preview:
+      text: Figure
+      icon: image
+    params:
+      src:
+        parser: argument
+        options:
+          model:
+            editor_key: src
+            type: string
+      alt:
+        parser: argument
+        options:
+          model:
+            editor_key: alt
+            type: string
+      caption:
+        parser: content
+        options:
+          editor_key: caption
+    _inputs:
+      src:
+        type: image
+      alt:
+        type: text
+      caption:
+        type: html
+```
+
+The `argument` parser matches a single value. Because the surrounding literal text contains the quotes (`src="[[src]]"`), the parser captures only the bare value between them. The `content` parser handles rich text (including nested HTML like `<a>` tags) in the figcaption.
+
+### Example: `<video>` with fixed attributes
+
+```yaml
+_snippets:
+  video_controls:
+    snippet: "<video autoplay muted=\"muted\" controls plays-inline=\"true\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    inline: false
+    preview:
+      text: Video
+      icon: videocam
+    params:
+      src:
+        parser: argument
+        options:
+          model:
+            editor_key: src
+            type: string
+    _inputs:
+      src:
+        type: url
+```
+
+All presentation attributes are literal. Only the video URL is editable.
+
+---
+
 **SSG-specific guidance:**
 - Astro: [astro/snippets.md](astro/snippets.md)
