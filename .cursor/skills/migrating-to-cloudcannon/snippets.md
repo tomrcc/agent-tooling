@@ -129,24 +129,42 @@ Snippet config:
 ```yaml
 _snippets:
   figure:
-    snippet: "<figure>\n<img src=\"[[src]]\" alt=\"[[alt]]\" />\n<figcaption>\n[[caption]]\n</figcaption>\n</figure>"
+    snippet: |-
+      <figure>
+      <img [[img_attrs]] />
+      <figcaption>
+      [[caption]]
+      </figcaption>
+      </figure>
     inline: false
+    view: gallery
     preview:
-      text: Figure
+      gallery:
+        image:
+          - key: src
+        fit: contain
+      text:
+        - key: alt
+        - Figure
       icon: image
+    picker_preview:
+      gallery:
+        image: false
+        icon: image
+      text: Figure
     params:
-      src:
-        parser: argument
+      img_attrs:
+        parser: key_values
         options:
-          model:
-            editor_key: src
-            type: string
-      alt:
-        parser: argument
-        options:
-          model:
-            editor_key: alt
-            type: string
+          models:
+            - editor_key: src
+              type: string
+            - editor_key: alt
+              type: string
+          format:
+            root_value_delimiter: "="
+            string_boundary:
+              - '"'
       caption:
         parser: content
         options:
@@ -160,31 +178,72 @@ _snippets:
         type: html
 ```
 
-The `argument` parser matches a single value. Because the surrounding literal text contains the quotes (`src="[[src]]"`), the parser captures only the bare value between them. The `content` parser handles rich text (including nested HTML like `<a>` tags) in the figcaption.
+The `key_values` parser handles the `<img>` tag's `src` and `alt` attributes as a group. Use `key_values` (not `argument`) for HTML attribute values — see [gotchas](snippets/gotchas.md) for why. The `content` parser handles rich text (including nested HTML like `<a>` tags) in the figcaption. The `view: gallery` + `preview.gallery.image` shows the actual image in the content editor — see [snippet preview for images](#snippet-preview-for-images) below.
 
 ### Example: `<video>` with fixed attributes
 
 ```yaml
 _snippets:
   video_controls:
-    snippet: "<video autoplay muted=\"muted\" controls plays-inline=\"true\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    snippet: |-
+      <video autoplay muted="muted" controls plays-inline="true">
+      <source [[source_attrs]] type="video/mp4">
+      </video>
     inline: false
     preview:
       text: Video
       icon: videocam
     params:
-      src:
-        parser: argument
+      source_attrs:
+        parser: key_values
         options:
-          model:
-            editor_key: src
-            type: string
+          models:
+            - editor_key: src
+              type: string
+          format:
+            root_value_delimiter: "="
+            string_boundary:
+              - '"'
     _inputs:
       src:
         type: url
 ```
 
-All presentation attributes are literal. Only the video URL is editable.
+All presentation attributes are literal. Only the video URL is editable. Even with a single variable attribute, use `key_values` — the `argument` parser does not work for values inside HTML attribute quotes. Fixed attributes like `type="video/mp4"` stay in the literal text after the `[[placeholder]]`.
+
+---
+
+## Snippet preview for images
+
+Any snippet that contains an image (figure, hero, card, etc.) should use `view: gallery` so editors see the actual image in the content editor instead of a generic icon card.
+
+Three keys work together:
+
+- `view: gallery` — switches the snippet from a compact card to a large image preview
+- `preview.gallery.image` — cascading option pointing at the image field's `editor_key`
+- `preview.gallery.fit` — `cover` (default, crops to fill) or `contain` (shows full image)
+
+Use `picker_preview` to override the gallery for the snippet picker modal (where you choose which snippet to insert). The picker doesn't have image data yet, so disable the gallery image and show a static icon instead.
+
+```yaml
+view: gallery
+preview:
+  gallery:
+    image:
+      - key: src
+    fit: contain
+  text:
+    - key: alt
+    - Fallback label
+  icon: image
+picker_preview:
+  gallery:
+    image: false
+    icon: image
+  text: Snippet Name
+```
+
+Apply this pattern to every snippet that has an image `editor_key` — not just `<figure>`. If the snippet has an image field, give it a gallery preview.
 
 ---
 

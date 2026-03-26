@@ -66,6 +66,59 @@ When CloudCannon serializes snippet data back to source text, it re-parses the o
 
 ---
 
+### Don't use `argument` for HTML attribute values
+
+The `argument` parser is designed for positional shortcode arguments (e.g. `{{<figure image.png>}}`). It does not work for values inside HTML `key="value"` attribute syntax — not even with `forbidden_tokens` or `string_boundary` in the format. The parser simply isn't built for that context.
+
+**Always use `key_values`** for HTML attribute values. Pull the variable attributes into a single `[[placeholder]]` and leave fixed attributes in the literal text:
+
+```yaml
+# Correct — key_values for multiple variable attributes
+snippet: |-
+  <img [[img_attrs]] />
+params:
+  img_attrs:
+    parser: key_values
+    options:
+      models:
+        - editor_key: src
+          type: string
+        - editor_key: alt
+          type: string
+      format:
+        root_value_delimiter: "="
+        string_boundary:
+          - '"'
+
+# Correct — key_values even for a single variable attribute
+# Fixed attributes (type) stay in the literal text after the placeholder
+snippet: |-
+  <source [[source_attrs]] type="video/mp4">
+params:
+  source_attrs:
+    parser: key_values
+    options:
+      models:
+        - editor_key: src
+          type: string
+      format:
+        root_value_delimiter: "="
+        string_boundary:
+          - '"'
+
+# Broken — argument parser cannot parse HTML attribute values
+snippet: '<img src="[[src]]" alt="[[alt]]" />'
+params:
+  src:
+    parser: argument
+    options:
+      model:
+        editor_key: src
+        type: string
+```
+
+---
+
 ### `_cc_` snippets are deprioritized in matching
 
 Snippet types starting with `_cc_` are sorted after all user-defined snippets in the matching loop. This means your custom `_snippets` entries always get first chance to match. You don't need to worry about hidden catchall patterns (`_cc_*_unknown`) stealing matches from your explicit snippet configs.

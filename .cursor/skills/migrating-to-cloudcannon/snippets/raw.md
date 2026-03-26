@@ -85,6 +85,10 @@ params:
 
 ### `argument` — single positional argument
 
+Parses a single value, optionally delimited by characters. Best for shortcode-style positional args (e.g. `{{<figure image.png>}}`).
+
+**Do not use `argument` for HTML attribute values** (e.g. `src="[[src]]"`). It does not work in that context, even with `forbidden_tokens` or `string_boundary`. Use `key_values` instead — see [gotchas](gotchas.md#dont-use-argument-for-html-attribute-values).
+
 Options:
 - `model` (object) — snippet model config for the value
 - `format` (object) — parsing format

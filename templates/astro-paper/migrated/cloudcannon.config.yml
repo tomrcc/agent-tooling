@@ -102,24 +102,42 @@ _inputs:
 
 _snippets:
   figure:
-    snippet: "<figure>\n<img src=\"[[src]]\" alt=\"[[alt]]\" />\n<figcaption>\n[[caption]]\n</figcaption>\n</figure>"
+    snippet: |-
+      <figure>
+      <img [[img_attrs]] />
+      <figcaption>
+      [[caption]]
+      </figcaption>
+      </figure>
     inline: false
+    view: gallery
     preview:
-      text: Figure
+      gallery:
+        image:
+          - key: src
+        fit: contain
+      text:
+        - key: alt
+        - Figure
       icon: image
+    picker_preview:
+      gallery:
+        image: false
+        icon: image
+      text: Figure
     params:
-      src:
-        parser: argument
+      img_attrs:
+        parser: key_values
         options:
-          model:
-            editor_key: src
-            type: string
-      alt:
-        parser: argument
-        options:
-          model:
-            editor_key: alt
-            type: string
+          models:
+            - editor_key: src
+              type: string
+            - editor_key: alt
+              type: string
+          format:
+            root_value_delimiter: "="
+            string_boundary:
+              - '"'
       caption:
         parser: content
         options:
@@ -134,35 +152,49 @@ _snippets:
         type: html
         comment: Caption displayed below the image
   video_controls:
-    snippet: "<video autoplay muted=\"muted\" controls plays-inline=\"true\" class=\"border border-skin-line\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    snippet: |-
+      <video autoplay muted="muted" controls plays-inline="true" class="border border-skin-line">
+      <source [[source_attrs]] type="video/mp4">
+      </video>
     inline: false
     preview:
       text: Video
       icon: videocam
     params:
-      src:
-        parser: argument
+      source_attrs:
+        parser: key_values
         options:
-          model:
-            editor_key: src
-            type: string
+          models:
+            - editor_key: src
+              type: string
+          format:
+            root_value_delimiter: "="
+            string_boundary:
+              - '"'
     _inputs:
       src:
         type: url
         comment: URL to the video file
   video_loop:
-    snippet: "<video autoplay loop=\"loop\" muted=\"muted\" plays-inline=\"true\">\n<source src=\"[[src]]\" type=\"video/mp4\">\n</video>"
+    snippet: |-
+      <video autoplay loop="loop" muted="muted" plays-inline="true">
+      <source [[source_attrs]] type="video/mp4">
+      </video>
     inline: false
     preview:
       text: Looping Video
       icon: loop
     params:
-      src:
-        parser: argument
+      source_attrs:
+        parser: key_values
         options:
-          model:
-            editor_key: src
-            type: string
+          models:
+            - editor_key: src
+              type: string
+          format:
+            root_value_delimiter: "="
+            string_boundary:
+              - '"'
     _inputs:
       src:
         type: url
