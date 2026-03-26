@@ -99,6 +99,3 @@ In addition to the checks above, verify:
 - [ ] Every block in `content_blocks` includes all fields from its structure definition (see [../structures.md](../structures.md))
 - [ ] Empty/default values are used for fields not present in the original page (strings empty, booleans `false`, arrays `[]`)
 
----
-
-**Example:** See `templates/astroplate/migrated/migration/content.md` for a completed content review.

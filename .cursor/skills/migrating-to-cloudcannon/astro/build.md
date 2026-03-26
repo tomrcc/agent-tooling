@@ -45,6 +45,3 @@ Astro's `<style is:inline>` bypasses Vite processing, so `@import` of node_modul
 
 If the build fails because Astro virtual modules can't be resolved in the client build, ensure the `editableRegions()` integration is registered in `astro.config.mjs`. The integration's Vite plugin shims these modules for client-side rendering.
 
----
-
-**Example:** See `templates/astroplate/migrated/migration/build.md` for completed build notes.

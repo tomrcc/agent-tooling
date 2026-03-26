@@ -130,4 +130,4 @@ When editing generated files, preserve these schema references. Use the schema U
 - [Gadget on GitHub](https://github.com/CloudCannon/gadget)
 - [Gadget on npm](https://www.npmjs.com/package/@cloudcannon/gadget)
 
-> **Note:** Commands in this guide use `gadget` directly (via `npm link` during development). Once the package is published, these become `npx @cloudcannon/gadget` instead.
+> **Note:** Commands in this guide use `gadget` directly. If the package isn't installed globally, use `npx @cloudcannon/gadget` instead.

@@ -680,8 +680,3 @@ _inputs:
     type: text
 ```
 
-> **Note:** Commands use `gadget` directly (via `npm link` during development). Once the package is published, these become `npx @cloudcannon/gadget` instead.
-
----
-
-**Example:** See `templates/astroplate/migrated/migration/configuration.md` for a completed configuration phase.

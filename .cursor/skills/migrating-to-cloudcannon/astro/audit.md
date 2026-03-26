@@ -78,6 +78,3 @@ Note anything that needs special handling in later phases:
 - `set:html` directives in templates (these render raw HTML and affect how content editing works)
 - Pre-build code generation that must run for the site to build
 
----
-
-**Example:** See `templates/astroplate/migrated/migration/audit.md` for a completed audit.

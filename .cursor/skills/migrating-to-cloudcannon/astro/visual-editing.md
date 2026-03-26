@@ -545,7 +545,7 @@ registerAstroComponent("call-to-action", CallToAction);
 
 ### React / non-Astro components (Astro display fallback)
 
-`registerReactComponent` exists but is unreliable -- live updates silently fail in the visual editor (see bug report in `templates/astroplate/migrated/migration/registerReactComponent-bug.md`). Instead, create a display-only `.astro` component that reproduces the same markup and register it with `registerAstroComponent`. The live site still uses the real React component via `client:load`; only the visual editor renderer is swapped.
+`registerReactComponent` exists but is unreliable -- live updates silently fail in the visual editor. Instead, create a display-only `.astro` component that reproduces the same markup and register it with `registerAstroComponent`. The live site still uses the real React component via `client:load`; only the visual editor renderer is swapped.
 
 This "Astro display fallback" pattern is useful beyond just React bugs. Any component that is difficult to re-render client-side (complex hooks, third-party DOM libraries, Web Components with shadow DOM, animation frameworks) can use a simplified Astro stand-in for the visual editor. The stand-in only needs to produce the right visual output for the editor preview -- it doesn't need interactivity.
 
@@ -656,6 +656,3 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] **Conditional guards**: Every `data-editable` element whose field can be undefined/null is wrapped in a conditional — object fields check an inner key (`{image?.src && ...}`, `{callToAction?.text && ...}`), scalar fields check the value directly (`{title && ...}`)
 - [ ] Build output contains `data-component-key`, `data-id-key`, `data-component=`, `data-id=`, and `data-editable="array-item"` attributes (grep `dist/` to verify)
 
----
-
-**Example:** See `templates/astroplate/migrated/migration/visual-editing.md` for a completed visual editing implementation summary.

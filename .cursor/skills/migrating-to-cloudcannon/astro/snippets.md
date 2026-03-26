@@ -273,6 +273,3 @@ After adding snippet configs:
 - [ ] `astro build` passes cleanly
 - [ ] Components in existing `.mdx` files should round-trip correctly (CC parses and re-serializes without losing attributes)
 
----
-
-**Example:** See `templates/astroplate/migrated/cloudcannon.config.yml` for a complete snippet configuration covering Button, Video, Notice, Youtube, Accordion, and Tabs/Tab.

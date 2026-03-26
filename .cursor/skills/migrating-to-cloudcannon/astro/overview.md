@@ -50,4 +50,3 @@ See [build.md](build.md).
 
 - Not every site needs all phases. Small sites may skip Phase 3 if content is already well-structured.
 - Visual editing (Phase 4) is optional but high-value -- prioritize it for sites where the customer wants a visual editing experience.
-- Template-specific findings go in `templates/<name>/migrated/migration/`, not in these docs.

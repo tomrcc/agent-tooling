@@ -42,23 +42,10 @@ Not every site needs all phases. Small sites may skip Phase 3 if content is alre
 
 Deterministic migration steps are automated as scripts in [scripts/](scripts/). Run these before or during the relevant phase to save time and tokens. New scripts should be added as repetitive patterns emerge.
 
-## Migration output
+## Migration notes
 
-Each template has two directories: `templates/<name>/pristine/` (the untouched original -- never modify this) and `templates/<name>/migrated/` (where the agent works). Always run migrations against `migrated/`, which starts as a copy of `pristine/`.
+Store per-phase migration notes alongside the project (e.g. in a `migration/` directory), with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in SSG-specific directories contain only generic guidance -- project-specific findings go in the project's migration notes.
 
-Store migration notes in `templates/<name>/migrated/migration/`, with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in SSG-specific directories contain only generic guidance -- template-specific findings go in the template's migration directory.
+## Adding a new SSG
 
-## Tracking migration effort
-
-After completing a migration, log metrics so we can measure whether skill improvements reduce effort over time. Run from the repo root:
-
-```bash
-python3 scripts/transcript-metrics.py <transcript-uuid> <template-name>
-```
-
-This extracts proxy metrics (word count, turns, subagent usage) from the agent transcript and appends a row to `metrics/migration-log.csv`. Use `--tokens N` to include a manual token count from the Cursor UI, and `--notes "..."` for context. See the `migration-tracking` rule for details.
-
-## Notes
-
-- Update these docs and reference files as you discover new patterns or better approaches.
-- When adding support for a new SSG, create a new directory (e.g. `hugo/`) with the same file structure as `astro/`.
+Create a new directory (e.g. `hugo/`) with the same file structure as `astro/` and add it to the supported SSGs table above.

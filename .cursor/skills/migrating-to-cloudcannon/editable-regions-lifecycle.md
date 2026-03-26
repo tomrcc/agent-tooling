@@ -1,6 +1,6 @@
 # Editable Regions — Lifecycle & Core Internals
 
-Deep reference for how `@cloudcannon/editable-regions` works under the hood. Start with [editable-regions.md](editable-regions.md) for the overview and region type reference. For even deeper internals or the JavaScript API, see the [deep-dive docs](../../docs/README.md).
+Deep reference for how `@cloudcannon/editable-regions` works under the hood. Start with [editable-regions.md](editable-regions.md) for the overview and region type reference. For the JavaScript API, HTML attributes, and known quirks, see [cloudcannon-api-reference.md](cloudcannon-api-reference.md).
 
 ---
 
