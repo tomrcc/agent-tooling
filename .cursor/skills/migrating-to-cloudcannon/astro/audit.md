@@ -56,6 +56,24 @@ Flag components that are good candidates for visual editing (hero banners, featu
 
 Also flag **hardcoded text in page templates** as source editable candidates. Common locations: homepage hero sections, CTA copy, section headings on listing pages. These don't need a content collection or data file -- they use `EditableSource` to edit the raw `.astro` file directly. See [visual-editing.md § Source editables](visual-editing.md#source-editables-for-hardcoded-content).
 
+### Classifying static pages: source editables vs. content collection
+
+Source editables are the right choice for a few scattered text strings in a fixed layout. But many templates have static `.astro` pages with **structured, repeated data** -- arrays of cards, timeline entries, feature grids, hero sections with multiple fields. These need a different approach.
+
+For each static `.astro` page, count the distinct data-driven sections. Pages with **3+ sections of repeated or structured components** (card lists, timelines, stats grids, hero with title/subtitle/buttons) are candidates for extracting into a `src/content/pages/` content collection rather than using source editables. Content collection entries give editors full CRUD control over arrays and structured fields via the data editor -- source editables can't do this.
+
+Also note which components appear on **multiple pages** (e.g. the same card component used on homepage, projects, and services). These indicate a **reusable page type** that could be offered as a creatable schema in the CMS, enabling editors to create new pages of that type without developer help.
+
+For page-oriented templates (portfolios, docs, marketing sites), assess whether the base layout is generic enough that a simple **title + markdown body page** would render correctly through it. If so, note this as a candidate for a generic creatable page schema.
+
+Produce a clear classification for each static page:
+
+- **Source editables** -- page has a few pieces of hardcoded text in a fixed layout, no arrays or repeated components
+- **Content collection entry** -- page has structured/repeated data that editors need CRUD control over
+- **Reusable page type** -- the page's rendering pattern (e.g. card listing, generic body page) could support creating new pages from the CMS
+
+This classification feeds directly into the configuration phase. See [configuration.md § Creating a pages collection from hardcoded pages](configuration.md#creating-a-pages-collection-from-hardcoded-pages).
+
 ## 5. Build pipeline
 
 Check `package.json` scripts and `astro.config.mjs`:

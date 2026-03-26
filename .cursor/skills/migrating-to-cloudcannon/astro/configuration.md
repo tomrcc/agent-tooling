@@ -175,6 +175,119 @@ No changes are needed on the Astro side — the content collection's glob loader
 
 The alternative is keeping everything in `pages` with `url: "/[full_slug]/"`, but separate collections are more semantically correct and give editors a clearer sidebar.
 
+## Creating a pages collection from hardcoded pages
+
+The consolidation section above assumes content collections already exist. Many templates have a different starting point: **no content-backed pages at all** -- all page data is hardcoded directly in `.astro` templates. The audit identifies these pages as content collection candidates when they have 3+ sections of structured or repeated components (card lists, timelines, feature grids). See [audit.md § Classifying static pages](audit.md#classifying-static-pages-source-editables-vs-content-collection).
+
+### When this applies
+
+- Static `.astro` pages with structured data (arrays of cards, timeline entries, hero sections with multiple fields) that editors need CRUD control over
+- Source editables aren't sufficient because editors need to add, remove, or reorder items -- not just edit text in place
+- The template has multiple static pages that should be editable, making a `pages` collection worthwhile
+
+### Steps
+
+1. **Create `src/content/pages/`** and add a `.md` file for each page. Extract the hardcoded data from the `.astro` template into YAML frontmatter. Add `_schema: <key>` to each file so CloudCannon matches the correct schema.
+
+2. **Add a `pagesCollection`** to the content config with a `z.union` schema covering all page types. See [Merge unique pages with a z.union](#fallback-merge-unique-pages-into-pages-with-a-zunion) for the pattern. Place the most specific schemas first in the union. Define shared Zod objects for common shapes that appear across page types (e.g. a card item used on homepage, projects, and services pages).
+
+3. **Update each `.astro` page** in `src/pages/` to fetch its data from the collection instead of hardcoding it:
+
+```astro
+---
+import { getEntry } from "astro:content";
+const page = await getEntry("pages", "projects");
+const { sections } = page.data;
+---
+```
+
+4. **Add a catch-all route** at `src/pages/[...slug].astro` to serve pages created from the CMS. Without this, new content files have no route and produce 404s. Astro's routing priority means dedicated routes (`index.astro`, `projects.astro`, `blog/[slug].astro`) always win -- the catch-all only matches slugs that don't have a specific route.
+
+```astro
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HorizontalCard from "../components/HorizontalCard.astro";
+
+export async function getStaticPaths() {
+  const pages = await getCollection("pages");
+  return pages.map((page) => ({
+    params: { slug: page.id === "index" ? undefined : page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+const data = page.data;
+---
+
+<BaseLayout title={data.title}>
+  {data._schema === "card_listing" && (
+    data.items.map((item) => (
+      <>
+        <HorizontalCard {...item} />
+        <div class="divider my-0" />
+      </>
+    ))
+  )}
+  {(!data._schema || data._schema === "default") && (
+    <article class="prose prose-lg max-w-[750px]">
+      <Content />
+    </article>
+  )}
+</BaseLayout>
+```
+
+The catch-all checks `_schema` to determine which rendering path to use. Each creatable schema needs a corresponding rendering branch.
+
+### Identifying reusable page types
+
+Review the audit's component inventory for components used on **multiple pages**. If the same component pattern (e.g. a card list rendered by `HorizontalCard`) appears on 3+ pages, it's a strong candidate for a creatable schema. Editors can then create new pages of that type -- a new portfolio section, resource list, or partner showcase -- without developer help.
+
+For each reusable page type:
+
+- Add a Zod schema variant to the union (e.g. `cardListingSchema` with a `title` and `items` array)
+- Add a CC schema in `.cloudcannon/schemas/` with representative frontmatter
+- Add a rendering branch in the catch-all route
+- Add an `add_options` entry on the collection with `new_preview_url` pointing to an existing page that uses the same rendering (e.g. `/projects/` for a card listing page)
+
+Also consider whether the base layout supports a **generic title + body page** -- if so, add a `default` schema for simple markdown pages. Use `editor: content` on its add option since the primary workflow is writing markdown.
+
+### CC collection config
+
+```yaml
+pages:
+  path: src/content/pages
+  url: "/[slug]/"
+  icon: wysiwyg
+  _enabled_editors:
+    - visual
+    - data
+  schemas:
+    default:
+      path: .cloudcannon/schemas/page.md
+      name: Page
+    card_listing:
+      path: .cloudcannon/schemas/card-listing.md
+      name: Card Listing
+      new_preview_url: /projects/
+    homepage:
+      path: .cloudcannon/schemas/homepage.md
+      name: Homepage
+    # ... other page-type schemas
+  add_options:
+    - name: Page
+      schema: default
+      icon: wysiwyg
+      editor: content
+    - name: Card Listing
+      schema: card_listing
+      icon: view_list
+```
+
+Only creatable page types appear in `add_options`. One-off pages with dedicated routes (homepage, contact) have schemas for editing but are excluded from `add_options` -- creating a second one would produce a file with no dedicated route (though the catch-all would still serve it).
+
 ## Data config for shared data
 
 Use `data_config` when you have reusable data (CTAs, testimonials, site settings) that doesn't belong in a content collection. Data files are edited in the CloudCannon data editor and referenced from templates via JSON import.
@@ -385,6 +498,22 @@ When `add_options` is defined, **only** the listed options appear. Schemas not l
 - **One-off pages with dedicated routes**: Homepage, contact -- where the Astro route is hardcoded to load a specific entry. Creating a second one would have no route to display it.
 - **Page builder pages**: When offering multiple schema types for new pages, `add_options` curates the list editors see.
 
+### Using `editor: content` on add options
+
+When an editor creates a new file, CloudCannon opens it in the visual editor by default. But a brand new file hasn't been built yet so there's no output URL -- the visual editor either shows the homepage (fallback) or a `new_preview_url` page. For content-heavy collections like blog posts, this is a poor first experience.
+
+Set `editor: content` on the add option to open new files in the content editor instead. The content editor doesn't need a preview URL, so it works immediately. Editors can switch to the visual editor after the first save and build.
+
+```yaml
+add_options:
+  - name: Blog Post
+    schema: default
+    icon: post_add
+    editor: content
+```
+
+This is the preferred approach for collections where the primary editing workflow is writing markdown (blog posts, docs, articles). For page-builder collections where visual editing is the primary workflow, use `new_preview_url` on the schema instead so editors get a representative visual preview from the start.
+
 ## Page building patterns
 
 Two approaches for letting editors create new pages, which can coexist.
@@ -572,9 +701,11 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `_snippets` entries exist for inline HTML in `.md` content that has no markdown equivalent (`<figure>`, `<video>`, `<details>`, etc.), identified during audit. See [../snippets.md § Raw snippets for inline HTML](../snippets.md#raw-snippets-for-inline-html-in-md-files)
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 - [ ] `add_options` restricts the Add button to only creatable schemas (excludes index pages and one-off pages with dedicated routes)
+- [ ] Collections where editors should not create new files use `disable_add: true`
 - [ ] Collections using `.md` files with no rendered body content have `_enabled_editors: [data]`
 - [ ] If the site has 3+ reusable block components, a page builder schema with `content_blocks` array is available
-- [ ] Schemas for creatable page types have `new_preview_url` pointing to an existing page with the same layout
+- [ ] Schemas for creatable page types either have `new_preview_url` pointing to an existing page with the same layout, or use `editor: content` on the add option to bypass the need for a preview URL
+- [ ] Content-heavy collections (blog, docs, articles) use `editor: content` on add options; page-builder collections use `new_preview_url`
 - [ ] `.cloudcannon/README.md` exists with editor-facing documentation (collections, data files, settings, quick links)
 
 ## Patterns and gotchas
@@ -632,6 +763,18 @@ Structure default values follow the same rule. If a structure defines `price:` (
 ### Verify Gadget's `source` path
 
 Gadget may generate an incorrect `source` path (e.g. pointing into `node_modules/`). Always check this field after generation. For most Astro sites, `source` should be empty or omitted (the project root is the source). Remove it if Gadget set it to something wrong.
+
+### Title-derived slugs and `{title|slugify|lowercase}`
+
+Some templates compute URLs from titles at build time using a custom function (e.g. `createSlug(title)` that lowercases, replaces spaces with hyphens, and strips special characters). When the audit identifies this pattern, don't assume CC's `slugify` filter produces identical output.
+
+CC's `slugify` replaces non-alphanumeric characters with hyphens and collapses them. A typical custom function removes non-alphanumeric characters instead. For simple titles ("Demo Post 1") both produce `demo-post-1`. For titles with apostrophes or special characters they diverge:
+
+- "What's New" → CC slugify: `what-s-new` (apostrophe → hyphen) vs custom: `whats-new` (apostrophe removed)
+
+**Recommendation:** Compare the custom function's algorithm against CC's `slugify` filter behavior. If they differ for edge cases, add a `slug` frontmatter field to each content file with the pre-computed value and use `{slug}` in the CC URL pattern. This is safer than `{title|slugify|lowercase}` and ensures the CC URL always matches the build output, even if it means adding `slug` fields in the content phase.
+
+If the existing content has only simple titles (no special characters) and the mismatch risk is low, `{title|slugify|lowercase}` is acceptable as a starting point -- but document the limitation in the migration notes and verify by comparing `dist/` output paths against CC's URL resolution during the build phase.
 
 ### Set `markdown.options.table` when content has Markdown tables
 
@@ -813,6 +956,13 @@ The same applies to `constants.ts` files with hardcoded arrays (social links, na
 
 ### Pages collection: including `.astro` pages
 
+There are two distinct approaches for pages in CloudCannon, depending on what the audit found:
+
+- **`src/content/pages/` collection**: For templates where the audit identified hardcoded pages with structured data (arrays, nested objects) that should become content collection entries. Provides Zod validation, structured editing, and supports creating new pages via a catch-all route. See [Creating a pages collection from hardcoded pages](#creating-a-pages-collection-from-hardcoded-pages).
+- **`src/pages/` collection** (this section): For templates where static pages stay as `.astro` files with source editables. The CC collection points at `src/pages/` and includes both `.astro` files (visual-only) and optionally `.md` pages with `layout` frontmatter. Simpler, but no Zod validation and limited to source editables for `.astro` pages.
+
+Choose based on the audit classification. Templates with many structured pages (portfolios, marketing sites) typically need the content collection approach. Blog-focused templates with a few static pages typically use this simpler approach.
+
 The pages collection should include both `.md` content pages and `.astro` template pages that have editable content. Set the collection to visual-only editing since that's the only editor that works for both file types:
 
 ```yaml
@@ -825,14 +975,34 @@ pages:
     - "index.astro"
   _enabled_editors:
     - visual
-  add_options: []
+  disable_add: true
 ```
 
 Only include `.astro` pages that actually have editable regions (source editables or other `data-editable` attributes). Pages with no visually editable content (e.g. search, 404, tag listing) should be excluded -- they just clutter the collection with unopenable items.
 
 The `[slug]` pattern handles `index.astro` correctly -- `[slug]` resolves to an empty string for `index` filenames, producing `/`.
 
-`add_options: []` prevents creating new pages since the routes are hardcoded. Hide the `layout` field in `_inputs` for `.md` pages.
+#### Deciding whether to enable page creation
+
+`.astro` pages have hardcoded routes and can never be duplicated. `.md` pages in `src/pages/` technically get automatic file-based routes (any new `.md` file becomes a page at `/<filename>/`), but that alone doesn't mean page creation should be enabled.
+
+**Disable page creation (`disable_add: true`)** when:
+- The template is blog-focused and standalone pages (about, contact) are one-offs with hardcoded layouts, navigation links, or template-specific styling that new pages wouldn't inherit
+- The `.md` pages use layouts that reference template-specific components or data that wouldn't work for arbitrary new pages
+- Enabling creation would give editors a broken or unstyled result without developer intervention
+
+**Enable page creation** when:
+- The template has a generic page layout that works for arbitrary content (not just a specific page like "About")
+- New `.md` pages would render correctly with the existing layout and navigation
+- The template is page-oriented (portfolio, docs, marketing) rather than blog-oriented
+
+When enabling, provide a schema with the `layout` field pre-filled and hidden, use `editor: content` on the add option, and set `new_preview_url` on the schema pointing to an existing page with the same layout.
+
+Use `disable_add: true` to hide the Add button for collections where editors should not create new files. Do not use `add_options: []` for this purpose -- it has no effect.
+
+Hide the `layout` field in `_inputs` for `.md` pages.
+
+**Note:** This guidance applies to the `src/pages/` collection pattern. For `src/content/pages/` collections, page creation requires a catch-all route (`[...slug].astro`) that serves new pages from the content collection. See [Creating a pages collection from hardcoded pages](#creating-a-pages-collection-from-hardcoded-pages) for the full pattern including `add_options` and rendering dispatch.
 
 #### When to use source editables vs. refactoring to `.md`
 
@@ -840,7 +1010,7 @@ Many `.astro` pages have hardcoded text (hero titles, descriptions, CTA copy) th
 
 **Source editables (preferred for most cases):** Add `data-editable="source"` attributes directly to elements in the `.astro` file. Low effort, no structural changes needed. See [visual-editing.md § Source editables](visual-editing.md#source-editables-for-hardcoded-content).
 
-**Refactor to `.md` with layouts (for component-heavy pages):** When a page is composed of many distinct sections/components, extract the content into a `.md` file with structured frontmatter and render it through a layout. This enables array-based page building where editors can reorder, add, and remove sections. Worth the effort when the page has 3+ distinct component sections.
+**Refactor to `.md` with layouts (for simple pages staying in `src/pages/`):** When a page has a handful of distinct sections that editors should control, extract the content into a `.md` file in `src/pages/` with structured frontmatter and render it through a layout.
 
-**Decision rule:** If the page has a few pieces of hardcoded text in a fixed layout, use source editables. If the page is built from many components that editors might want to rearrange, refactor to `.md` with a `content_blocks` array approach.
+**Decision rule:** If the page has a few pieces of hardcoded text in a fixed layout, use source editables. If the page has structured data that editors need CRUD control over (arrays of cards, timelines, etc.), the `src/content/pages/` content collection approach is usually better -- see [Creating a pages collection from hardcoded pages](#creating-a-pages-collection-from-hardcoded-pages). The `src/pages/` `.md` refactor above is a lighter alternative when only one or two pages need this and a full content collection isn't warranted.
 

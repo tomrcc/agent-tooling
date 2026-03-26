@@ -53,6 +53,7 @@ collections_config:
       - name: Blog Post
         schema: default
         icon: post_add
+        editor: content
   pages:
     path: src/pages
     icon: wysiwyg
@@ -62,7 +63,7 @@ collections_config:
       - "index.astro"
     _enabled_editors:
       - visual
-    add_options: []
+    disable_add: true
 
 _inputs:
   title:

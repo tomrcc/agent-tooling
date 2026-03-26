@@ -47,7 +47,7 @@ collections_config:
       contact:
         path: templates/astroship/migrated/.cloudcannon/schemas/contact.md
         name: Contact Page
-    add_options: []
+    disable_add: true
   blog:
     path: src/content/blog
     url: "/blog/[slug]/"

@@ -26,7 +26,7 @@ Generated with `gadget generate --auto --init-settings --ssg astro`. Issues fixe
 - URL: `/[slug]/`
 - Glob: `*.md` (only catches `about.md`, excludes `.astro` files)
 - Editors: content + data
-- `add_options: []` — about is a one-off page with a dedicated route, don't allow creating new pages
+- `disable_add: true` — about is a one-off page with a dedicated route, don't allow creating new pages
 
 ## Site config
 
