@@ -27,7 +27,52 @@ _editables:
 collections_config:
   pages:
     path: src/content/pages
+    glob:
+      - "!homes/**"
+      - "!landing/**"
     url: "/[slug]/"
+    icon: wysiwyg
+    _enabled_editors:
+      - visual
+      - data
+    schemas:
+      page_builder:
+        path: .cloudcannon/schemas/page-builder.md
+        name: Page Builder
+      default:
+        path: .cloudcannon/schemas/page.md
+        name: Page
+    add_options:
+      - name: Page
+        schema: default
+        icon: wysiwyg
+      - name: Page Builder
+        schema: page_builder
+        icon: dashboard
+  homes:
+    path: src/content/pages/homes
+    url: "/homes/[slug]/"
+    icon: wysiwyg
+    _enabled_editors:
+      - visual
+      - data
+    schemas:
+      page_builder:
+        path: .cloudcannon/schemas/page-builder.md
+        name: Page Builder
+      default:
+        path: .cloudcannon/schemas/page.md
+        name: Page
+    add_options:
+      - name: Page
+        schema: default
+        icon: wysiwyg
+      - name: Page Builder
+        schema: page_builder
+        icon: dashboard
+  landing:
+    path: src/content/pages/landing
+    url: "/landing/[slug]/"
     icon: wysiwyg
     _enabled_editors:
       - visual
@@ -64,6 +109,8 @@ collection_groups:
   - heading: Pages
     collections:
       - pages
+      - homes
+      - landing
   - heading: Blogging
     collections:
       - post
@@ -118,6 +165,7 @@ _inputs:
       values:
         - page
         - landing
+    hidden: true
   variant:
     type: select
     options:

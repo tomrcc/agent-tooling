@@ -134,6 +134,39 @@ No discriminator field is needed -- the required fields themselves differentiate
 
 Every Zod schema in the union should have a matching CC schema in `.cloudcannon/schemas/` and a corresponding entry under the collection's `schemas` key in `cloudcannon.config.yml`. Add `_schema: <key>` to each content file's frontmatter so CloudCannon matches it explicitly rather than guessing from the frontmatter shape. The Zod schemas control build-time validation; the CC schemas control which fields editors see in the CMS.
 
+## Splitting nested subdirectories into their own collections
+
+When the `pages` collection contains subdirectories that represent a distinct group of content with their own URL prefix (e.g. `pages/homes/`, `pages/landing/`), split them into separate CloudCannon collections rather than keeping everything flat under `pages`. This gives each group its own sidebar entry, correct URL pattern, and cleaner editorial experience.
+
+1. **Exclude the subdirectories from `pages`** using glob negation:
+
+```yaml
+pages:
+  path: src/content/pages
+  glob:
+    - "!homes/**"
+    - "!landing/**"
+  url: "/[slug]/"
+```
+
+2. **Add a collection for each subdirectory** with its own `path` and `url`:
+
+```yaml
+homes:
+  path: src/content/pages/homes
+  url: "/homes/[slug]/"
+  # schemas, _enabled_editors, add_options same as pages
+landing:
+  path: src/content/pages/landing
+  url: "/landing/[slug]/"
+```
+
+3. **Add the new collections to `collection_groups`** under the same heading as `pages`.
+
+No changes are needed on the Astro side — the content collection's glob loader (`**/*.md` from `src/content/pages`) already picks up all nested files, and the catch-all route (`[...slug].astro`) uses `entry.id` which includes the subdirectory path (e.g. `homes/mobile-app`), so routing works automatically.
+
+The alternative is keeping everything in `pages` with `url: "/[full_slug]/"`, but separate collections are more semantically correct and give editors a clearer sidebar.
+
 ## Data config for shared data
 
 Use `data_config` when you have reusable data (CTAs, testimonials, site settings) that doesn't belong in a content collection. Data files are edited in the CloudCannon data editor and referenced from templates via JSON import.
@@ -405,6 +438,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] No collections contain only a single file -- consolidate or group as needed
 - [ ] `collection_groups` organise collections into logical sidebar groups
 - [ ] `_inputs` is configured for common field types (images, dates, dropdowns, hidden fields)
+- [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
 - [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
@@ -538,6 +572,20 @@ _inputs:
           - key: name
         icon: tab
 ```
+
+### Hide developer-only frontmatter fields
+
+Fields like `layout`, `_schema`, and other routing/rendering keys are set by developers and shouldn't be exposed to editors. Mark them `hidden: true` in `_inputs`:
+
+```yaml
+_inputs:
+  layout:
+    hidden: true
+  _schema:
+    hidden: true
+```
+
+These fields still exist in the frontmatter and are read at build time, but editors won't see or accidentally change them. Apply this to any field that controls rendering plumbing rather than visible content.
 
 ### Data-only markdown collections
 
