@@ -41,10 +41,10 @@ const {
     />
     {
       actions && (
-        <div class="max-w-xs sm:max-w-md m-auto flex flex-nowrap flex-col sm:flex-row sm:justify-center gap-4 mt-6">
+        <div class="max-w-xs sm:max-w-md m-auto flex flex-nowrap flex-col sm:flex-row sm:justify-center gap-4 mt-6" data-editable="array" data-prop="actions">
           {Array.isArray(actions) ? (
             actions.map((action) => (
-              <div class="flex w-full sm:w-auto">
+              <div class="flex w-full sm:w-auto" data-editable="array-item">
                 <Button {...(action || {})} class="w-full sm:mb-0" />
               </div>
             ))

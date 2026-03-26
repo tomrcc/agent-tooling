@@ -438,6 +438,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] No collections contain only a single file -- consolidate or group as needed
 - [ ] `collection_groups` organise collections into logical sidebar groups
 - [ ] `_inputs` is configured for common field types (images, dates, dropdowns, hidden fields)
+- [ ] Icon fields use `type: select` with `allow_create: true` and a curated values list (not plain `text`)
 - [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
@@ -458,6 +459,33 @@ After generating and customizing the config, work through these checks before mo
 ## Patterns and gotchas
 
 This section grows as we complete more migrations. Document template-specific findings in the template's own `migration/configuration.md`, not here.
+
+### Configure icon fields as select inputs
+
+When a template uses an icon library (e.g. `astro-icon` with Iconify sets like `tabler:*` and `flat-color-icons:*`), configure the `icon` input as a `select` with `allow_create: true` rather than a plain `text` field. Non-technical editors can't guess icon names, but they can pick from a curated list.
+
+1. Grep the content files for every unique `icon:` value used in the template.
+2. Add them all as the `values` list in the select input.
+3. Set `allow_create: true` so developers can still type custom icon names.
+4. Add a `comment` linking to the icon set's browser (e.g. Iconify) so developers know where to find new names.
+
+```yaml
+_inputs:
+  icon:
+    type: select
+    comment: "Pick an icon or type a custom [Iconify](https://icon-sets.iconify.design/) name"
+    options:
+      allow_create: true
+      values:
+        - tabler:rocket
+        - tabler:check
+        - flat-color-icons:template
+        # ... all icons used in the template's content
+```
+
+This applies to any field that accepts icon names — items in features, steps, stats, buttons, etc. A single global `icon` input definition covers all of them since the key name is the same.
+
+A data file isn't worth the complexity here. Adding new icons requires knowing the icon set's naming scheme, which is a developer task. The hardcoded list is easy for a developer to extend directly in config.
 
 ### Verify Gadget's `source` path
 
