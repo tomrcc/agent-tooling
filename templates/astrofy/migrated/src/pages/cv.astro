@@ -31,6 +31,20 @@ const data = page.data;
         />
       </div>
     ))}
+    <template>
+      <div data-editable="array-item">
+        <div class="flex">
+          <div class="education__time">
+            <span class="w-4 h-4 bg-primary block rounded-full mt-1"></span>
+            <span class="education__line bg-primary block h-full w-[2px] translate-x-[7px]"></span>
+          </div>
+          <div class="experience__data bd-grid px-5">
+            <h3 class="font-semibold mb-1" data-editable="text" data-prop="title"></h3>
+            <span class="font-light text-sm" data-editable="text" data-prop="subtitle"></span>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
   <div class="mb-5">
@@ -43,11 +57,25 @@ const data = page.data;
         <TimeLineElement
           title={entry.title}
           subtitle={entry.subtitle}
-        >
-          {entry.description}
-        </TimeLineElement>
+          description={entry.description}
+        />
       </div>
     ))}
+    <template>
+      <div data-editable="array-item">
+        <div class="flex">
+          <div class="education__time">
+            <span class="w-4 h-4 bg-primary block rounded-full mt-1"></span>
+            <span class="education__line bg-primary block h-full w-[2px] translate-x-[7px]"></span>
+          </div>
+          <div class="experience__data bd-grid px-5">
+            <h3 class="font-semibold mb-1" data-editable="text" data-prop="title"></h3>
+            <span class="font-light text-sm" data-editable="text" data-prop="subtitle"></span>
+            <p class="my-2 text-justify" data-editable="text" data-prop="description"></p>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
   <div class="mb-5">
@@ -62,6 +90,13 @@ const data = page.data;
         </a>
       </li>
     ))}
+    <template>
+      <li data-editable="array-item">
+        <a href="#" target="_blank">
+          <span data-editable="text" data-prop="text"></span>
+        </a>
+      </li>
+    </template>
   </ul>
 
   <div class="mb-5">
@@ -72,5 +107,8 @@ const data = page.data;
     {data.skills.map((skill) => (
       <li data-editable="array-item"><span data-editable="text" data-prop="">{skill}</span></li>
     ))}
+    <template>
+      <li data-editable="array-item"><span data-editable="text" data-prop=""></span></li>
+    </template>
   </ul>
 </BaseLayout>

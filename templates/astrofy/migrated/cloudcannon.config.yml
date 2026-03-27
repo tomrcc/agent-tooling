@@ -32,7 +32,6 @@ collections_config:
       default:
         path: .cloudcannon/schemas/page.md
         name: Page
-        new_preview_url: /projects/
       homepage:
         path: .cloudcannon/schemas/homepage.md
         name: Homepage
@@ -121,6 +120,9 @@ _inputs:
     comment: Requires a save and rebuild to preview
     options:
       allow_create: true
+      values:
+        - tokio
+        - rust
   draft:
     type: switch
   pricing:

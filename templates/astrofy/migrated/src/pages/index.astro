@@ -22,16 +22,22 @@ const last_posts = posts.slice(0, data.blog_posts_count || 3);
         <div class="text-lg" data-editable="text" data-type="block" data-prop="hero.description" set:html={hero.description} />
       </div>
     )}
-    <div class="mt-8">
+    <div class="mt-8" data-editable="array" data-prop="hero.buttons">
       {hero.buttons.map((button) => (
         <a
           class={`btn ${button.variant === "outline" ? "btn-outline ml-5" : ""}`}
           href={button.url}
           target={button.target}
+          data-editable="array-item"
         >
-          {button.text}
+          <span data-editable="text" data-prop="text">{button.text}</span>
         </a>
       ))}
+      <template>
+        <a class="btn" data-editable="array-item">
+          <span data-editable="text" data-prop="text"></span>
+        </a>
+      </template>
     </div>
   </div>
 
@@ -52,6 +58,20 @@ const last_posts = posts.slice(0, data.blog_posts_count || 3);
         {i < data.items.length - 1 && <div class="divider my-0" />}
       </div>
     ))}
+    <template>
+      <div data-editable="array-item">
+        <div class="rounded-lg bg-base-100">
+          <div class="hero-content flex-col md:flex-row">
+            <div class="grow w-full">
+              <h1 class="text-xl font-bold">
+                <span data-editable="text" data-prop="title"></span>
+              </h1>
+              <p class="py-1 text-1xl" data-editable="text" data-prop="desc"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
   <div>

@@ -211,6 +211,52 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 
 **Always nest text and image editables inside array items.** Without nested `data-editable="text"` / `data-editable="image"` on their key fields, array items only get CRUD controls (add/remove/reorder) — no inline text editing or live image picking. This applies universally, not just when component re-rendering is unavailable. Text and image editables handle their own DOM updates independently of the component system, so they work even on Astro 4 where `editableRegions()` integration isn't available. Every array item should have nested editables on its title, description, and image fields at minimum.
 
+**Use `data-prop=""` for plain string array items.** When array items are plain strings (not objects), use `data-prop=""` (empty string) to pass the current scope as the editable value. Without it, CloudCannon errors with "Text editable regions require a 'data-prop' HTML attribute but none was provided."
+
+```astro
+<ul data-editable="array" data-prop="skills">
+  {skills.map((skill) => (
+    <li data-editable="array-item"><span data-editable="text" data-prop="">{skill}</span></li>
+  ))}
+</ul>
+```
+
+**Add `<template>` blueprints for arrays without component registration.** On Astro 4 (or any setup without `registerAstroComponent`), CloudCannon cannot render new array items that were added via the sidebar — it doesn't know what HTML to produce. Add a `<template>` element as a child of the array container with the HTML structure for new items. CloudCannon clones this template when adding items:
+
+```astro
+<div data-editable="array" data-prop="items">
+  {items.map((item) => (
+    <div data-editable="array-item">
+      <h2 data-editable="text" data-prop="title">{item.title}</h2>
+      <p data-editable="text" data-prop="desc">{item.desc}</p>
+    </div>
+  ))}
+  <template>
+    <div data-editable="array-item">
+      <h2 data-editable="text" data-prop="title"></h2>
+      <p data-editable="text" data-prop="desc"></p>
+    </div>
+  </template>
+</div>
+```
+
+The template should mirror the rendered item's HTML structure with editable attributes but empty content. For nested arrays (e.g. sections containing items), include nested `<template>` elements. This pattern is essential for any array where editors can add items — without it, new items show "array item cannot be rendered" errors.
+
+**Conditional editable prop for cross-collection content.** When a shared component (like a card) is used both for frontmatter-backed array items AND programmatic content from another collection (e.g. blog posts fetched via `getCollection`), the editable attributes break on the programmatic items because there's no valid data scope. Add an `editable` prop (default `true`) to the component and conditionally apply editable attributes:
+
+```astro
+---
+const { title, desc, editable = true } = Astro.props;
+---
+<h1>
+  {editable ? <span data-editable="text" data-prop="title">{title}</span> : title}
+</h1>
+```
+
+Pass `editable={false}` when rendering cross-collection content that isn't backed by the current page's frontmatter.
+
+**Rebuild comments on sidebar-only fields (Astro 4).** On Astro 4 without component re-rendering, fields that appear on the page but are only editable via the sidebar (e.g. `badge`, `tags`, `variant`) won't live-update. Add `comment` to these inputs in the CC config explaining what the field does and that changes require a save and rebuild. On Astro 5+ with component registration, these fields update live and the comments aren't needed.
+
 ### Page builder blocks
 
 When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference. For the structure definitions that back these blocks, see [../structures.md](../structures.md).
@@ -723,5 +769,8 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] **Registration keys match `_type`**: Every key in `componentMap` (or direct `registerAstroComponent` call) uses the exact `_type` string from the content files (e.g., `call_to_action` not `call-to-action`)
 - [ ] **All block types registered**: Every `_type` value that appears in content files has a corresponding entry in `componentMap` — missing entries mean no edit button and no live re-rendering for that block type
 - [ ] **Conditional guards**: Every `data-editable` element whose field can be undefined/null is wrapped in a conditional — object fields check an inner key (`{image?.src && ...}`, `{callToAction?.text && ...}`), scalar fields check the value directly (`{title && ...}`)
+- [ ] **`<template>` blueprints (Astro 4)**: Every `data-editable="array"` container has a `<template>` child mirroring the rendered item's HTML structure with editable attributes but empty content — including nested templates for arrays-within-arrays
+- [ ] **Cross-collection editable guard**: Shared components used for both frontmatter-backed items and programmatic cross-collection content (e.g. blog posts) have an `editable` prop to conditionally strip editable attributes
+- [ ] **Rebuild comments (Astro 4)**: Sidebar-only fields that affect page appearance (badge, tags, variant, etc.) have `comment` in `_inputs` noting they require a save and rebuild to preview
 - [ ] Build output contains `data-component-key`, `data-id-key`, `data-component=`, `data-id=`, and `data-editable="array-item"` attributes (grep `dist/` to verify)
 

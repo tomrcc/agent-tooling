@@ -26,8 +26,43 @@ const data = page.data;
               {i < section.items.length - 1 && <div class="divider my-0" />}
             </div>
           ))}
+          <template>
+            <div data-editable="array-item">
+              <div class="rounded-lg bg-base-100">
+                <div class="hero-content flex-col md:flex-row">
+                  <div class="grow w-full">
+                    <h1 class="text-xl font-bold">
+                      <span data-editable="text" data-prop="title"></span>
+                    </h1>
+                    <p class="py-1 text-1xl" data-editable="text" data-prop="desc"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     ))}
+    <template>
+      <div data-editable="array-item">
+        <div class="text-3xl w-full font-bold mb-5" data-editable="text" data-prop="heading"></div>
+        <div data-editable="array" data-prop="items">
+          <template>
+            <div data-editable="array-item">
+              <div class="rounded-lg bg-base-100">
+                <div class="hero-content flex-col md:flex-row">
+                  <div class="grow w-full">
+                    <h1 class="text-xl font-bold">
+                      <span data-editable="text" data-prop="title"></span>
+                    </h1>
+                    <p class="py-1 text-1xl" data-editable="text" data-prop="desc"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
   </div>
 </BaseLayout>
