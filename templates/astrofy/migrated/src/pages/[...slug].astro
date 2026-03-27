@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HorizontalCard from "../components/HorizontalCard.astro";
+
+export async function getStaticPaths() {
+  const dedicatedRoutes = new Set(["index", "projects", "services", "cv"]);
+  const pages = await getCollection("pages");
+  return pages
+    .filter((page) => !dedicatedRoutes.has(page.slug))
+    .map((page) => ({
+      params: { slug: page.slug === "index" ? undefined : page.slug },
+      props: { page },
+    }));
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+const data = page.data;
+---
+
+<BaseLayout title={data.title} sideBarActiveItemID={data.sidebar_id}>
+  {data._schema === "card_listing" && data.sections && (
+    data.sections.map((section, sectionIdx) => (
+      <>
+        <div class={sectionIdx > 0 ? "mt-10" : ""}>
+          <div class="text-3xl w-full font-bold mb-5">{section.heading}</div>
+        </div>
+        {section.items.map((item, i) => (
+          <>
+            <HorizontalCard
+              title={item.title}
+              img={item.img}
+              desc={item.desc}
+              url={item.url}
+              badge={item.badge}
+            />
+            {i < section.items.length - 1 && <div class="divider my-0" />}
+          </>
+        ))}
+      </>
+    ))
+  )}
+
+  {(!data._schema || data._schema === "default") && (
+    <article class="prose prose-lg max-w-[750px]">
+      <Content />
+    </article>
+  )}
+</BaseLayout>

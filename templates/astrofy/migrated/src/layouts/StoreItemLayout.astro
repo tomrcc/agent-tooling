@@ -27,14 +27,14 @@ import { Image } from "astro:assets";
 <BaseLayout title={title} description={description} image={heroImage}>
   <main class="md:flex md:justify-center">
     <article class="prose prose-lg max-w-[750px] prose-img:mx-auto">
-      {
-        heroImage && (
+      {heroImage && (
+        <div data-editable="image" data-prop-src="heroImage">
           <Image width={750} height={422} format="webp" src={heroImage} alt={title} class="w-full mb-6" />
-        )
-      }
+        </div>
+      )}
       <div class="">
         <h1 class="title my-2 text-4xl font-bold">
-          {title}
+          <span data-editable="text" data-prop="title">{title}</span>
           {badge && <div class="badge badge-secondary mx-2">{badge}</div>}
         </h1>
         <div class="flex place-content-between items-center">
@@ -55,7 +55,9 @@ import { Image } from "astro:assets";
         </div>
       </div>
       <div class="divider my-2"></div>
-      <slot />
+      <div data-editable="text" data-type="block" data-prop="@content">
+        <slot />
+      </div>
     </article>
   </main>
 </BaseLayout>

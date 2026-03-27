@@ -140,6 +140,8 @@ const pagesCollection = defineCollection({
 
 No discriminator field is needed -- the required fields themselves differentiate each schema. Homepage requires `banner`/`features`, contact requires form labels, and the default page is the fallback with just common fields.
 
+**When to use `z.discriminatedUnion` instead:** If page schemas have many optional fields with defaults (arrays defaulting to `[]`, strings that are `.nullish()`), `z.union` may match the wrong schema because earlier members validate successfully even for data intended for later members. In these cases, use `z.discriminatedUnion("_schema", [...])` with a literal `_schema` field in each schema (e.g. `_schema: z.literal("homepage")`). This guarantees correct matching regardless of field optionality.
+
 Every Zod schema in the union should have a matching CC schema in `.cloudcannon/schemas/` and a corresponding entry under the collection's `schemas` key in `cloudcannon.config.yml`. Add `_schema: <key>` to each content file's frontmatter so CloudCannon matches it explicitly rather than guessing from the frontmatter shape. The Zod schemas control build-time validation; the CC schemas control which fields editors see in the CMS.
 
 ## Splitting nested subdirectories into their own collections
@@ -211,6 +213,8 @@ import HorizontalCard from "../components/HorizontalCard.astro";
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
+  // Astro 5+ glob loader: use page.id (no extension, slug-aware)
+  // Astro 4 legacy collections: use page.slug (page.id includes .md extension)
   return pages.map((page) => ({
     params: { slug: page.id === "index" ? undefined : page.id },
     props: { page },
@@ -772,7 +776,9 @@ CC's `slugify` replaces non-alphanumeric characters with hyphens and collapses t
 
 - "What's New" → CC slugify: `what-s-new` (apostrophe → hyphen) vs custom: `whats-new` (apostrophe removed)
 
-**Recommendation:** Compare the custom function's algorithm against CC's `slugify` filter behavior. If they differ for edge cases, add a `slug` frontmatter field to each content file with the pre-computed value and use `{slug}` in the CC URL pattern. This is safer than `{title|slugify|lowercase}` and ensures the CC URL always matches the build output, even if it means adding `slug` fields in the content phase.
+**Recommendation:** Compare the custom function's algorithm against CC's `slugify` filter behavior. If they differ for edge cases, add a frontmatter field with the pre-computed slug value and use it in the CC URL pattern (e.g. `{permalink}`). This is safer than `{title|slugify|lowercase}` and ensures the CC URL always matches the build output.
+
+**Astro 4 gotcha: `slug` is reserved.** In Astro 4's legacy content collections (`src/content/config.ts`), the `slug` field is reserved by Astro for its own slug generation. Adding `slug` to the Zod schema throws `ContentSchemaContainsSlugError`. Use a different field name like `permalink` instead. This restriction does not apply to Astro 5+ with the `glob()` loader, where `slug` in frontmatter overrides `post.id` (see above).
 
 If the existing content has only simple titles (no special characters) and the mismatch risk is low, `{title|slugify|lowercase}` is acceptable as a starting point -- but document the limitation in the migration notes and verify by comparing `dist/` output paths against CC's URL resolution during the build phase.
 

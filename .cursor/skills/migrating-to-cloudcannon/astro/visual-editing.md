@@ -43,6 +43,8 @@ export default defineConfig({
 
 This registers a Vite plugin that enables client-side rendering of Astro components (needed for `EditableComponent` regions).
 
+**Astro 4 compatibility:** The integration references `window` at module evaluation time in `helpers/cloudcannon.mjs`. In Astro 4's legacy content collections, `astro sync` (which runs at the start of `astro build`) evaluates the integration before the Vite plugin can shim browser globals, causing a `window is not defined` crash. The integration requires Astro 5+. For Astro 4 sites, skip the integration — `data-editable` HTML attributes still work for CloudCannon's Visual Editor (text editing, image picking, array CRUD), but component re-rendering (`registerAstroComponent`) is not available.
+
 ### 3. Create the `registerComponents` script
 
 Create `src/cloudcannon/registerComponents.ts`. This is where Astro components are registered for live re-rendering in the Visual Editor. Initially it contains only commented-out examples -- uncomment and add registrations as components are wired up.

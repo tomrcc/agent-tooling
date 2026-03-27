@@ -14,8 +14,9 @@
   "dependencies": {
     "@astrojs/mdx": "^2.0.3",
     "@astrojs/rss": "^3.0.0",
-    "@astrojs/sitemap": "^3.0.1",
+    "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.0.3",
+    "@cloudcannon/editable-regions": "^0.0.12",
     "astro": "^4.0.2",
     "daisyui": "^4.4.10",
     "dayjs": "^1.11.9",
