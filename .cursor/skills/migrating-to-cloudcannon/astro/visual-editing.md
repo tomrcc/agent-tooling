@@ -227,12 +227,18 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 <div data-editable="array" data-prop="items">
   {items.map((item) => (
     <div data-editable="array-item">
+      <div data-editable="image" data-prop-src="img">
+        <img src={item.img} alt={item.title} />
+      </div>
       <h2 data-editable="text" data-prop="title">{item.title}</h2>
       <p data-editable="text" data-prop="desc">{item.desc}</p>
     </div>
   ))}
   <template>
     <div data-editable="array-item">
+      <div data-editable="image" data-prop-src="img">
+        <img src="" alt="" />
+      </div>
       <h2 data-editable="text" data-prop="title"></h2>
       <p data-editable="text" data-prop="desc"></p>
     </div>
@@ -240,7 +246,7 @@ Array items get CRUD controls (reorder, add, delete) automatically. Without a re
 </div>
 ```
 
-The template should mirror the rendered item's HTML structure with editable attributes but empty content. For nested arrays (e.g. sections containing items), include nested `<template>` elements. This pattern is essential for any array where editors can add items — without it, new items show "array item cannot be rendered" errors.
+The template should mirror the rendered item's HTML structure with editable attributes but empty content. Include **all** editable region types — text, image, and nested arrays. Image editables need a wrapper `<div>` with a child `<img src="" alt="">` so CloudCannon can update the src live when the editor picks an image. Without the image editable in the template, new items can only get images via save-and-rebuild. For nested arrays (e.g. sections containing items), include nested `<template>` elements. This pattern is essential for any array where editors can add items — without it, new items show "array item cannot be rendered" errors.
 
 **Conditional editable prop for cross-collection content.** When a shared component (like a card) is used both for frontmatter-backed array items AND programmatic content from another collection (e.g. blog posts fetched via `getCollection`), the editable attributes break on the programmatic items because there's no valid data scope. Add an `editable` prop (default `true`) to the component and conditionally apply editable attributes:
 

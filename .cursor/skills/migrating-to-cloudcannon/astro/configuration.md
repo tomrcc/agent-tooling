@@ -54,7 +54,7 @@ After generation, read `cloudcannon.config.yml` and check:
 
 - **`source`** -- should not be added by the agent. It's deployment-specific (used in monorepo setups) and should be left for the user to configure based on their hosting. For most Astro sites, `source` should be empty or omitted (the project root is the source). Gadget may generate an incorrect `source` path — always remove it if present.
 - **`collections_config`** -- are all content collections present? Do paths match the `base` directories from `content.config.ts`?
-- **`paths`** -- `static` should be `public`, `uploads` should be `public/images` (or wherever the site stores uploaded assets)
+- **`paths`** -- `static` should be `public`. For `uploads`, check where the site actually stores images: if there's a dedicated subdirectory (e.g. `public/images/`), use that; if images are flat in the `public/` root, use `public`; if no images exist yet, default to `public/images`
 - **Build settings** (in `.cloudcannon/initial-site-settings.json`) -- `ssg` should be `"astro"`, `build_command` should be `"astro build"` (or the full pipeline if pre-build scripts exist), `output_path` should be `"dist"`
 
 ## Customize the config
@@ -693,7 +693,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash for the site's `build.format`. Compare a few filenames against `dist/` output paths -- if they differ, the URL is frontmatter-driven and needs `{data_field}` placeholders instead of `[slug]`
 - [ ] Collections with content in subdirectories: compare `dist/` output for nested files against the URL template. If the SSG routing preserves the subdirectory in the output path, ensure `{slug}` values include the directory prefix (or split into separate collections)
 - [ ] Collections with `index.md` files have separate schemas for the index page and regular items
-- [ ] `paths.uploads` is set to `public/images` (or the correct static asset directory)
+- [ ] `paths.uploads` matches where the site stores images (`public/images` if a subdirectory exists, `public` if images are at the root, `public/images` as default when no images exist yet)
 - [ ] `.cloudcannon/prebuild` exists if pre-build steps are needed
 - [ ] `file_config` entries exist for files with inputs not covered by global or collection-level config
 - [ ] Object inputs have `type: object` with `preview.icon` — both top-level data file objects and nested objects inside structures (`callToAction`, `image`, etc.)

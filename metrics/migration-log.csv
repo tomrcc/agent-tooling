@@ -1,1 +1,4 @@
 date,template,transcript_id,total_words,user_turns,assistant_turns,subagent_count,subagent_words,transcript_bytes,manual_token_count,notes
+2026-03-27,astrofy,d7530081-7df7-434f-bd99-eab2ad7dc0d9,14323,7,76,3,2558,111567,200000,
+2026-03-27,astrofy,f34a6135-6d66-4b4a-bb6e-a0aceefb6857,13431,17,47,2,1904,107439,80000,
+2026-03-27,astrofy,22ba66da-c9c4-4c12-ac2d-bad825947b6d,4049,3,43,0,0,29995,100000,

@@ -1,6 +1,6 @@
 paths:
   static: public
-  uploads: public/images
+  uploads: public
 
 timezone: Pacific/Auckland
 
