@@ -70,7 +70,7 @@ const data = page.data;
 
   <ul class="list-disc md:columns-5 columns-2 mx-6" data-editable="array" data-prop="skills">
     {data.skills.map((skill) => (
-      <li data-editable="array-item">{skill}</li>
+      <li data-editable="array-item"><span data-editable="text" data-prop="">{skill}</span></li>
     ))}
   </ul>
 </BaseLayout>

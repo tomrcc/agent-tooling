@@ -39,14 +39,14 @@ import { Image } from "astro:assets";
         </h1>
         <div class="flex place-content-between items-center">
           <div class="grow md:grow-0">
-            <span class="text-xl mr-1"> {pricing}</span>
-            <span class="text-md opacity-50 line-through">{oldPricing}</span>
+            <span class="text-xl mr-1" data-editable="text" data-prop="pricing">{pricing}</span>
+            {oldPricing && <span class="text-md opacity-50 line-through" data-editable="text" data-prop="oldPricing">{oldPricing}</span>}
           </div>
           <div>
             {
               custom_link && (
                 <a class="btn btn-outline grow md:grow-0 ml-4" href={custom_link} target="_blank">
-                  {custom_link_label}
+                  <span data-editable="text" data-prop="custom_link_label">{custom_link_label}</span>
                 </a>
               )
             }

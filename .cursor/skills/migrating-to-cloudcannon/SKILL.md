@@ -38,7 +38,7 @@ Each SSG guide walks through these phases in order with SSG-specific instruction
 
 Not every site needs all phases. Small sites may skip Phase 3 if content is already well-structured. Visual editing (Phase 4) is optional but high-value.
 
-**Phases are sequential, not siloed.** When a later-phase concern (e.g. a missing frontmatter field) blocks the current phase from producing the right result, make the targeted fix now rather than settling for a worse outcome. A human migrating a site wouldn't leave a broken URL pattern just because "content changes belong in Phase 3." Small, mechanical fixes (adding a missing field, normalizing a value) are fine in any phase. Structural changes (moving files, reorganizing collections, altering rendering) should still wait for their proper phase.
+**Phases are sequential, not siloed.** When a later-phase concern (e.g. a missing frontmatter field) blocks the current phase from producing the right result, make the targeted fix now rather than settling for a worse outcome. A human migrating a site wouldn't leave a broken URL pattern just because "content changes belong in Phase 3." Small, mechanical fixes (adding a missing field, normalizing a value) are fine in any phase. Structural changes (moving files, reorganizing collections, altering rendering) should still wait for their proper phase. Agents should feel free to modify files outside their current phase when needed — e.g. updating CC config during the visual-editing phase, or fixing content during configuration. The phases exist to organize the work, not to restrict when changes can be made.
 
 ## Scripts
 

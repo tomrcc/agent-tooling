@@ -52,7 +52,7 @@ Running subcommands individually lets you cross-reference Gadget's output agains
 
 After generation, read `cloudcannon.config.yml` and check:
 
-- **`source`** -- typically empty for Astro (source is the project root)
+- **`source`** -- should not be added by the agent. It's deployment-specific (used in monorepo setups) and should be left for the user to configure based on their hosting. For most Astro sites, `source` should be empty or omitted (the project root is the source). Gadget may generate an incorrect `source` path — always remove it if present.
 - **`collections_config`** -- are all content collections present? Do paths match the `base` directories from `content.config.ts`?
 - **`paths`** -- `static` should be `public`, `uploads` should be `public/images` (or wherever the site stores uploaded assets)
 - **Build settings** (in `.cloudcannon/initial-site-settings.json`) -- `ssg` should be `"astro"`, `build_command` should be `"astro build"` (or the full pipeline if pre-build scripts exist), `output_path` should be `"dist"`
@@ -69,7 +69,7 @@ The decision rule: if skipping the change means the config is wrong or fragile, 
 
 Gadget produces a structural baseline. The following customizations are almost always needed, informed by the Phase 1 audit:
 
-- **`_inputs`** -- configure how fields appear in the editor (dropdowns, date pickers, image uploaders, comments, hidden fields). Map these from the Zod schemas discovered in the audit.
+- **`_inputs`** -- configure how fields appear in the editor (dropdowns, date pickers, image uploaders, comments, hidden fields). Map these from the Zod schemas discovered in the audit. When a frontmatter field contains markdown (e.g. a hero description with `**bold**` text), use `type: markdown` or `type: html`, not `type: textarea`. Using `textarea` for a markdown field creates an inconsistent experience where the visual editor renders rich text but the sidebar shows plain text. Use scoped input keys (e.g. `hero.description`) when the general input should stay as `textarea` but a specific context needs `markdown`.
 - **`_structures`** -- define reusable component structures for array-based page building. Derive these from the component inventory in the audit.
 - **`collection_groups`** -- organize collections into sidebar groups for a clean editing experience.
 - **`_editables`** -- configure rich text editor toolbars per collection or globally.
@@ -766,7 +766,7 @@ Structure default values follow the same rule. If a structure defines `price:` (
 
 ### Verify Gadget's `source` path
 
-Gadget may generate an incorrect `source` path (e.g. pointing into `node_modules/`). Always check this field after generation. For most Astro sites, `source` should be empty or omitted (the project root is the source). Remove it if Gadget set it to something wrong.
+See the `source` bullet in [Review the generated config](#review-the-generated-config) — agents should never add `source` and should remove it if Gadget generates one.
 
 ### Title-derived slugs and `{title|slugify|lowercase}`
 

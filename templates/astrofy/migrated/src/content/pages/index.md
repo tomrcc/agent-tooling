@@ -16,7 +16,7 @@ hero:
       url: "https://github.com/manuelernestog/astrofy"
       variant: outline
       target: _blank
-projects_heading: 'My last projects {"</>"}'
+projects_heading: My last projects
 items:
   - title: "Demo Project 1"
     img: "/post_img.webp"

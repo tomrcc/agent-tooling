@@ -10,6 +10,10 @@ If the audit shows content is already well-structured -- consistent frontmatter,
 
 Work through these checks for every migration. Document findings even when no changes are needed.
 
+### Astro template artifacts in extracted content
+
+When extracting hardcoded data from `.astro` templates into content frontmatter, check for Astro JSX expression artifacts like `{""}`, `{"</>"}`, or similar sequences that leaked from the template syntax. These are meaningless in YAML content and should be stripped to plain text. Search content files for `{"` to catch them.
+
 ### Frontmatter consistency
 
 For each content collection, compare the files against the Zod schema in `content.config.ts`:

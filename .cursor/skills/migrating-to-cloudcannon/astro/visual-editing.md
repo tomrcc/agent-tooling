@@ -209,6 +209,8 @@ Wrap the container with `data-editable="array"` and each item with `data-editabl
 
 Array items get CRUD controls (reorder, add, delete) automatically. Without a registered component renderer, items won't visually re-render after data changes -- the user saves and refreshes. Text/image editable regions within items still work in real-time. If the array contains conditional elements, style bindings, or computed content, wrap the parent section as a component -- see [When to use a component editable region](#when-to-use-a-component-editable-region) below.
 
+**Always nest text and image editables inside array items.** Without nested `data-editable="text"` / `data-editable="image"` on their key fields, array items only get CRUD controls (add/remove/reorder) — no inline text editing or live image picking. This applies universally, not just when component re-rendering is unavailable. Text and image editables handle their own DOM updates independently of the component system, so they work even on Astro 4 where `editableRegions()` integration isn't available. Every array item should have nested editables on its title, description, and image fields at minimum.
+
 ### Page builder blocks
 
 When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference. For the structure definitions that back these blocks, see [../structures.md](../structures.md).

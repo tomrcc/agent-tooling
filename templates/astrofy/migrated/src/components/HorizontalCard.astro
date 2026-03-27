@@ -1,5 +1,5 @@
 ---
-const { title, img, desc, url, badge, tags, target = "_blank" } = Astro.props;
+const { title, img, desc, url, badge, tags, target = "_blank", editable = true } = Astro.props;
 import { Image } from "astro:assets";
 const tag_url = url.split("/").slice(0, -1).join("/") + "/tag";
 ---
@@ -18,15 +18,16 @@ const tag_url = url.split("/").slice(0, -1).join("/") + "/tag";
             format="webp"
             alt={title}
             class="max-w-full md:max-w-[13rem] rounded-lg"
+            {...(editable ? { "data-editable": "image", "data-prop-src": "img" } : {})}
           />
         )
       }
       <div class="grow w-full">
         <h1 class="text-xl font-bold">
-          {title}
+          {editable ? <span data-editable="text" data-prop="title">{title}</span> : title}
           {badge && <div class="badge badge-secondary mx-2">{badge}</div>}
         </h1>
-        <p class="py-1 text-1xl">{desc}</p>
+        <p class="py-1 text-1xl" {...(editable ? { "data-editable": "text", "data-prop": "desc" } : {})}>{desc}</p>
         <div class="card-actions justify-end">
           {
             tags &&

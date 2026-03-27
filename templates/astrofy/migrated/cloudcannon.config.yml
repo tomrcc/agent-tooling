@@ -97,6 +97,8 @@ _inputs:
     type: text
   description:
     type: textarea
+  hero.description:
+    type: markdown
   profile:
     type: textarea
   pubDate:
@@ -113,8 +115,10 @@ _inputs:
     type: image
   badge:
     type: text
+    comment: Small label shown next to titles (e.g. NEW, FOSS). Requires a save and rebuild to preview
   tags:
     type: multiselect
+    comment: Requires a save and rebuild to preview
     options:
       allow_create: true
   draft:
@@ -134,6 +138,7 @@ _inputs:
     type: url
   target:
     type: select
+    comment: Requires a save and rebuild to preview
     options:
       values:
         - _blank
@@ -142,8 +147,10 @@ _inputs:
     type: text
   blog_posts_count:
     type: number
+    comment: Number of recent blog posts shown on the homepage. Requires a save and rebuild to preview
   variant:
     type: select
+    comment: Requires a save and rebuild to preview
     options:
       values:
         - primary
@@ -170,6 +177,11 @@ _inputs:
       structures: _structures.certification_entries
   skills:
     type: array
+  hero:
+    type: object
+    options:
+      preview:
+        icon: person
   buttons:
     type: array
     options:

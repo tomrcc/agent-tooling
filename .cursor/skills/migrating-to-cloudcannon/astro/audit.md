@@ -16,6 +16,7 @@ This runs Gadget detection and collects project metadata. Use its output as a st
 - Markdown processing: remark/rehype plugins, MDX support (`@astrojs/mdx`)
 - Package manager (npm, pnpm, yarn) and any lockfile present
 - Node version requirements (`.nvmrc`, `engines` in `package.json`)
+- **Astro 4 upgrade decision**: If the site is on Astro 4 or older, ask the user whether they want to upgrade to Astro 5+ before proceeding. Astro 4 limits the migration: no `editableRegions()` Astro integration (component re-rendering unavailable), `slug` is a reserved schema field, and `page.id` includes the file extension. The [Astro 4→5 migration guide](https://docs.astro.build/en/guides/upgrade-to/v5/) is well-documented. If the user declines, proceed with HTML-attribute-only visual editing (`data-editable` attributes still work for text, image, and array CRUD).
 
 ## 2. Content collections
 
