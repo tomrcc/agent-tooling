@@ -23,6 +23,9 @@ importers:
       '@astrojs/sitemap':
         specifier: 3.7.1
         version: 3.7.1
+      '@cloudcannon/editable-regions':
+        specifier: ^0.0.12
+        version: 0.0.12
       '@tailwindcss/vite':
         specifier: 4.2.1
         version: 4.2.1(vite@7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.31.1)(yaml@2.8.2))
@@ -276,6 +279,9 @@ packages:
 
   '@clack/prompts@1.1.0':
     resolution: {integrity: sha512-pkqbPGtohJAvm4Dphs2M8xE29ggupihHdy1x84HNojZuMtFsHiUlRvqD24tM2+XmI+61LlfNceM3Wr7U5QES5g==}
+
+  '@cloudcannon/editable-regions@0.0.12':
+    resolution: {integrity: sha512-CWRiAshcP+GmZcFwIGZaYdEy7w0k6uVtWYAbho8gMoVdKwS4XVCFw83yr66rDoexa/qyipYceSX8DNedJj7xTw==}
 
   '@ctrl/tinycolor@4.2.0':
     resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
@@ -3484,6 +3490,8 @@ snapshots:
     dependencies:
       '@clack/core': 1.1.0
       sisteransi: 1.0.5
+
+  '@cloudcannon/editable-regions@0.0.12': {}
 
   '@ctrl/tinycolor@4.2.0': {}
 

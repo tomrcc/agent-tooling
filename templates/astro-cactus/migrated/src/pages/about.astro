@@ -8,14 +8,25 @@ const meta = {
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-12">About</h1>
-	<div class="prose prose-sm prose-cactus max-w-none">
+	<h1
+		class="title mb-12"
+		data-editable="source"
+		data-path="src/pages/about.astro"
+		data-key="about-title"
+	>About</h1>
+	<div
+		class="prose prose-sm prose-cactus max-w-none"
+		data-editable="source"
+		data-path="src/pages/about.astro"
+		data-key="about-content"
+		data-type="block"
+	>
 		<p>
 			Hi, I’m a starter Astro. I’m particularly great for getting you started with your own blogging
 			website.
 		</p>
 		<p>Here are my some of my awesome built in features:</p>
-		<ul class="list-inside list-disc" role="list">
+		<ul class="feature-list" role="list">
 			<li>I'm ultra fast as I'm a static site</li>
 			<li>I'm fully responsive</li>
 			<li>I come with a light and dark mode</li>

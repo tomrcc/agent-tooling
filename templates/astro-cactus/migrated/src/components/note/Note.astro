@@ -18,12 +18,17 @@ const { Content } = await render(note);
 >
 	<Tag class="title" class:list={{ "text-base": isPreview }}>
 		{
-			isPreview ? (
-				<a class="cactus-link" href={`/notes/${note.id}/`}>
-					{note.data.title}
-				</a>
+		isPreview ? (
+			<a
+				class="cactus-link"
+				href={`/notes/${note.id}/`}
+				data-editable="text"
+				data-prop={`@file[/src/content/note/${note.id}.md].title`}
+			>
+				{note.data.title}
+			</a>
 			) : (
-				<>{note.data.title}</>
+				<span data-editable="text" data-prop="title">{note.data.title}</span>
 			)
 		}
 	</Tag>
@@ -37,10 +42,21 @@ const { Content } = await render(note);
 		}}
 		date={note.data.publishDate}
 	/>
-	<div
-		class="prose prose-sm prose-cactus mt-4 max-w-none [&>p:last-of-type]:mb-0"
-		class:list={{ "line-clamp-6": isPreview }}
-	>
-		<Content />
-	</div>
+	{isPreview ? (
+		<div
+			class="prose prose-sm prose-cactus mt-4 max-w-none [&>p:last-of-type]:mb-0 line-clamp-6"
+			data-prop={`@file[/src/content/note/${note.id}.md].["@content"]`}
+		>
+			<Content />
+		</div>
+	) : (
+		<div
+			class="prose prose-sm prose-cactus mt-4 max-w-none [&>p:last-of-type]:mb-0"
+			data-editable="text"
+			data-type="block"
+			data-prop="@content"
+		>
+			<Content />
+		</div>
+	)}
 </article>

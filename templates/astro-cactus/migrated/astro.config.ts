@@ -18,6 +18,7 @@ import { remarkAdmonitions } from "./src/plugins/remark-admonitions"; /* Add adm
 import { remarkGithubCard } from "./src/plugins/remark-github-card";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 import { expressiveCodeOptions, siteConfig } from "./src/site.config";
+import editableRegions from "@cloudcannon/editable-regions/astro-integration";
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,6 +27,7 @@ export default defineConfig({
 		domains: ["webmention.io"],
 	},
 	integrations: [
+    editableRegions(),
 		expressiveCode(expressiveCodeOptions),
 		icon(),
 		sitemap(),

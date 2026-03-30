@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "@/components/FormattedDate.astro";
 
@@ -20,20 +19,19 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 
 {
 	data.coverImage && (
-		<div class="mb-6 aspect-video">
-			<Image
+		<div class="mb-6 aspect-video" data-editable="image" data-prop="coverImage">
+			<img
 				alt={data.coverImage.alt}
-				layout="constrained"
 				width={748}
 				height={420}
-				priority
 				src={data.coverImage.src}
+				class="h-full w-full object-cover"
 			/>
 		</div>
 	)
 }
 {data.draft ? <span class="text-base text-red-500">(Draft)</span> : null}
-<h1 class="title">
+<h1 class="title" data-editable="text" data-prop="title">
 	{data.title}
 </h1>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2">

@@ -14,15 +14,14 @@ const baseSchema = z.object({
 
 const post = defineCollection({
 	loader: glob({ base: "./src/content/post", pattern: "**/*.{md,mdx}" }),
-	schema: ({ image }) =>
-		baseSchema.extend({
-			description: z.string(),
-			coverImage: z
-				.object({
-					alt: z.string(),
-					src: image(),
-				})
-				.optional(),
+	schema: baseSchema.extend({
+		description: z.string(),
+		coverImage: z
+			.object({
+				alt: z.string(),
+				src: z.string(),
+			})
+			.optional(),
 			draft: z.boolean().default(false),
 			ogImage: z.string().optional(),
 			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
