@@ -3,19 +3,25 @@ import { Link } from 'accessible-astro-components'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 
-/**
- * Hero Component
- *
- * @description A component that displays a hero section with a title, description, and image
- */
-interface Props {
-  /**
-   * The source URL for the image
-   */
-  src?: string
+interface HeroButton {
+  label: string
+  href: string
+  type?: string
+  icon?: string | null
 }
 
-const { src = '/astronaut-hero-img.webp' }: Props = Astro.props
+interface Props {
+  title?: string
+  gradient_text?: string
+  image?: string
+  src?: string
+  buttons?: HeroButton[]
+}
+
+const props = Astro.props
+const imgSrc = props.image ?? props.src ?? '/astronaut-hero-img.webp'
+const buttons = props.buttons ?? []
+const hasSlot = Astro.slots.has('default')
 ---
 
 <section class="hero my-24">
@@ -23,32 +29,42 @@ const { src = '/astronaut-hero-img.webp' }: Props = Astro.props
     <div class="grid grid-cols-1 items-center gap-24 lg:grid-cols-2">
       <div class="flex flex-col items-center gap-8 md:items-start">
         <h1 class="text-center text-6xl md:text-left lg:text-8xl">
-          <slot><span class="text-gradient">Accessible</span> Starter for Astro</slot>
+          {hasSlot ? (
+            <slot><span class="text-gradient">Accessible</span> Starter for Astro</slot>
+          ) : (
+            <>
+              {props.gradient_text && <span class="text-gradient" data-editable="text" data-prop="gradient_text">{props.gradient_text}</span>}
+              {' '}
+              {props.title && <span data-editable="text" data-prop="title">{props.title}</span>}
+            </>
+          )}
         </h1>
-        <div class="flex flex-col gap-3 min-[500px]:flex-row">
-          <Link
-            href="https://github.com/incluud/accessible-astro-starter"
-            isButton
-            type="primary"
-            animateOnHover
-            animationType="boop"
-          >
-            <Icon aria-hidden="true" name="lucide:star" size="1.5rem" />
-            Star on GitHub
-          </Link>
-          <Link
-            href="https://accessible-astro.incluud.dev/"
-            isButton
-            type="secondary"
-            animateOnHover
-            animationType="boop"
-          >
-            <Icon aria-hidden="true" name="lucide:bookmark" size="1.5rem" />
-            Read the docs
-          </Link>
-        </div>
+        {buttons.length > 0 && (
+          <div class="flex flex-col gap-3 min-[500px]:flex-row">
+            {buttons.map((button) => (
+              <Link
+                href={button.href}
+                isButton
+                type={button.type ?? 'primary'}
+                animateOnHover
+                animationType="boop"
+              >
+                {button.icon && <Icon aria-hidden="true" name={button.icon} size="1.5rem" />}
+                {button.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-      <Image class="hidden lg:block" src={src} alt="" decoding="async" width={800} height={600} loading="eager" />
+      <Image
+        class="hidden lg:block"
+        src={imgSrc}
+        alt=""
+        decoding="async"
+        width={800}
+        height={600}
+        loading="eager"
+      />
     </div>
   </div>
 </section>

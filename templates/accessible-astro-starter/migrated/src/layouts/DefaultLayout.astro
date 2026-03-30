@@ -124,6 +124,9 @@ const imageUrl = new URL(imagePath, Astro.site).href
       <slot />
     </main>
     <Footer />
+    <script>
+      import '../cloudcannon/registerComponents'
+    </script>
     <style lang="scss" is:global>
       @use '../assets/scss/base/mixins' as *;
 

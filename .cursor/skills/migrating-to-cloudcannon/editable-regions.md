@@ -109,6 +109,7 @@ A specialisation of `EditableText` that edits raw HTML source files rather than 
 - Finds the editable region within the source by locating the `data-key` attribute in the raw HTML
 - On change, splices the edited content back into the full file source, preserving the original indentation
 - Writes back via `file.set(content)` (sets the entire file, not a front matter key)
+- **Toolbar config**: Source editables use `_editables.content` for their toolbar configuration (not `_editables.block`, despite any `data-type` attribute). Editor styles via the `styles` property are supported. Known CC bug: list item styles don't apply correctly in source editables (under investigation by CC).
 
 ### EditableSnippet
 

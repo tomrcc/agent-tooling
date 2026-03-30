@@ -112,6 +112,8 @@ _snippets:
 
 Built-in admonition types: `note`, `tip`, `info`, `caution`, `danger`.
 
+**Caveat — remark-directive syntax mismatch**: The Docusaurus admonition uses space-separated titles (`:::note My Title`). Sites using `remark-directive` (common in Astro) use bracket syntax (`:::note[My Title]`). Importing `docusaurus_mdx_admonition` via `_snippets_imports` for a remark-directive site will mangle content — the type keyword and inner text leak out as plain text between snippet blocks. For remark-directive sites, define a custom raw snippet instead, using `style.inline.leading: '['` / `trailing: ']'` on the title param and `optional: true` to handle the no-title case.
+
 **`docusaurus_mdx_tabs`**
 
 Pattern: `<Tabs[[tabs_args]]>[[repeating_tabs]]</Tabs>`

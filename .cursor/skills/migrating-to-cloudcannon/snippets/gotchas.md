@@ -48,6 +48,20 @@ Don't use `_snippets_imports` during migrations. It auto-imports pre-built snipp
 
 ---
 
+### Snippets matching inside code blocks
+
+Custom snippets can also match inside fenced code blocks. If content files contain code examples that use the same syntax as a snippet (e.g. a documentation post showing `:::note` admonition syntax in a ` ```md ` block), the snippet parser will treat those as real snippets.
+
+Fix: set `escape_snippets_in_code_blocks: true` in the markdown options. This should be enabled whenever snippets are configured:
+
+```yaml
+markdown:
+  options:
+    escape_snippets_in_code_blocks: true
+```
+
+---
+
 ### Import statements in content
 
 Rich text editors show everything in the file. Import statements (`import X from 'y'`) will be visible to non-technical editors. Use your SSG's auto-import mechanism to avoid import statements in content files. See SSG-specific docs for details (e.g. `astro-auto-import` for Astro).
