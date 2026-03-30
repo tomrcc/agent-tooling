@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+source: templates/astrowind/migrated/
 
 paths:
   static: public
@@ -37,10 +37,10 @@ collections_config:
       - data
     schemas:
       page_builder:
-        path: .cloudcannon/schemas/page-builder.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page-builder.md
         name: Page Builder
       default:
-        path: .cloudcannon/schemas/page.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page.md
         name: Page
     add_options:
       - name: Page
@@ -58,10 +58,10 @@ collections_config:
       - data
     schemas:
       page_builder:
-        path: .cloudcannon/schemas/page-builder.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page-builder.md
         name: Page Builder
       default:
-        path: .cloudcannon/schemas/page.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page.md
         name: Page
     add_options:
       - name: Page
@@ -79,10 +79,10 @@ collections_config:
       - data
     schemas:
       page_builder:
-        path: .cloudcannon/schemas/page-builder.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page-builder.md
         name: Page Builder
       default:
-        path: .cloudcannon/schemas/page.md
+        path: templates/astrowind/migrated/.cloudcannon/schemas/page.md
         name: Page
     add_options:
       - name: Page

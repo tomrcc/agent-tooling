@@ -1,3 +1,5 @@
+source: templates/astrofy/migrated/
+
 paths:
   static: public
   uploads: public
@@ -30,17 +32,17 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/page.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/page.md
         name: Page
       homepage:
-        path: .cloudcannon/schemas/homepage.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/homepage.md
         name: Homepage
       card_listing:
-        path: .cloudcannon/schemas/card-listing.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/card-listing.md
         name: Card Listing
         new_preview_url: /projects/
       cv:
-        path: .cloudcannon/schemas/cv.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/cv.md
         name: CV
     add_options:
       - name: Page
@@ -61,7 +63,7 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/post.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/post.md
         name: Blog Post
     add_options:
       - name: Blog Post
@@ -79,7 +81,7 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/store-item.md
+        path: templates/astrofy/migrated/.cloudcannon/schemas/store-item.md
         name: Store Item
     add_options:
       - name: Store Item

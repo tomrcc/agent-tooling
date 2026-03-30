@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json
+source: templates/astro-paper/migrated/
 
 paths:
   static: public
@@ -47,7 +47,7 @@ collections_config:
       - data
     schemas:
       default:
-        path: .cloudcannon/schemas/post.md
+        path: templates/astro-paper/migrated/.cloudcannon/schemas/post.md
         name: Blog Post
     add_options:
       - name: Blog Post
