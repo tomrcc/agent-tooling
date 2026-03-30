@@ -34,7 +34,3 @@ fi
 ```
 
 3. If the migration spanned multiple chat sessions, repeat for each transcript UUID.
-
-## CSV cross-reference
-
-The `transcript_id` column in `metrics/migration-log.csv` should match the archived transcript UUID, linking metrics to the raw transcript data.
