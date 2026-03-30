@@ -1,0 +1,202 @@
+# Page Building (Astro)
+
+Guidance for creating content-backed pages and array-based page builders in Astro sites migrating to CloudCannon.
+
+## Creating a pages collection from hardcoded pages
+
+Many templates have **no content-backed pages** -- all page data is hardcoded directly in `.astro` templates. The audit identifies these pages as content collection candidates when they have 3+ sections of structured or repeated components (card lists, timelines, feature grids). See [audit.md § Classifying static pages](audit.md#classifying-static-pages-source-editables-vs-content-collection).
+
+### When this applies
+
+- Static `.astro` pages with structured data (arrays of cards, timeline entries, hero sections with multiple fields) that editors need CRUD control over
+- Source editables aren't sufficient because editors need to add, remove, or reorder items -- not just edit text in place
+- The template has multiple static pages that should be editable, making a `pages` collection worthwhile
+
+### Steps
+
+1. **Create `src/content/pages/`** and add a `.md` file for each page. Extract the hardcoded data from the `.astro` template into YAML frontmatter. Add `_schema: <key>` to each file so CloudCannon matches the correct schema.
+
+2. **Add a `pagesCollection`** to the content config with a `z.union` schema covering all page types. See [configuration.md § Merge unique pages with a z.union](configuration.md#fallback-merge-unique-pages-into-pages-with-a-zunion) for the pattern. Place the most specific schemas first in the union. Define shared Zod objects for common shapes that appear across page types.
+
+3. **Update each `.astro` page** in `src/pages/` to fetch its data from the collection instead of hardcoding it:
+
+```astro
+---
+import { getEntry } from "astro:content";
+const page = await getEntry("pages", "projects");
+const { sections } = page.data;
+---
+```
+
+4. **Add a catch-all route** at `src/pages/[...slug].astro` to serve pages created from the CMS. Without this, new content files have no route and produce 404s. Astro's routing priority means dedicated routes (`index.astro`, `projects.astro`, `blog/[slug].astro`) always win -- the catch-all only matches slugs that don't have a specific route.
+
+```astro
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const pages = await getCollection("pages");
+  return pages.map((page) => ({
+    params: { slug: page.id === "index" ? undefined : page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+const data = page.data;
+---
+
+<BaseLayout title={data.title}>
+  {data.content_blocks ? (
+    <div
+      data-editable="array"
+      data-prop="content_blocks"
+      data-component-key="_type"
+      data-id-key="_type"
+    >
+      {data.content_blocks.map((block) => (
+        <BlockRenderer block={block} />
+      ))}
+    </div>
+  ) : (
+    <article class="prose prose-lg max-w-[750px]">
+      <Content />
+    </article>
+  )}
+</BaseLayout>
+```
+
+The catch-all checks for `content_blocks` to switch between page builder rendering and plain body rendering. Each creatable schema needs a corresponding rendering branch.
+
+### Identifying reusable page types
+
+Review the audit's component inventory for components used on **multiple pages**. If the same component pattern appears on 3+ pages, it's a strong candidate for a creatable schema. Editors can then create new pages of that type without developer help.
+
+For each reusable page type:
+
+- Add a Zod schema variant to the union
+- Add a CC schema in `.cloudcannon/schemas/` with representative frontmatter
+- Add a rendering branch in the catch-all route
+- Add an `add_options` entry on the collection with `new_preview_url` pointing to an existing page that uses the same rendering
+
+Also consider whether the base layout supports a **generic title + body page** -- if so, add a `default` schema for simple markdown pages. Use `editor: content` on its add option since the primary workflow is writing markdown.
+
+### CC collection config
+
+```yaml
+pages:
+  path: src/content/pages
+  url: "/[slug]/"
+  icon: wysiwyg
+  _enabled_editors:
+    - visual
+    - data
+  schemas:
+    default:
+      path: .cloudcannon/schemas/page.md
+      name: Page
+    page_builder:
+      path: .cloudcannon/schemas/page-builder.md
+      name: Page Builder
+      new_preview_url: /services/
+  add_options:
+    - name: Page
+      schema: default
+      icon: wysiwyg
+      editor: content
+    - name: Page Builder
+      schema: page_builder
+      icon: dashboard
+```
+
+Only creatable page types appear in `add_options`. One-off pages with dedicated routes (homepage, contact) have schemas for editing but are excluded from `add_options` -- creating a second one would produce a file with no dedicated route.
+
+## Array-based page builder
+
+A schema with a `content_blocks` array lets editors assemble pages from reusable blocks in any order.
+
+**When to use it**: When the site has 3+ reusable block components (banners, features, CTAs, testimonials, rich text). Fewer than 3 blocks doesn't justify the added complexity.
+
+For the full structures reference (inline vs split, field completeness, previews, deriving from components), see [../structures.md](../structures.md). Structures must be defined during the configuration phase because the content phase uses them as the blueprint for field completeness.
+
+### Schema structure
+
+```yaml
+_schema: page_builder
+title:
+description:
+meta_title:
+image:
+hero_content:
+draft: false
+content_blocks: []
+```
+
+### Zod schema
+
+Add a `pageBuilderSchema` to the union with `content_blocks` as a discriminated union array:
+
+```typescript
+const contentBlock = z.discriminatedUnion("_type", [
+  z.object({ _type: z.literal("banner"), title: z.string(), /* ... */ }),
+  z.object({ _type: z.literal("features"), items: z.array(/* ... */) }),
+  z.object({ _type: z.literal("rich_text"), content: z.string() }),
+  z.object({ _type: z.literal("call_to_action") }),
+  z.object({ _type: z.literal("testimonial") }),
+]);
+
+const pageBuilderSchema = z.object({
+  ...commonFields,
+  hero_content: z.string().optional(),
+  content_blocks: z.array(contentBlock),
+});
+```
+
+Place `pageBuilderSchema` before the generic `pageSchema` in the union so it matches before the catch-all.
+
+### CC structures
+
+Define structures for each block type using `_type` as the discriminator. For sites with 5+ block types, use the split co-located approach (see [../structures.md](../structures.md)):
+
+```yaml
+_inputs:
+  content_blocks:
+    type: array
+    options:
+      structures:
+        values_from_glob:
+          - /src/components/widgets/*.cloudcannon.structure-value.yml
+```
+
+### Reference blocks vs inline blocks
+
+Blocks like CTA and Testimonial that pull from global JSON data files are "reference" blocks -- they have no inline data, just a `_type` marker. The rendering code imports the global data and passes it to the component. This keeps the data DRY (edited once in the Data section) while letting editors place these sections anywhere on the page. Visual editing still works via `@data[key]` editable regions.
+
+### BlockRenderer
+
+Create a `BlockRenderer.astro` component that maps `_type` to the matching widget. Use a shared `componentMap` (see [visual-editing.md § registerComponents](visual-editing.md#3-create-the-registercomponents-script)) so the mapping lives in one place:
+
+```astro
+<!-- BlockRenderer.astro -->
+---
+import { componentMap } from '~/cloudcannon/componentMap';
+
+const { block } = Astro.props;
+const { _type, ...props } = block;
+const Component = componentMap[_type as string];
+---
+
+{Component && (
+  <section data-editable="array-item" data-component={_type} data-id={_type}>
+    <Component {...props} />
+  </section>
+)}
+```
+
+Each array item uses a **plain HTML element** (`<section>`) with `data-editable="array-item"`, `data-component`, and `data-id`. `EditableArrayItem` inherits from `EditableComponent`, so `data-component` on an array-item element gives both array CRUD controls and component re-rendering. **Do not use `<editable-component>` for array items** — see [visual-editing.md § Page builder blocks](visual-editing.md#page-builder-blocks) for the rationale.
+
+Every widget component inside also needs nested `data-editable` attributes (text, image). Every `_type` value used in content files must have a matching `registerAstroComponent(_type, Component)` call in `registerComponents.ts`.
+
+For the full visual editing setup (three-layer pattern, nested editables, sub-arrays, component registration), see [visual-editing.md](visual-editing.md).

@@ -48,6 +48,14 @@ Deterministic migration steps are automated as scripts in [scripts/](scripts/). 
 
 Store per-phase migration notes alongside the project (e.g. in a `migration/` directory), with one file per phase (`audit.md`, `content.md`, `configuration.md`, `visual-editing.md`, `build.md`). Phase docs in SSG-specific directories contain only generic guidance -- project-specific findings go in the project's migration notes.
 
+## Naming conventions
+
+Follow the project's existing conventions when present. Otherwise:
+
+- `kebab-case` for files
+- `camelCase` for JavaScript and JSON
+- `snake_case` for Markdown frontmatter and YAML
+
 ## Adding a new SSG
 
 Create a new directory (e.g. `hugo/`) with the same file structure as `astro/` and add it to the supported SSGs table above.

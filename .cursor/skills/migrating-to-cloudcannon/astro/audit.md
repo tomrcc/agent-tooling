@@ -73,7 +73,7 @@ Produce a clear classification for each static page:
 - **Content collection entry** -- page has structured/repeated data that editors need CRUD control over
 - **Reusable page type** -- the page's rendering pattern (e.g. card listing, generic body page) could support creating new pages from the CMS
 
-This classification feeds directly into the configuration phase. See [configuration.md § Creating a pages collection from hardcoded pages](configuration.md#creating-a-pages-collection-from-hardcoded-pages).
+This classification feeds directly into the configuration phase. See [page-building.md § Creating a pages collection](page-building.md#creating-a-pages-collection-from-hardcoded-pages).
 
 ## 5. Build pipeline
 

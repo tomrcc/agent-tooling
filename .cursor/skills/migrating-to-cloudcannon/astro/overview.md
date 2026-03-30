@@ -38,7 +38,7 @@ See [content.md](content.md).
 
 Add `@cloudcannon/editable-regions` for inline editing in CloudCannon's Visual Editor.
 
-See [visual-editing.md](visual-editing.md). Also reference the core [editable regions overview](../editable-regions.md). Only read the [lifecycle docs](../editable-regions-lifecycle.md) if debugging unexpected editable region behavior.
+See [visual-editing.md](visual-editing.md). Also reference the core [editable regions overview](../editable-regions.md). Only read the [internals doc](../editable-regions-internals.md) if debugging unexpected editable region behavior.
 
 ### Phase 5: Build and test
 

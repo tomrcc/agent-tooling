@@ -181,7 +181,9 @@ _snippets:
 
 ## Nested components (repeating parser)
 
-For nested patterns like `<Tabs><Tab>...</Tab></Tabs>`, use a single snippet with the `repeating` parser. The child component's template is defined **inline** in the repeating parser's `options.snippet`, and its params live in the **parent's** `params` block. Do NOT define the child as a separate `_snippets` entry — it would match standalone and steal content from the parent.
+For nested patterns like `<Tabs><Tab>...</Tab></Tabs>`, use a single snippet with the `repeating` parser. See [../snippets/raw.md § repeating](../snippets/raw.md#repeating--repeat-a-child-pattern-as-array-items) for the full parser reference. Do NOT define the child as a separate `_snippets` entry — it would match standalone and steal content from the parent.
+
+**Astro-specific note:** Tabs components typically need `client:load` on the parent element. Include this in the snippet template string:
 
 ```yaml
 tabs:
@@ -236,15 +238,7 @@ tabs:
             trailing: "\n\n"
 ```
 
-Key points:
-
-- `repeating_tabs.options.snippet` is the full inline template for a single `<Tab>`, not a reference to another snippet name. The repeating parser creates a sub-parser from this template using the parent's `params`.
-- `named_args` and `tab_content` are defined alongside `repeating_tabs` in the same `params` block — the sub-parser inherits all of them.
-- The `style` controls output formatting: `between` is the delimiter between repeated items, `block.leading`/`trailing` wrap the group.
-- `_inputs` uses the `editor_key` from the repeating parser (`tab_items`) as the array input, and `tab_items[*]` as the array item input. Item-level `preview` and `type: object` go on the `[*]` target, not on the array itself. Use `[*].field` syntax (e.g. `tab_items[*].name`) to configure inputs for individual fields within each item.
-- Editors see a structured array of Tab items they can add, remove, and reorder.
-
-See the [raw snippets doc](../snippets/raw.md) for full `repeating` parser reference.
+Configure `_inputs` using the `editor_key` from the repeating parser (`tab_items`) as the array input, and `tab_items[*]` for array item previews. Use `[*].field` syntax for individual field inputs within each item.
 
 ## What's practical as a snippet
 

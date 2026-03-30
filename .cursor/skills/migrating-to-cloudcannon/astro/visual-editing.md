@@ -265,53 +265,13 @@ Pass `editable={false}` when rendering cross-collection content that isn't backe
 
 ### Page builder blocks
 
-When a site uses an array-based page builder (`content_blocks` array with a `_type` discriminator), each block needs **three layers** of editable support. This is a common source of mistakes — agents often add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference. For the structure definitions that back these blocks, see [../structures.md](../structures.md).
+For the structural setup (array wrapper, BlockRenderer, catch-all route, CC config), see [page-building.md](page-building.md). This section covers the **visual editing layers** that go on top of that structure.
 
-**Layer 1: Array wrapper** on the catch-all route. The wrapper needs `data-component-key` and `data-id-key` to tell CloudCannon which frontmatter key identifies the component type and unique ID for each item:
+Each block needs **three layers**: (1) array wrapper, (2) array items with component behaviour, (3) nested editables. Agents commonly add the array wrapper but miss the component layer or nested editables. See the [CloudCannon complex array docs](https://cloudcannon.com/documentation/developer-guides/set-up-visual-editing/visually-edit-complex-arrays-and-page-building/) for the canonical reference.
 
-```astro
-<div
-  data-editable="array"
-  data-prop="content_blocks"
-  data-component-key="_type"
-  data-id-key="_type"
->
-  {data.content_blocks.map((block) => (
-    <BlockRenderer block={block} />
-  ))}
-</div>
-```
+**Do NOT use the `<editable-component>` custom element for array items.** That element self-hydrates as `EditableComponent`, which conflicts with the `EditableArrayItem` hydration triggered by `data-editable="array-item"`. `<editable-component>` is only for standalone component regions that are NOT inside an array (e.g. a fixed hero section: `<editable-component data-component="hero" data-prop="banner">`).
 
-Without `data-component-key`, CloudCannon cannot match array items to registered components. Without `data-id-key`, CloudCannon cannot uniquely identify items for reordering.
-
-**Layer 2: Array items with component behaviour** in BlockRenderer. Each item must be a **plain HTML element** (like `<section>`) with `data-editable="array-item"`, `data-component`, and `data-id`. Use the shared `componentMap` (see below) to look up the component dynamically instead of a long conditional chain:
-
-```astro
-<!-- BlockRenderer.astro -->
----
-import { componentMap } from '~/cloudcannon/componentMap';
-
-interface Props {
-  block: Record<string, unknown>;
-}
-
-const { block } = Astro.props;
-const { _type, ...props } = block;
-const Component = componentMap[_type as string];
----
-
-{Component && (
-  <section data-editable="array-item" data-component={_type} data-id={_type}>
-    <Component {...props} />
-  </section>
-)}
-```
-
-`EditableArrayItem` extends `EditableComponent`, so `data-component` on an array-item element gives both array CRUD controls (add, remove, reorder) and component re-rendering — no separate wrapper needed.
-
-**Do NOT use the `<editable-component>` custom element for array items.** That element self-hydrates as `EditableComponent`, which conflicts with the `EditableArrayItem` hydration triggered by `data-editable="array-item"`. `<editable-component>` is only for standalone component regions that are NOT inside an array (e.g. a fixed hero section on a page: `<editable-component data-component="hero" data-prop="banner">`).
-
-**Layer 3: Nested editables** inside widget components — add `data-editable="text"` / `data-editable="image"` to the elements that render editable fields:
+**Nested editables** inside widget components — add `data-editable="text"` / `data-editable="image"` to the elements that render editable fields:
 
 ```astro
 <!-- Inside Hero.astro -->
@@ -538,7 +498,7 @@ Source editables work by reading and writing the raw source file (e.g. `src/page
 
 ### Including `.astro` pages in collections
 
-Pages with source editables should be included in the pages collection so editors can find and open them. Add specific `.astro` filenames to the collection's glob alongside `"*.md"` -- only include pages that actually have editable regions. Pages with no visually editable content (search, 404, tag listings) should be excluded. Set `_enabled_editors: [visual]` for the collection -- `.astro` files can only use the visual editor (their JS frontmatter isn't parseable as data), and `.md` pages work well in the visual editor too when they have editable regions. See [configuration.md § Pages collection](configuration.md#pages-collection-including-astro-pages) for the full config pattern.
+Pages with source editables should be included in the pages collection so editors can find and open them. Add specific `.astro` filenames to the collection's glob alongside `"*.md"` -- only include pages that actually have editable regions. Pages with no visually editable content (search, 404, tag listings) should be excluded. Set `_enabled_editors: [visual]` for the collection -- `.astro` files can only use the visual editor (their JS frontmatter isn't parseable as data), and `.md` pages work well in the visual editor too when they have editable regions. See [configuration-gotchas.md § Pages collection](configuration-gotchas.md#pages-collection-including-astro-pages) for the full config pattern.
 
 ### Syntax
 

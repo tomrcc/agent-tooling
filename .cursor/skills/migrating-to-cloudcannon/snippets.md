@@ -17,7 +17,7 @@ Agents must handle both layers during a migration, but keep them conceptually se
 |---|---|
 | [Template-based snippets](snippets/template-based.md) | Component syntax matches a built-in template (most common). Covers MDX templates, snippet model reference, example lifecycle. |
 | [Raw snippets](snippets/raw.md) | Component needs custom syntax (e.g. `client:load`). Covers parser types, snippet format reference, custom templates. |
-| [Built-in templates](snippets/built-in-templates.md) | Reference for all built-in templates per SSG (MDX, Hugo, Jekyll, Eleventy, Markdoc), their patterns, required definitions, internal format configs, and parser internals. |
+| [Built-in templates](snippets/built-in-templates.md) | Reference for built-in MDX templates, their patterns, required definitions, internal format configs, and parser internals. |
 | [Gotchas](snippets/gotchas.md) | Debugging or reviewing. Common pitfalls and workarounds. |
 
 ---
