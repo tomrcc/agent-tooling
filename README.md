@@ -20,31 +20,44 @@ The skills and rules are **living documents** -- agents are expected to update t
 ```
 .cursor/
   rules/                              # Cross-cutting agent rules
-    project-context.md                # Repo purpose and working philosophy (alwaysApply)
-    tone.md                           # Agent tone and coding conventions (alwaysApply)
-    testing.md                        # What agents vs. humans should test (alwaysApply)
-    casing.md                         # Naming conventions (applyIntelligently)
-    migration-transcripts.md          # Post-migration transcript archiving (applyIntelligently)
+    project-context.mdc               # Repo purpose and working philosophy (alwaysApply)
+    tone.mdc                          # Agent tone and coding conventions (alwaysApply)
+    gadget.mdc                        # Gadget CLI is read-only (alwaysApply)
+    testing.mdc                       # What agents vs. humans should test (alwaysApply)
+    casing.mdc                        # Naming conventions (applyIntelligently)
+    migration-transcripts.mdc         # Post-migration transcript archiving (applyIntelligently)
   skills/
     migrating-to-cloudcannon/         # Main migration workflow skill
       SKILL.md                        # Entry point -- detects SSG, routes to SSG guide
-      gadget-guide.md                 # Core reference: Gadget CLI
-      editable-regions.md             # Core reference: editable region types and API
-      editable-regions-lifecycle.md   # Core reference: lifecycle and internals
+      GUIDE.md                        # Human traversal guide (file map, reading order, decision tree)
+      gadget-guide.md                 # Core: Gadget CLI commands and options
+      editable-regions.md             # Core: region types, attribute reference
+      editable-regions-internals.md   # Core: lifecycle, JS API, quirks (read on demand)
+      collection-urls.md              # Core: URL patterns, placeholders, trailing slash
+      structures.md                   # Core: inline vs split, previews, field completeness
+      snippets.md                     # Core: snippet concepts, when to use, config patterns
+      snippets/                       # Snippet sub-docs
+        built-in-templates.md         #   MDX template reference, parser internals
+        raw.md                        #   Raw snippet syntax, all parser types
+        template-based.md             #   Template-based snippet workflow
+        gotchas.md                    #   Snippet pitfalls and debugging
       astro/                          # Astro-specific migration guide
-        overview.md                   # Astro entry point with phase links
-        audit.md                      # Phase 1: Analyze the Astro site
-        configuration.md              # Phase 2: cloudcannon.config.yml for Astro
-        content.md                    # Phase 3: Content review for Astro
-        visual-editing.md             # Phase 4: Visual editor setup for Astro
-        build.md                      # Phase 5: Build and validate for Astro
+        overview.md                   #   Astro entry point with phase links
+        audit.md                      #   Phase 1: Analyze the Astro site
+        configuration.md              #   Phase 2: CC config, schemas, inputs
+        configuration-gotchas.md      #   Phase 2: Patterns and pitfalls
+        page-building.md              #   Phase 2/4: Pages collection, page builder
+        content.md                    #   Phase 3: Content review
+        snippets.md                   #   Phase 2: Astro snippet configuration
+        visual-editing.md             #   Phase 4: Visual editor setup
+        build.md                      #   Phase 5: Build and validate
       scripts/                        # Deterministic migration scripts
-        audit-astro.sh                # Phase 1: Gather audit data (Gadget + supplements)
-        rename-dash-index.sh          # Phase 3: Rename -index.md to index.md
-        setup-editable-regions.sh     # Phase 4: Install + configure editable regions
+        audit-astro.sh                #   Phase 1: Gather audit data
+        rename-dash-index.sh          #   Phase 3: Rename -index.md to index.md
+        setup-editable-regions.sh     #   Phase 4: Install + configure editable regions
 
 templates/
-  astroplate/
+  <name>/
     pristine/                         # Untouched original (never modify)
     migrated/                         # Agent works here
       migration/
@@ -53,64 +66,9 @@ templates/
 
 ## Agent reading order
 
-When a user asks an agent to migrate a site, Cursor loads files in layers. Understanding this order helps when authoring or reviewing the tooling.
+For a detailed walkthrough of how agents (and humans reviewing agent behavior) traverse the skill files -- including reading order per phase, decision trees for optional docs, and a cross-reference map -- see [GUIDE.md](.cursor/skills/migrating-to-cloudcannon/GUIDE.md).
 
-### Dependency graph
-
-```mermaid
-flowchart TD
-    subgraph "Always-applied rules (auto-injected)"
-        R1[project-context.mdc]
-        R2[tone.mdc]
-        R3[gadget.mdc]
-        R4[testing.mdc]
-    end
-
-    subgraph "Intelligently-applied rules (injected by context)"
-        R5[casing.mdc]
-        R7[migration-transcripts.mdc]
-    end
-
-    SKILL[SKILL.md] -->|detects SSG| OV[astro/overview.md]
-
-    OV --> P1[Phase 1: audit.md]
-    OV --> P2[Phase 2: configuration.md]
-    OV --> P3[Phase 3: content.md]
-    OV --> P4[Phase 4: visual-editing.md]
-    OV --> P5[Phase 5: build.md]
-
-    P1 -.->|runs| S1[audit-astro.sh]
-    P2 -.->|references| GG[gadget-guide.md]
-    P3 -.->|runs| S2[rename-dash-index.sh]
-    P4 -.->|runs| S3[setup-editable-regions.sh]
-    P4 -.->|references| ER[editable-regions.md]
-    P4 -.->|debug only| ERL[editable-regions-lifecycle.md]
-
-    style R1 fill:#e0f0e0
-    style R2 fill:#e0f0e0
-    style R3 fill:#e0f0e0
-    style R4 fill:#e0f0e0
-    style R5 fill:#fff3cd
-    style R7 fill:#fff3cd
-    style S1 fill:#e0e0f0
-    style S2 fill:#e0e0f0
-    style S3 fill:#e0e0f0
-```
-
-### Layer breakdown
-
-| Layer | Files | When loaded |
-|-------|-------|-------------|
-| 1. Always-applied rules | `project-context`, `tone`, `gadget`, `testing` | Every conversation, automatically |
-| 2. Skill entry point | `SKILL.md` | Agent recognizes migration intent |
-| 3. SSG overview | `astro/overview.md` | Agent follows link from SKILL.md |
-| 4. Phase docs | `audit`, `configuration`, `content`, `visual-editing`, `build` | Sequentially as work progresses |
-| 5. Scripts | `audit-astro.sh`, `rename-dash-index.sh`, `setup-editable-regions.sh` | Invoked by phase docs during execution |
-| 6. Reference docs | `gadget-guide`, `editable-regions` | On-demand when a phase doc references them |
-| 7. Debug reference | `editable-regions-lifecycle` | Only if debugging unexpected editable region behavior |
-| 8. Intelligent rules | `casing`, `migration-transcripts` | Cursor injects when it deems relevant |
-
-The ideal agent reads phase docs just-in-time rather than front-loading all reference docs at once. The lifecycle doc should only be read when troubleshooting.
+The short version: `SKILL.md` detects the SSG and routes to `astro/overview.md`, which links to phase docs (audit → configuration → content → visual-editing → build). Each phase doc references core docs and scripts on demand. The ideal agent reads just-in-time rather than front-loading all reference docs at once.
 
 ## Key principles
 
@@ -121,7 +79,7 @@ The ideal agent reads phase docs just-in-time rather than front-loading all refe
 - **Skills** are procedural workflows with ordered steps (the migration process)
 - **Scripts** are standalone automation that skills can invoke
 
-**Graduated structure**: Reference docs inside a skill start small and grow. When they exceed ~300 lines or need their own scripts, they get promoted to standalone skills. See `project-context.md` for the full set of graduation criteria.
+**Graduated structure**: Reference docs inside a skill start small and grow. When they exceed ~300 lines or need their own scripts, they get promoted to standalone skills. See `project-context.mdc` for the full set of graduation criteria.
 
 ## Getting started
 
@@ -140,14 +98,16 @@ The ideal agent reads phase docs just-in-time rather than front-loading all refe
 
 ### Updating the tooling directly
 
-The files in `.cursor/rules/` and `.cursor/skills/` are the primary output of this project. Edit them directly or let agents update them during migrations. The `project-context.md` rule describes the overall philosophy and growth strategy.
+The files in `.cursor/rules/` and `.cursor/skills/` are the primary output of this project. Edit them directly or let agents update them during migrations. The `project-context.mdc` rule describes the overall philosophy and growth strategy.
 
 ## Templates
 
 | Template | SSG | Status |
 |----------|-----|--------|
-| [astroplate](templates/astroplate/) | Astro | Ready for migration |
-
-## Current state
-
-The tooling scaffolding is in place: migration skill with 5 phases and Gadget CLI integration. Astroplate's `pristine/` directory needs to be populated, then `migrated/` gets a copy to work on.
+| [accessible-astro-starter](templates/accessible-astro-starter/) | Astro | Migrated |
+| [astro-cactus](templates/astro-cactus/) | Astro | Migrated |
+| [astro-paper](templates/astro-paper/) | Astro | Migrated |
+| [astrofy](templates/astrofy/) | Astro | Migrated |
+| [astroplate](templates/astroplate/) | Astro | Migrated |
+| [astroship](templates/astroship/) | Astro | Migrated |
+| [astrowind](templates/astrowind/) | Astro | Migrated |
