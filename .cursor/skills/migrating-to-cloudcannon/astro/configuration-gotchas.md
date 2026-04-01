@@ -1,6 +1,6 @@
 # Configuration Gotchas (Astro)
 
-Common patterns and pitfalls discovered during Astro migrations. Document template-specific findings in the template's own `migration/configuration.md`, not here.
+Common patterns and pitfalls discovered during Astro migrations.
 
 ## Configure icon fields as select inputs
 
@@ -14,6 +14,10 @@ When a template uses an icon library (e.g. `astro-icon` with Iconify sets like `
 6. Add a `comment` linking to the icon set's browser (e.g. Iconify) so developers know where to find new names.
 
 Derive friendly names from the icon ID: strip the collection prefix (`tabler:`, `flat-color-icons:`), replace hyphens with spaces, title-case. For icons from secondary collections, add a suffix to distinguish them (e.g. "Template (Color)" for `flat-color-icons:template` vs "Template" for `tabler:template`).
+
+### Inline values (fewer than ~20 icons)
+
+For small icon sets, list the values directly on the input:
 
 ```yaml
 _inputs:
@@ -34,6 +38,57 @@ _inputs:
         - name: Template (Color)
           id: flat-color-icons:template
 ```
+
+### Data file values (~20+ icons)
+
+When there are ~20 or more unique icons, move the list into a data file so editors can manage it without touching the CC config. Steps:
+
+1. Create a data file (e.g. `src/data/icons.json`) containing the icon objects:
+
+```json
+[
+  { "name": "Rocket", "id": "tabler:rocket" },
+  { "name": "Check", "id": "tabler:check" },
+  { "name": "Template (Color)", "id": "flat-color-icons:template" }
+]
+```
+
+2. Expose the file in `data_config`:
+
+```yaml
+data_config:
+  icons:
+    path: src/data/icons.json
+```
+
+3. Add the data file to a collection in `collections_config` so editors can browse and add new icons:
+
+```yaml
+collections_config:
+  data:
+    path: src/data
+    glob:
+      - icons.json
+    disable_add: true
+```
+
+4. Reference the data set on the input using `values: data.icons`:
+
+```yaml
+_inputs:
+  icon:
+    type: select
+    comment: "Pick an icon or type a custom [Iconify](https://icon-sets.iconify.design/) name"
+    options:
+      allow_create: true
+      value_key: id
+      preview:
+        text:
+          - key: name
+      values: data.icons
+```
+
+The rest of the input config (`allow_create`, `value_key`, `preview`) stays the same as the inline approach.
 
 A single global `icon` input definition covers all fields that accept icon names.
 
@@ -106,7 +161,7 @@ _editables:
 
 ## `collection_groups` requires matching `collections_config` entries
 
-`collection_groups` only organizes collections that are already defined in `collections_config` -- it does not create them. If you reference a collection name in `collection_groups` that has no `collections_config` entry, it silently does nothing. A common case: data files handled via `data_config` still need a separate collection in `collections_config` if you want them to appear as a browsable group in the sidebar.
+`collection_groups` only organizes collections that are already defined in `collections_config` -- it does not create them. If you reference a collection name in `collection_groups` that has no `collections_config` entry, it silently does nothing. A common case: data files handled via `data_config` still need to belong to a collection configured in `collections_config` if you want them to appear as a browsable group in the sidebar. Group related data files into the same collection where it makes sense.
 
 ## Always link arrays to structures explicitly
 
@@ -128,33 +183,9 @@ preview:
 
 ## Configure object inputs with preview icons
 
-Object inputs without a `preview.icon` show a generic icon in the data editor. Configure `type: object` with `options.preview.icon` on any object key that editors will see — both top-level data file objects and nested objects inside structures.
+See [configuration.md § Object inputs need preview icons](configuration.md#object-inputs-need-preview-icons) for the core recommendation.
 
-**Top-level objects in data/config files** — use `file_config` to scope the input:
-
-```yaml
-file_config:
-  - glob: src/config/config.json
-    _inputs:
-      site:
-        type: object
-        options:
-          preview:
-            icon: language
-```
-
-**Nested objects inside structures** — define in global `_inputs` so the icon applies everywhere:
-
-```yaml
-_inputs:
-  callToAction:
-    type: object
-    options:
-      preview:
-        icon: ads_click
-```
-
-Use [Material Icons](https://fonts.google.com/icons) names. **Watch for key collisions** — a key like `image` may be a string path (`type: image`) in some contexts and an object (`{ src, alt }`) in others. Keep the simpler/more common definition globally.
+**Key collisions:** A key like `image` may be a string path (`type: image`) in some contexts and an object (`{ src, alt }`) in others. Keep the simpler/more common definition globally and use `file_config` or scoped keys for the other.
 
 ## Array item previews go on `[*]`, not on the array
 
@@ -172,21 +203,9 @@ _inputs:
         icon: tab
 ```
 
-## Hide developer-only frontmatter fields
-
-Fields like `layout`, `_schema`, and other routing/rendering keys should be hidden from editors:
-
-```yaml
-_inputs:
-  layout:
-    hidden: true
-  _schema:
-    hidden: true
-```
-
 ## Data-only markdown collections
 
-When `.md` files are used purely for frontmatter (team members, testimonials, authors) with no body content rendered, set `_enabled_editors: [data]` to restrict editing to the data editor. Alternatively, convert these files to `.yml` or `.json`.
+When `.md` files don't build to a page (team members, testimonials, authors used purely as data), set `_enabled_editors: [data]` to restrict editing to the data editor. Alternatively, convert these files to `.yml` or `.json`. Note that a `.md` file can still have editable body content and be data-only — what matters is whether Astro builds a page from it, not whether the body is used.
 
 ## `_inputs` key collision across nesting levels
 

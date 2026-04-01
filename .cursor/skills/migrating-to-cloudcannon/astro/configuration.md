@@ -52,6 +52,47 @@ file_config:
         type: text
 ```
 
+**Scoping:** For top-level arrays and objects in data/config files, use `file_config` so that you can gain access to `$`, which symbolises the root of the data file:
+
+```yaml
+file_config:
+  - glob: src/config/config.json
+    _inputs:
+      $:
+        type: array
+      $[*]:
+        type: object
+        options:
+          preview:
+            icon: language
+```
+
+### Object inputs need preview icons
+
+Object inputs without a `preview.icon` show a generic icon in the data editor. Configure `type: object` with `options.preview.icon` on any object key that editors will see — both top-level data file objects and nested objects inside structures. Use [Material Icons](https://fonts.google.com/icons) names.
+
+```yaml
+_inputs:
+  callToAction:
+    type: object
+    options:
+      preview:
+        icon: ads_click
+```
+
+
+### Hide developer-only frontmatter fields
+
+Fields like `layout`, `_schema`, and other routing/rendering keys should be hidden from editors:
+
+```yaml
+_inputs:
+  layout:
+    hidden: true
+  _schema:
+    hidden: true
+```
+
 The full set of configuration keys is defined in the [CloudCannon Configuration JSON Schema](https://raw.githubusercontent.com/CloudCannon/configuration-types/main/cloudcannon-config.schema.json). Generated files include a schema reference that provides IDE autocomplete and validation -- preserve these references when editing.
 
 ## Consolidating single-file collections
@@ -295,7 +336,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] No collections contain only a single file -- consolidate or group as needed
 - [ ] `collection_groups` organise collections into logical sidebar groups
 - [ ] `_inputs` is configured for common field types (images, dates, dropdowns, hidden fields)
-- [ ] Icon fields use `type: select` with `allow_create: true`, `value_key: id`, and named values
+- [ ] Icon fields use `type: select` with `allow_create: true`, `value_key: id`, and named values — use a data file for ~20+ icons
 - [ ] Numeric values in content frontmatter that map to `text` inputs are quoted as strings
 - [ ] Developer-only fields (`layout`, `_schema`, routing/rendering keys) have `hidden: true`
 - [ ] Collections that produce pages have a `url` pattern with correct trailing slash. See [../collection-urls.md](../collection-urls.md)
@@ -312,7 +353,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 - [ ] `add_options` restricts the Add button to only creatable schemas
 - [ ] Collections where editors should not create new files use `disable_add: true`
-- [ ] Collections using `.md` files with no rendered body content have `_enabled_editors: [data]`
+- [ ] Collections using `.md` files that don't build to a page have `_enabled_editors: [data]`
 - [ ] If the site has 3+ reusable block components, a page builder schema is available. See [page-building.md](page-building.md)
 - [ ] Schemas for creatable page types have `new_preview_url` or use `editor: content` on add options
 - [ ] `.cloudcannon/README.md` exists with editor-facing documentation
