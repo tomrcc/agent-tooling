@@ -21,7 +21,7 @@ Image editing via CloudCannon's data panel. Expects a child `<img>` element. Man
 Re-renders a component when its data changes. Requires a registered renderer function (e.g. via `registerAstroComponent`). Diffs new HTML into the live DOM rather than replacing wholesale, preserving focused editors and live state.
 
 ### EditableArray & EditableArrayItem
-Manages ordered lists with full CRUD and drag-and-drop. Array items extend `EditableComponent`, so `data-component` on an array-item element gives both CRUD controls and component re-rendering. Use plain HTML elements for array items — **not** `<editable-component>`.
+Manages ordered lists with full CRUD (add, remove, reorder) and drag-and-drop. Array items on their own don't re-render contents — adding `data-component` to an array item element enables component re-rendering alongside the CRUD controls. For complex arrays, the array wrapper needs `data-component-key` and optionally `data-id-key` to declare which data fields identify items. Use `<editable-array-item>` when no suitable HTML container exists.
 
 ### EditableSource
 Edits raw HTML source files rather than frontmatter. Uses `data-path` (file path) and `data-key` (unique identifier) instead of `data-prop`. Reads/writes the full source file via the CloudCannon file API.
@@ -52,8 +52,9 @@ Primitive editables (text, image, array, source) handle their own DOM updates bu
 | `data-prop-src` / `data-prop-alt` / `data-prop-title` | Path string | Per-attribute image bindings |
 | `data-type` | `span`, `text`, `block` | Text editor mode |
 | `data-component` | Component key | Component identifier for re-rendering lookup |
-| `data-id-key` | Key name | Array item identity key for stable reordering |
-| `data-component-key` | Key name | Which frontmatter key identifies the component type |
+| `data-id-key` | Key name | On the **array wrapper**: which data field uniquely identifies each item. Defaults to `data-component-key` value when omitted (Dec 2025) |
+| `data-component-key` | Key name | On the **array wrapper**: which data field identifies the component type for each item |
+| `data-id` | ID value | On each **array item**: the resolved identity value for this specific item. Defaults to `data-component` when omitted |
 | `data-path` | File path | Source file path (for `EditableSource`) |
 | `data-key` | Unique key | Identifier within a source file |
 | `data-defer-mount` | *(presence)* | Lazy initialization — editor mounts on first click |
@@ -66,6 +67,7 @@ Primitive editables (text, image, array, source) handle their own DOM updates bu
 | `<editable-text>` | `<span data-editable="text">` |
 | `<editable-image>` | `<div data-editable="image">` |
 | `<editable-component>` | `<div data-editable="component">` |
+| `<editable-array-item>` | `<div data-editable="array-item">` |
 | `<editable-source>` | `<div data-editable="source">` |
 
 Both forms produce identical behaviour. Custom elements self-hydrate via `connectedCallback`.

@@ -61,7 +61,7 @@ Link the array to the structure explicitly via `_inputs.content_blocks.options.s
 When a site has 5 or more block types, maintaining all structures inline in the config becomes unwieldy. Instead, each component gets its own structure file next to it:
 
 ```
-src/components/widgets/
+src/components/
   Hero.astro
   hero.cloudcannon.structure-value.yml
   Features.astro
@@ -78,7 +78,7 @@ _inputs:
     options:
       structures:
         values_from_glob:
-          - /src/components/widgets/*.cloudcannon.structure-value.yml
+          - /src/components/*.cloudcannon.structure-value.yml
 ```
 
 ### Naming convention

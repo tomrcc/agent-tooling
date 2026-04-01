@@ -34,6 +34,7 @@ const { sections } = page.data;
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import BlockRenderer from "../components/BlockRenderer.astro";
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
@@ -167,7 +168,7 @@ _inputs:
     options:
       structures:
         values_from_glob:
-          - /src/components/widgets/*.cloudcannon.structure-value.yml
+          - /src/components/*.cloudcannon.structure-value.yml
 ```
 
 ### Reference blocks vs inline blocks
@@ -195,7 +196,7 @@ const Component = componentMap[_type as string];
 )}
 ```
 
-Each array item uses a **plain HTML element** (`<section>`) with `data-editable="array-item"`, `data-component`, and `data-id`. `EditableArrayItem` inherits from `EditableComponent`, so `data-component` on an array-item element gives both array CRUD controls and component re-rendering. **Do not use `<editable-component>` for array items** — see [visual-editing.md § Page builder blocks](visual-editing.md#page-builder-blocks) for the rationale.
+Each array item combines two behaviours: `data-editable="array-item"` provides CRUD controls (add, remove, reorder) and `data-component` enables component re-rendering of the block's contents. When no suitable HTML element exists, use `<editable-array-item>` instead. See [visual-editing.md § Page builder blocks](visual-editing.md#page-builder-blocks) for the full visual editing setup.
 
 Every widget component inside also needs nested `data-editable` attributes (text, image). Every `_type` value used in content files must have a matching `registerAstroComponent(_type, Component)` call in `registerComponents.ts`.
 
