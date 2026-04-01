@@ -9,8 +9,7 @@ This guide covers Astro sites that use:
 - Astro content collections (`src/content/` with `content.config.ts` or `src/content/config.ts`)
 - `.astro` single-file components
 - Static output (`output: "static"` -- the default)
-- Islands architecture with optional framework integrations (React, Vue, Svelte via `client:*` directives)
-- Vite as the build tool
+- Islands architecture with optional framework integrations (React confirmed; Vue and Svelte likely work but are untested)
 
 Server-rendered Astro sites (`output: "server"` or `output: "hybrid"`) are not covered -- CloudCannon requires static output.
 

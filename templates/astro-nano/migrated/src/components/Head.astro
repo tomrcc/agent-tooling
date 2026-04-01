@@ -75,6 +75,10 @@ const { title, description, image = "/nano.png" } = Astro.props;
   );
 </script>
 
+<script>
+  import "../cloudcannon/registerComponents";
+</script>
+
 <script is:inline>
   function init() {
     preloadTheme();

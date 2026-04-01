@@ -10,13 +10,15 @@ Run the setup script to handle steps 1-3 automatically:
 bash .cursor/skills/migrating-to-cloudcannon/scripts/setup-editable-regions.sh .
 ```
 
-This installs the package (falling back to `--legacy-peer-deps` if needed), adds the Astro integration to `astro.config.mjs`, and creates `src/cloudcannon/registerComponents.ts`. Verify the results and then import the registerComponents script from the base layout:
+This installs the package (falling back to `--legacy-peer-deps` if needed), adds the Astro integration to `astro.config.mjs`, and creates `src/cloudcannon/registerComponents.ts`. Verify the results — especially that `editableRegions()` was placed inside the integrations array, not after it. Then import the registerComponents script from the base layout:
 
 ```astro
 <script>
-  import "@/cloudcannon/registerComponents";
+  import "../cloudcannon/registerComponents";
 </script>
 ```
+
+Use a relative path for the import. Many Astro projects use `@*` as a path alias for `src/`, which means `@cloudcannon/registerComponents` would resolve correctly to the local file — but it looks like an npm scoped package reference and can confuse readers and tooling. A relative path avoids this ambiguity.
 
 The details of what the script sets up are below for reference.
 

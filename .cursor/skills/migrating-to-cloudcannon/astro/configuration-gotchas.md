@@ -61,6 +61,14 @@ CC's `slugify` replaces non-alphanumeric characters with hyphens and collapses t
 
 **Astro 4 gotcha: `slug` is reserved.** In Astro 4's legacy content collections (`src/content/config.ts`), the `slug` field is reserved by Astro. Adding `slug` to the Zod schema throws `ContentSchemaContainsSlugError`. Use a different field name like `permalink` instead. This restriction does not apply to Astro 5+ with the `glob()` loader.
 
+## Folder-per-post content and CC URL placeholders
+
+When content uses a folder-per-post structure (e.g. `blog/01-getting-started/index.md`), CC's `[slug]` placeholder resolves to an empty string (because the filename is `index`). This means `url: "/blog/[slug]/"` produces `/blog/` for every post — wrong.
+
+**Fix:** Add a `slug` field to each content file's frontmatter matching the folder name, then use `{slug}` (data placeholder) in the CC URL pattern. For legacy Astro collections, `slug` in frontmatter overrides the auto-generated slug without needing to be in the Zod schema. Include `slug` in the CC schema template so new posts get the field.
+
+Alternatively, `[full_slug]` may work for folder-per-post content (`[relative_base_path]/[slug]` where the directory path provides the slug when `[slug]` is empty), but `{slug}` with explicit frontmatter is more reliable and doesn't depend on CC's path normalization behavior.
+
 ## Set `markdown.options.table` when content has Markdown tables
 
 CloudCannon defaults `markdown.options.table` to `false`, meaning the rich text editor outputs `<table>` HTML. If the site's content files already use Markdown table syntax (`| col | col |`), set this to `true` so tables survive round-tripping through the editor. Grep content directories for the pipe-delimited pattern:

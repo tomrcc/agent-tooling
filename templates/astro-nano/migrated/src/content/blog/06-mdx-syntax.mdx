@@ -20,12 +20,8 @@ Importing a component from the `/components` directory.
 This component will accept a javascript date object and format it as a string.
 
 ```astro
-import DateComp from "../../../components/FormattedDate.astro";
-
-<DateComp date={new Date()} />
+<FormattedDate date={new Date()} />
 ```
-
-import FormattedDate from "../../../components/FormattedDate.astro";
 
 <FormattedDate date={new Date()} />
 
@@ -38,14 +34,12 @@ Importing a component from a relative path to your content.
 This component will display an alert when you click the button.
 
 ```astro
-import RelativeComponent from "./component.astro";
+import MdxButton from "../../components/MdxButton.astro";
 
-<RelativeComponent />
+<MdxButton />
 ```
 
-import RelativeComponent from "./component.astro";
-
-<RelativeComponent />
+<MdxButton />
 
 ---
 

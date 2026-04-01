@@ -32,32 +32,55 @@ const work = await Promise.all(
 
 <PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
   <Container>
-    <h4 class="animate font-semibold text-black dark:text-white">
+    <h4
+      class="animate font-semibold text-black dark:text-white"
+      data-editable="source"
+      data-path="src/pages/index.astro"
+      data-key="hero-heading"
+    >
       Hi, I'm Nano <span class="text-xl">👋🏻</span> 
     </h4>
     <div class="space-y-16">
       <section>
         <article class="space-y-4">
-          <p class="animate">
+          <p
+            class="animate"
+            data-editable="source"
+            data-type="block"
+            data-path="src/pages/index.astro"
+            data-key="hero-p1"
+          >
             I am a minimal, seo friendly, accessible portfolio and blog for developers. 
             I am an even more lightweight version of my popular theme
-            <Link href="https://github.com/markhorn-dev/astro-sphere" aria-label="Astro Sphere on Github" external>
+            <a href="https://github.com/markhorn-dev/astro-sphere" aria-label="Astro Sphere on Github" target="_blank" rel="noopener noreferrer">
               Astro Sphere
-            </Link>.
+            </a>.
             I have a lighthouse scores of 100 across the board for performance, 
             accesibility, best practices and SEO.
           </p>
-          <p class="animate">
+          <p
+            class="animate"
+            data-editable="source"
+            data-type="block"
+            data-path="src/pages/index.astro"
+            data-key="hero-p2"
+          >
             I come packed with full type safety, a sitemap, an rss feed, markdown 
             and mdx support (use components in your markdown) through astro integrations.
             I am styled with tailwind and come preconfigured with light, dark and 
             system/os theme preferences out of the box.
           </p>
-          <p class="animate">
+          <p
+            class="animate"
+            data-editable="source"
+            data-type="block"
+            data-path="src/pages/index.astro"
+            data-key="hero-p3"
+          >
             Visit
-            <Link href="https://github.com/markhorn-dev/astro-nano" aria-label="Astro Nano on Github" external>
+            <a href="https://github.com/markhorn-dev/astro-nano" aria-label="Astro Nano on Github" target="_blank" rel="noopener noreferrer">
               Astro Nano on Github
-            </Link>
+            </a>
             to fork the repository, read the docs or one-click deploy on Vercel or Netlify. 
           </p>
         </article>
@@ -65,7 +88,12 @@ const work = await Promise.all(
 
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
+          <h5
+            class="font-semibold text-black dark:text-white"
+            data-editable="source"
+            data-path="src/pages/index.astro"
+            data-key="posts-heading"
+          >
             Latest posts
           </h5>
           <Link href="/blog">
@@ -83,7 +111,12 @@ const work = await Promise.all(
 
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
+          <h5
+            class="font-semibold text-black dark:text-white"
+            data-editable="source"
+            data-path="src/pages/index.astro"
+            data-key="work-heading"
+          >
             Work Experience
           </h5>
           <Link href="/work">
@@ -96,13 +129,25 @@ const work = await Promise.all(
               <div class="text-sm opacity-75">
                 {dateRange(entry.data.dateStart, entry.data.dateEnd)}
               </div>
-              <div class="font-semibold text-black dark:text-white">
+              <div
+                class="font-semibold text-black dark:text-white"
+                data-editable="text"
+                data-prop={`@file[/src/content/work/${entry.id}].company`}
+              >
                 {entry.data.company}
               </div>
-              <div class="text-sm opacity-75">
+              <div
+                class="text-sm opacity-75"
+                data-editable="text"
+                data-prop={`@file[/src/content/work/${entry.id}].role`}
+              >
                 {entry.data.role}
               </div>
-              <article>
+              <article
+                data-editable="text"
+                data-type="block"
+                data-prop={`@file[/src/content/work/${entry.id}].@content`}
+              >
                 <entry.Content />
               </article>
             </li>
@@ -112,7 +157,12 @@ const work = await Promise.all(
 
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
+          <h5
+            class="font-semibold text-black dark:text-white"
+            data-editable="source"
+            data-path="src/pages/index.astro"
+            data-key="projects-heading"
+          >
             Recent projects
           </h5>
           <Link href="/projects">
@@ -129,11 +179,20 @@ const work = await Promise.all(
       </section>
 
       <section class="animate space-y-4">
-        <h5 class="font-semibold text-black dark:text-white">
+        <h5
+          class="font-semibold text-black dark:text-white"
+          data-editable="source"
+          data-path="src/pages/index.astro"
+          data-key="connect-heading"
+        >
           Let's Connect
         </h5>
         <article>
-          <p>
+          <p
+            data-editable="source"
+            data-path="src/pages/index.astro"
+            data-key="connect-description"
+          >
             If you want to get in touch with me about something or just to say hi,
             reach out on social media or send me an email.
           </p>

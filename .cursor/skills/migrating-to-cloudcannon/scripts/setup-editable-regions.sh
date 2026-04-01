@@ -73,10 +73,15 @@ import editableRegions from \"$PACKAGE/astro-integration\";
 
     # Add editableRegions() to the integrations array
     if grep -q "integrations:" "$CONFIG"; then
-      # Insert after the integrations: [ line
-      sed -i '' '/integrations:[[:space:]]*\[/a\
+      if grep -q 'integrations:.*\[.*\]' "$CONFIG"; then
+        # Single-line array: insert before the closing ]
+        sed -i '' 's/\(integrations:.*\)\]/\1, editableRegions()]/' "$CONFIG"
+      else
+        # Multi-line array: insert after the opening [ line
+        sed -i '' '/integrations:[[:space:]]*\[/a\
     editableRegions(),
 ' "$CONFIG"
+      fi
       echo "Added editableRegions() to integrations array"
     else
       echo "WARNING: No integrations array found in $CONFIG. Add manually:"
