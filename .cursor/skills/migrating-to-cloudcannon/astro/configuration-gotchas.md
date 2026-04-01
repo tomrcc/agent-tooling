@@ -65,9 +65,9 @@ CC's `slugify` replaces non-alphanumeric characters with hyphens and collapses t
 
 When content uses a folder-per-post structure (e.g. `blog/01-getting-started/index.md`), CC's `[slug]` placeholder resolves to an empty string (because the filename is `index`). This means `url: "/blog/[slug]/"` produces `/blog/` for every post — wrong.
 
-**Fix:** Add a `slug` field to each content file's frontmatter matching the folder name, then use `{slug}` (data placeholder) in the CC URL pattern. For legacy Astro collections, `slug` in frontmatter overrides the auto-generated slug without needing to be in the Zod schema. Include `slug` in the CC schema template so new posts get the field.
+**Preferred fix:** Flatten to flat files (`blog/01-getting-started.md`). This lets Astro auto-generate slugs from filenames and CC's `[slug]` works natively. See [content.md § Flattening folder-per-post content](content.md#flattening-folder-per-post-content) for the full checklist.
 
-Alternatively, `[full_slug]` may work for folder-per-post content (`[relative_base_path]/[slug]` where the directory path provides the slug when `[slug]` is empty), but `{slug}` with explicit frontmatter is more reliable and doesn't depend on CC's path normalization behavior.
+**Fallback (when flattening isn't practical):** Add a `slug` field to each content file's frontmatter matching the folder name, then use `{slug}` (data placeholder) in the CC URL pattern. For legacy Astro collections, `slug` in frontmatter overrides the auto-generated slug without needing to be in the Zod schema. Include `slug` in the CC schema template so new posts get the field.
 
 ## Set `markdown.options.table` when content has Markdown tables
 

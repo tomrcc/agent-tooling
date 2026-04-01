@@ -31,14 +31,15 @@ The decision rule: if skipping the change means the config is wrong or fragile, 
 
 Gadget produces a structural baseline. The following customizations are almost always needed, informed by the Phase 1 audit:
 
-- **`_inputs`** -- configure how fields appear in the editor (dropdowns, date pickers, image uploaders, comments, hidden fields). Map these from the Zod schemas discovered in the audit. When a frontmatter field contains markdown (e.g. a hero description with `**bold**` text), use `type: markdown` or `type: html`, not `type: textarea`. Use scoped input keys (e.g. `hero.description`) when the general input should stay as `textarea` but a specific context needs `markdown`.
-- **`_structures`** -- define reusable component structures for array-based page building. Derive these from the component inventory in the audit.
+- **`_inputs`** -- configure how fields appear in the editor (dropdowns, date pickers, image uploaders, comments, hidden fields). Map these from the Zod schemas discovered in the audit. When a frontmatter field contains markdown (e.g. a hero description with `**bold**` text), use `type: markdown`, not `type: textarea`. The same goes for fields that contain html elements (e.g. a hero description with `<strong>bold</strong>` text) - they should use `type: html`, instead of `type: textarea`. Use scoped input keys (e.g. `hero.description`) when the general input should stay as `textarea` but a specific context needs `markdown`.
+- **`_structures`** -- define reusable component structures used for knowing what to add to arrays, or object inputs in CloudCannon. Particularly needed for array-based page building, but should be defined for all array or object inputs on the site. Derive these from the component inventory in the audit.
 - **`collection_groups`** -- organize collections into sidebar groups for a clean editing experience.
 - **`_editables`** -- configure rich text editor toolbars per collection or globally.
 - **`markdown`** -- if content files contain Markdown-syntax tables (`| col | col |`), set `markdown.options.table: true`. See [configuration-gotchas.md § Markdown tables](configuration-gotchas.md#set-markdownoptionstable-when-content-has-markdown-tables).
-- **`_snippets`** -- configure snippets for MDX components used in rich text content. Built-in templates like `mdx_component` resolve automatically — no `_snippets_imports` needed. See [snippets.md](snippets.md).
+- **`_snippets`** -- configure snippets for non-standard markdown amongst markdown content. In Astro this is often MDX components used in rich text content. Built-in templates like `mdx_component` resolve automatically — no `_snippets_imports` needed. See [snippets.md](snippets.md).
 - **`_select_data`** -- define shared dropdown options for fields used across collections.
 - **Schemas** -- define templates for creating new content files, based on the content patterns found in the audit.
+- **`data_config`** -- a root-level key that targets specific data files via a path, and exposes them for use in CloudCannon (eg. a data file of tags that can be used to populate a multi-select input called tags). Once a data set has been exposed in the `data_config`, its available for use on a select type input by defining it as the input's, `options.values` value (it uses the key we've defined in the `data_config` as the name to use as a reference).
 - **`file_config`** -- a root-level key that targets specific files via glob and scopes `_inputs` to them. Use it when key names would collide at broader scopes, or to configure inputs for settings/data files. Supports `$` to reference the root of the file or structure. Example:
 
 ```yaml
@@ -73,9 +74,7 @@ If a page has data coming from a file separate from the content page, or a page 
 - Move section data from `.md` frontmatter into `src/data/*.json` files
 - Add `data_config` entries in `cloudcannon.config.yml` pointing to each JSON file
 - Import the JSON directly in Astro components (no collection needed)
-- Use `@data[key].path` editable regions for visual editing
-
-This avoids the `@file` limitation where CloudCannon resolves the file's URL from its collection's `url` pattern and navigates away from the current page. Data files don't have URL patterns, so `@data` editables work correctly on any page.
+- Use `@data[key].path` for an editable region's `data-prop` for connecting data to an element in the visual editor
 
 For pages with unique schemas (e.g. a homepage with `banner`/`features`), merge the page into the `pages` collection using a `z.union` in the Zod schema and CC schemas for the correct editor fields (see Fallback below).
 
@@ -309,7 +308,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] All arrays with structures are explicitly linked via `type: array` + `options.structures`
 - [ ] Structures use both `picker_preview` and `preview` (see [../structures.md](../structures.md))
 - [ ] Sites with 5+ block types use the split co-located approach (`values_from_glob`)
-- [ ] `_snippets` entries exist for each MDX component and for inline HTML in `.md` content
+- [ ] Every MDX component in content has a `_snippets` entry OR the file is restricted to `_enabled_editors: [source, data]` — unconfigured snippets always show as broken elements
 - [ ] `markdown.options.table` is `true` if any content files contain Markdown-syntax tables
 - [ ] `add_options` restricts the Add button to only creatable schemas
 - [ ] Collections where editors should not create new files use `disable_add: true`

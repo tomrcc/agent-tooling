@@ -11,7 +11,7 @@ This runs Gadget detection and collects project metadata. Use its output as a st
 ## 1. Astro version and dependencies
 
 - Astro version (check `package.json`)
-- Framework integrations and versions (React, Vue, Svelte, Solid -- look for `@astrojs/*` packages)
+- Framework integrations and versions (React, Vue, Svelte, Solid -- look for `@astrojs/*` packages). Flag Vue/Svelte/Solid components -- these throw runtime errors in editable regions. For each, decide: convert to `.astro`/React, or keep and provide an editing fallback
 - CSS framework (Tailwind, etc.)
 - Markdown processing: remark/rehype plugins, MDX support (`@astrojs/mdx`)
 - Package manager (npm, pnpm, yarn) and any lockfile present
@@ -24,11 +24,12 @@ Read `src/content.config.ts` (Astro 5+) or `src/content/config.ts` (older versio
 
 - **Name** as exported in `collections`
 - **Loader** type: `glob({ pattern, base })`, `file()`, or legacy folder-based
+- **Content structure**: flat files (`post.md`) or folder-per-post (`post/index.md`). Flag folder-per-post as a candidate for flattening — see [content.md § Flattening folder-per-post content](content.md#flattening-folder-per-post-content)
 - **Base directory** and glob pattern
 - **Schema fields** with Zod types, defaults (`z.default()`), and optionality (`z.optional()`)
 - **File naming conventions** (e.g. `-index.md` for listing page metadata -- these get renamed to `index.md` in the content phase)
 - **How it's consumed**: `getCollection()`, `getEntry()`, or helper functions wrapping these
-- **Body content usage**: Is the markdown body rendered on any page, or is the file used only for its frontmatter? Flag data-only `.md` collections (e.g. team members, testimonials, authors) -- these need `_enabled_editors: [data]` in the configuration phase.
+- **Body content usage**: Is the markdown file rendered as page, or is the file used only for its data on other pages? Flag data-only `.md` collections (e.g. team members, testimonials, authors). If a md file only uses its frontmatter for controlling data these pages need `_enabled_editors: [data]` in the configuration phase. If the md file uses its frontmatter and body content elsewhere (but doesn't build anywhere), these pages need `_enabled_editors: [content, data]`.
 
 Also check for data files outside collections (JSON, YAML in `src/config/` or similar) that contain editable site configuration.
 
@@ -50,10 +51,12 @@ Document the component hierarchy:
 - **Base layout** (`BaseLayout.astro` or similar) -- what it wraps (head, header, footer, default slot)
 - **Page-level layouts** (e.g. `PostSingle.astro`) -- which pages use them, what props they expect
 - **Partials** that render shared sections (CTA, testimonials, sidebars, feature grids)
-- **Interactive islands** -- React/Vue/Svelte components with `client:*` directives (`client:load`, `client:visible`, `client:idle`)
+- **Interactive islands** -- components with `client:*` directives (`client:load`, `client:visible`, `client:idle`). Flag the framework: React components work in editable regions; Vue, Svelte, and Solid components throw runtime errors and must be converted or given editing fallbacks
 - **Shortcode components** auto-imported for MDX (check `astro.config.mjs` for MDX `remarkPlugins` or custom components)
 
 Flag components that are good candidates for visual editing (hero banners, feature sections, CTAs) vs. those better suited to the data panel (navigation, social links, theme settings).
+
+Also flag **presentational wrapper components** (e.g. a `<Link>` that just renders a styled `<a>`) that appear inside editable content. These can't survive source editing and need either inlining as plain HTML + CSS or a snippet config. See [visual-editing.md § Astro components in source editables](visual-editing.md#astro-components-in-source-editables).
 
 Also flag **hardcoded text in page templates** as source editable candidates. Common locations: homepage hero sections, CTA copy, section headings on listing pages. These don't need a content collection or data file -- they use `EditableSource` to edit the raw `.astro` file directly. See [visual-editing.md § Source editables](visual-editing.md#source-editables-for-hardcoded-content).
 

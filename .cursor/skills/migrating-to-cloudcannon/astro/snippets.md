@@ -240,21 +240,22 @@ tabs:
 
 Configure `_inputs` using the `editor_key` from the repeating parser (`tab_items`) as the array input, and `tab_items[*]` for array item previews. Use `[*].field` syntax for individual field inputs within each item.
 
-## What's practical as a snippet
+## Every MDX component must be accounted for
 
-Not every component in MDX content is worth configuring as a snippet.
+Every component used in MDX content must either have a `_snippets` entry or the file must be restricted to source/data editor only (`_enabled_editors: [source, data]`). There is no middle ground — an unconfigured component shows as a broken/unrecognizable element in the content editor. "Demo content", "only used once", or "not worth configuring" are not valid reasons to skip.
 
 **Good snippet candidates:**
 - Self-closing components with string/number/boolean props (Button, Youtube, Video)
 - Paired components with simple content and a few props (Notice, Accordion)
 - Components editors would want to insert from the toolbar
+- Components with no editable props (still need a minimal snippet so the content editor can parse and display them)
 
-**Better left for the source editor:**
-- Components with deeply nested children beyond two levels
+**Restrict the file instead when:**
+- Components have deeply nested children beyond two levels
 - Components whose props reference complex data structures (arrays of objects with sub-arrays)
-- Components that are only used in a single file and unlikely to be added/edited by non-technical editors
+- Components use JS expressions as prop values (e.g. `date={new Date()}`) that can't be represented as editor inputs
 
-When a component isn't worth a snippet config, document it in the migration notes so editors know to use the source editor for that file.
+For files restricted to source/data editor, add `_enabled_editors: [source, data]` at the file or collection level, and document the reason in the migration notes.
 
 ## Verification
 

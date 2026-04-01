@@ -89,6 +89,28 @@ When converting hardcoded pages to markdown with `content_blocks`, the agent mus
 
 **Null values in YAML:** Bare keys with no value (`tagline:`) parse as `null`. The Zod schema must use `.nullish()` instead of `.optional()` on optional fields, otherwise `null` values fail validation and `z.union` silently falls through to a non-page-builder schema — stripping `content_blocks` from the data. See [../structures.md](../structures.md#handling-null-values-from-empty-yaml-fields) for details on aligning the Zod schema and CloudCannon config.
 
+### Flattening folder-per-post content
+
+When content uses a folder-per-post structure (`blog/my-post/index.md`), CC's `[slug]` placeholder resolves to an empty string (because the filename is `index`). This forces workarounds: explicit `slug` frontmatter plus `{slug}` data placeholders.
+
+The preferred fix is to flatten to flat files (`blog/my-post.md`). Astro auto-generates slugs from the filename, and CC's `[slug]` works natively — no extra frontmatter needed.
+
+**Checklist before flattening:**
+
+1. **Check for sibling assets** — images or other files co-located in the post's directory. Move them to `public/` and update references from `./image.webp` to `/image.webp`.
+2. **Check for relative imports in MDX** — components imported with `./component.astro` paths. Move them to `src/components/` and set up `astro-auto-import` so they're available without explicit imports.
+3. **Rename files** — `dir/index.md` becomes `dir.md`. Remove the now-empty directories.
+4. **Remove `slug` frontmatter** — no longer needed since the filename provides the slug.
+5. **Update CC config** — switch URL patterns from `{slug}` to `[slug]`.
+
+**When NOT to flatten:**
+
+- Content directories contain many co-located assets that would clutter `public/`
+- The folder structure encodes meaningful grouping beyond just the slug
+- The site uses Astro's image optimization with relative import paths (`import img from './hero.png'`)
+
+In these cases, keep folder-per-post and use the `{slug}` workaround documented in [configuration-gotchas.md](configuration-gotchas.md#folder-per-post-content-and-cc-url-placeholders).
+
 ### Data files (JSON/YAML config)
 
 Site configuration stored in JSON or YAML files outside content collections (e.g. `src/config/` directory with navigation, social links, theme settings) is editable in CloudCannon as "data" collections. Verify:

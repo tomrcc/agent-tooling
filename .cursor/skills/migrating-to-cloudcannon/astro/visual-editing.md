@@ -96,7 +96,7 @@ for (const [key, component] of Object.entries(componentMap)) {
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
 | `@cloudcannon/editable-regions/astro-react-renderer` | Side-effect import: registers React as a framework renderer for Astro's client-side SSR (needed when React components like `react-icons` are used inside registered Astro components) |
-| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering — **unreliable, use Astro display fallback instead** |
+| `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering |
 
 ## Adding editable regions
 
@@ -373,13 +373,11 @@ The key matches the `data_config` entry name in `cloudcannon.config.yml`. This i
 
 ### Absolute file paths (cross-file editing)
 
-Use `@file[path]` for editing data in a specific file. File paths are relative to the repository root:
+Use `@file[/path]` for editing data in a specific file. Paths must have a leading `/` and are relative to the repository root:
 
 ```
-data-prop="@file[src/content/sections/cta.md].title"
+data-prop="@file[/src/content/sections/cta.md].title"
 ```
-
-**Limitation:** `@file` targets a specific file. If that file is in a collection with a `url` pattern, CloudCannon resolves the URL from the pattern and may navigate away from the current page when the user clicks the editable region. For shared/reusable data that appears on pages other than the file's own URL, prefer `data_config` + `@data` instead.
 
 ### Content body editing
 
@@ -414,10 +412,10 @@ When a page template fetches and renders items from a different collection (e.g.
 ```astro
 {teamMembers.map((member) => (
   <div>
-    <div data-editable="image" data-prop={`@file[src/content/team/${member.id}].avatar`}>
+    <div data-editable="image" data-prop={`@file[/src/content/team/${member.id}].avatar`}>
       <img src={member.data.avatar.src} alt={member.data.avatar.alt} />
     </div>
-    <h3 data-editable="text" data-prop={`@file[src/content/team/${member.id}].name`}>
+    <h3 data-editable="text" data-prop={`@file[/src/content/team/${member.id}].name`}>
       {member.data.name}
     </h3>
   </div>
@@ -547,6 +545,46 @@ During Phase 1, flag hardcoded text in page templates as source editable candida
 - Footer taglines or copyright text
 - Any page that has visible text not sourced from frontmatter or a data file
 
+## Astro components in source editables
+
+Source editables cannot handle Astro component syntax — the rich text editor strips non-standard JSX. When a presentational Astro component (e.g. a styled `<Link>`) appears inside content that should be source-editable, choose one of:
+
+1. **Inline as plain HTML + CSS** — replace the component with its HTML equivalent (`<a>` for `<Link>`) and use normal CSS selectors to replicate the styling. This works well for simple wrappers around native HTML elements. Avoid Tailwind utility classes on the inline HTML — use contextual CSS rules instead (e.g. `article a { ... }` in a stylesheet).
+
+2. **Define a snippet** — for more complex components with meaningful props, configure a `_snippets` entry so editors get a structured interface. Enable `snippet: true` in `_editables.content` to make the snippet toolbar button available.
+
+The decision rule: if the component just wraps a native HTML element with styles, inline it. If it has props, state, or non-trivial rendering, make it a snippet.
+
+## Listing page editables with `@file`
+
+For collections without detail pages (data-like `.md` files rendered only on listing pages), use `@file[/path].field` editables to make individual entries editable inline on the listing page.
+
+```astro
+{entries.map(entry => (
+  <div>
+    <h3
+      data-editable="text"
+      data-prop={`@file[/src/content/work/${entry.id}].company`}
+    >
+      {entry.data.company}
+    </h3>
+    <article
+      data-editable="text"
+      data-type="block"
+      data-prop={`@file[/src/content/work/${entry.id}].@content`}
+    >
+      <entry.Content />
+    </article>
+  </div>
+))}
+```
+
+**Path syntax:** `@file` paths must have a leading `/` and are relative to the repository root. `entry.id` in Astro content collections includes the file extension (e.g. `apple.md`).
+
+**When to prefer `@data` over `@file`:** If the data is a site-wide singleton (CTA, testimonials) that doesn't need to live in a content collection, `@data[key].field` is simpler — no collection or schema overhead, and the data appears under "Data" in the sidebar.
+
+**Enabling visual editing for listing pages:** Add `visual` to the collection's `_enabled_editors` and include the listing page in the `pages` collection glob so editors can open it in the visual editor.
+
 ## What to make editable vs. what to leave for the sidebar
 
 Not everything benefits from visual editing. Guidelines:
@@ -568,7 +606,8 @@ Not everything benefits from visual editing. Guidelines:
 - URL/link fields
 - Taxonomy arrays (categories, tags)
 
-**Provide visual editing fallbacks with `ENV_CLIENT`:**
+**Provide editing fallbacks with `ENV_CLIENT`:**
+- **Vue, Svelte, and Solid components** -- these frameworks throw runtime errors in editable regions, even when nested inside supported `.astro` or `.jsx` wrappers. First consider converting the component to `.astro` or React (prefer `.astro` unless it's state-heavy). If conversion isn't practical, guard with `import.meta.env.ENV_CLIENT` to render an editing fallback -- a simplified `.astro` component that visually resembles the real one and supports editable attributes, giving editors a useful preview and editing experience without the unsupported framework.
 - Components with complex DOM management (Swiper carousels, etc.) -- their JavaScript conflicts with editable region DOM manipulation, and often are hard to edit if functioning like they do on prod.
 - Components using server-only APIs (`import.meta.glob`, `getImage` from `astro:assets`, data fetching) -- guard with `import.meta.env.ENV_CLIENT` to provide a simplified client-side path that skips optimization and renders plain HTML. For example, an `Image` component that uses `findImage()` and `getImagesOptimized()` should render a plain `<img>` with the raw `src` prop when `ENV_CLIENT` is true.
 
@@ -625,11 +664,33 @@ import CallToAction from "@/layouts/partials/CallToAction.astro";
 registerAstroComponent("call-to-action", CallToAction);
 ```
 
-### React / non-Astro components (Astro display fallback)
+### Non-Astro framework components
 
-`registerReactComponent` exists but is unreliable -- live updates silently fail in the visual editor. Instead, create a display-only `.astro` component that reproduces the same markup and register it with `registerAstroComponent`. The live site still uses the real React component via `client:load`; only the visual editor renderer is swapped.
+Only `.astro` and React components are supported in editable regions. Vue, Svelte, and Solid components throw runtime errors in the visual editor, even when nested inside supported `.astro` or `.jsx` wrappers.
 
-This "Astro display fallback" pattern is useful beyond just React bugs. Any component that is difficult to re-render client-side (complex hooks, third-party DOM libraries, Web Components with shadow DOM, animation frameworks) can use a simplified Astro stand-in for the visual editor. The stand-in only needs to produce the right visual output for the editor preview -- it doesn't need interactivity.
+**Decision: convert or provide an editing fallback.** For each unsupported component, decide whether to convert it to a supported framework or keep it and provide a fallback:
+
+- **Convert** -- rewrite as `.astro` or React. Prefer `.astro` unless the component needs complex client-side state/interactivity, in which case React is a good choice. This is simpler (no duplication) and gives full visual editing support. Default recommendation.
+- **Editing fallback** -- if conversion isn't practical (third-party framework library with no equivalent, large complex component, team preference), keep the original and use `ENV_CLIENT` to conditionally render an editing fallback in the visual editor. See below.
+
+#### React components
+
+React components should generally stay as React. Use `registerReactComponent` for component re-rendering in the visual editor:
+
+```typescript
+import { registerReactComponent } from "@cloudcannon/editable-regions/react";
+import Announcement from "@/components/Announcement";
+
+registerReactComponent("announcement", Announcement);
+```
+
+To make nested content editable within a React component, you may need to refactor it slightly so there are suitable elements to attach editable attributes or web components to. The component handles overall re-rendering via `registerReactComponent`, but inner text, images, etc. should still be individually editable where possible.
+
+**Hydration gotcha.** Content inside a React island's hydrated DOM can be overwritten when React rehydrates. If an editable region modifies static server-rendered HTML but React then re-renders and replaces that DOM with its own output, the editor's changes appear to do nothing. Factor this into refactoring decisions -- content controlled by React state may not be a good candidate for inline editable regions.
+
+#### Editing fallbacks (Vue, Svelte, Solid, or complex components)
+
+An editing fallback is a display-only `.astro` component that visually resembles the real component and supports editable attributes. It gives editors a representative preview they can edit inline -- it doesn't need interactivity or the original framework. The live site still uses the real component; only the visual editor renderer is swapped.
 
 ```astro
 <!-- src/layouts/helpers/AnnouncementDisplay.astro -->
@@ -650,19 +711,19 @@ registerAstroComponent("announcement", AnnouncementDisplay);
 ```
 
 ```astro
-<!-- Base.astro — live site uses the real React component -->
+<!-- Base.astro — live site uses the real component -->
 <editable-component data-component="announcement" data-prop="@data[announcement]">
   <Announcement client:load {...announcementData} />
 </editable-component>
 ```
 
-**When to reach for this pattern:**
-- React components (hooks, state, effects won't fire in the editor renderer)
+**When to use an editing fallback:**
+- Vue, Svelte, or Solid components that can't be converted to `.astro`/React
 - Components using third-party DOM libraries (Swiper, GSAP, etc.)
 - Web Components with shadow DOM that don't serialize cleanly
-- Any component where the live-site version is too complex for `registerAstroComponent` to handle directly
+- Any component where the live-site version is too complex for the editor to re-render directly
 
-**Keep the display component in sync.** The Astro fallback duplicates markup, so changes to the real component's visual structure need to be mirrored. Keep both in the same directory and name them clearly (e.g. `Announcement.tsx` + `AnnouncementDisplay.astro`).
+**Keep the editing fallback in sync.** The fallback duplicates markup, so changes to the real component's visual structure need to be mirrored. Keep both in the same directory and name them clearly (e.g. `Announcement.vue` + `AnnouncementDisplay.astro`).
 
 ### Wrapping with web components
 
@@ -680,7 +741,8 @@ If a suitable container already exists in the markup (e.g. a `<section>` wrappin
 
 **Caveats:**
 - Astro components that use `astro:content` or `astro:assets` imports need the integration's Vite plugin (which shims these modules for client-side rendering)
-- React components inside registered Astro components (e.g. `react-icons`) need the React framework renderer. Add `import "@cloudcannon/editable-regions/astro-react-renderer"` to `registerComponents.ts` -- this is a side-effect import that registers a generic React renderer for Astro's client-side SSR. Without it, any React component encountered during re-rendering will fail with "NoMatchingRenderer".
+- React components inside registered Astro components (e.g. `react-icons`) need the React framework renderer. Add `import "@cloudcannon/editable-regions/astro-react-renderer"` to `registerComponents.ts` -- this is a side-effect import that registers a generic React renderer for Astro's client-side SSR. Without it, any React component encountered during re-rendering will fail with "NoMatchingRenderer"
+- The React framework renderer only covers React -- there are no equivalent renderers for Vue, Svelte, or Solid. These frameworks will always error in editable regions and must be converted or given editing fallbacks
 - Components must be self-contained -- external data fetching won't work client-side
 
 Text/image editable regions provide the most value with the least complexity. Component registration is the next step for templates where full live preview is a priority.
@@ -723,7 +785,7 @@ After adding editable regions, work through these checks before moving to the bu
 - [ ] The Astro integration is registered in `astro.config.mjs`
 - [ ] `src/cloudcannon/registerComponents.ts` exists and is imported from the base layout
 - [ ] Registered components accept spread props matching the shape of their `data-prop` value -- not a named wrapper prop (see [Component prop contract](#component-prop-contract))
-- [ ] Pages that render items from other collections have `@file` editables on those items (when the target collection has no `url` pattern). Remember `entry.id` includes the file extension — don't double it.
+- [ ] Pages that render items from other collections have `@file` editables on those items. Remember `entry.id` includes the file extension — don't double it.
 - [ ] Slot content that should be editable uses concrete elements (e.g. `<span>`) instead of `<Fragment>`
 - [ ] Key page templates contain `data-editable` attributes -- spot-check the homepage, a content page, and any shared partials (CTA, testimonials, etc.)
 - [ ] **Source editables**: Hardcoded text in page templates (hero headings, descriptions, CTA copy) has `data-editable="source"` with `data-path` and `data-key` attributes -- don't skip content just because it's not in a content collection

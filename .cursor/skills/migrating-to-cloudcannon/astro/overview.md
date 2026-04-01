@@ -9,7 +9,7 @@ This guide covers Astro sites that use:
 - Astro content collections (`src/content/` with `content.config.ts` or `src/content/config.ts`)
 - `.astro` single-file components
 - Static output (`output: "static"` -- the default)
-- Islands architecture with optional framework integrations (React confirmed; Vue and Svelte likely work but are untested)
+- Islands architecture with optional framework integrations. Only `.astro` and React components are supported in editable regions -- Vue, Svelte, and Solid components throw runtime errors in the visual editor even when nested inside supported components. Convert to a supported framework, or use `ENV_CLIENT` editing fallbacks (see [visual-editing.md](visual-editing.md))
 
 Server-rendered Astro sites (`output: "server"` or `output: "hybrid"`) are not covered -- CloudCannon requires static output.
 
