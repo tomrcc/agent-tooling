@@ -250,6 +250,8 @@ schemas:
 
 Pick a `new_preview_url` that uses the same layout or template as the schema. `new_preview_url` is optional — if omitted, CloudCannon falls back to showing the site's homepage for new files.
 
+**Caveat for drafts:** `new_preview_url` only helps with newly created files. It does not help with existing files marked `draft: true` — those pages are excluded from the build and have no output URL. For collections with a `draft` field, use `editor: content` on the add option so editors land in the content editor, which doesn't require a built page.
+
 ## Controlling the Add button with `add_options`
 
 By default, CloudCannon shows all schemas in the "+ Add" button dropdown. Use `add_options` to restrict which schemas editors can create new files from.
@@ -283,7 +285,7 @@ When `add_options` is defined, **only** the listed options appear. Schemas not l
 
 ### Using `editor: content` on add options
 
-Set `editor: content` on the add option to open new files in the content editor instead of the visual editor. The content editor doesn't need a preview URL, so it works immediately. This is the preferred approach for collections where the primary editing workflow is writing markdown (blog posts, docs, articles). For page-builder collections, use `new_preview_url` on the schema instead.
+Set `editor: content` on the add option to open new files in the content editor instead of the visual editor. The content editor doesn't need a preview URL, so it works immediately. This is the preferred approach for collections where the primary editing workflow is writing markdown (blog posts, docs, articles), and for collections with a `draft` field — draft pages aren't built, so the visual editor has no page to preview. The content editor doesn't require a built page, making it the only reliable editing experience for drafts. For page-builder collections, use `new_preview_url` on the schema instead.
 
 ## Page building patterns
 
@@ -356,6 +358,7 @@ After generating and customizing the config, work through these checks before mo
 - [ ] Collections using `.md` files that don't build to a page have `_enabled_editors: [data]`
 - [ ] If the site has 3+ reusable block components, a page builder schema is available. See [page-building.md](page-building.md)
 - [ ] Schemas for creatable page types have `new_preview_url` or use `editor: content` on add options
+- [ ] Collections with a `draft` field use `editor: content` on add options (drafts aren't built, so the visual editor can't preview them)
 - [ ] `.cloudcannon/README.md` exists with editor-facing documentation
 
 For common pitfalls and patterns, see [configuration-gotchas.md](configuration-gotchas.md).

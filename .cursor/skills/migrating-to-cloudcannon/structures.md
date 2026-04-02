@@ -124,15 +124,19 @@ _structures:
 
 Every structure value should include both `picker_preview` and `preview`:
 
-- **`picker_preview`** — how the item appears in the "Add" menu when editors click the + button. Shows the label and icon.
-- **`preview`** — how the item appears as an array card in the sidebar. Uses cascade format for `text`, `icon`, and `image`.
+- **`picker_preview`** — how the item appears in modals (the "Add" menu, structure picker). `key:` lookups are supported but often won't resolve in picker contexts (e.g. adding a new item where no data exists yet), so literal fallback values are typical.
+- **`preview`** — how the item appears as a card everywhere else (sidebar array cards, collection file lists). Uses `key:` lookups to pull data from the item, with literal fallbacks.
+
+Both accept cascading arrays for `text`, `icon`, `image`, and `subtext`. Default to arrays for each field for consistency.
 
 ```yaml
 label: Hero
 icon: flag
 picker_preview:
-  text: Hero
-  icon: flag
+  text:
+    - Hero
+  icon:
+    - flag
 preview:
   text:
     - key: title
@@ -158,8 +162,10 @@ A complete `*.cloudcannon.structure-value.yml` file:
 label: Content
 icon: article
 picker_preview:
-  text: Content
-  icon: article
+  text:
+    - Content
+  icon:
+    - article
 preview:
   text:
     - key: title
@@ -195,14 +201,14 @@ _inputs:
 |-----|---------|
 | `label` | Display name in the Add menu |
 | `icon` | Material Icons name |
-| `picker_preview` | How it looks in the Add menu |
-| `preview` | How it looks as an array card (cascade format) |
+| `picker_preview` | How it looks in modals (Add menu, structure picker) |
+| `preview` | How it looks as a card elsewhere (sidebar, collection lists) — cascade format with `key:` lookups |
 | `value` | The data template — `_type` discriminator plus all fields |
 | `_inputs` | Field type configuration scoped to this component |
 
 ### The `_type` discriminator
 
-Every structure value must include `_type` matching the key used in `componentMap` and `registerAstroComponent` calls. This is how CloudCannon matches array items to their structure definitions.
+Every structure value must include a discriminator key so CloudCannon can match array items to the correct structure definition. We use `_type` as our standard, but the name is arbitrary — `_name`, `_component`, or anything else works as long as it's consistent across all values in a given array. Similarly, `content_blocks` is our standard array name for page builder blocks, but any name works with the right config. The discriminator value must match the key used in `componentMap` and `registerAstroComponent` calls.
 
 ### Scoped `_inputs`
 

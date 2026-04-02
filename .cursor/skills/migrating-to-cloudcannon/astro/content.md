@@ -20,7 +20,7 @@ For each content collection, compare the files against the Zod schema in `conten
 
 - **Required fields are present in every file.** If the schema defines a field as required but files omit it, either add it to the files or make the schema `z.optional()`. Prefer matching what the schema expects.
 - **Optional fields with defaults.** When a field has `z.default()`, Astro fills in the default at runtime. CloudCannon editors see what's in the file, not the runtime default. If a field is commonly used and should be visible in the editor, add it explicitly to content files even if the schema doesn't require it.
-- **`draft` field.** If the site filters on `draft`, ensure it's present where needed. When the filter uses `!data.draft`, omitting the field is equivalent to `draft: false` (since `!undefined === true`), so missing `draft` fields are safe. But for CloudCannon's UI, an explicit `draft: false` is better -- it gives editors a visible toggle.
+- **`draft` field.** If the site filters on `draft`, ensure it's present where needed. When the filter uses `!data.draft`, omitting the field is equivalent to `draft: false` (since `!undefined === true`), so missing `draft` fields are safe. But for CloudCannon's UI, an explicit `draft: false` is better -- it gives editors a visible toggle. Collections with a `draft` field should default to the content editor (`editor: content` on add options or `_enabled_editors` starting with `content`). Draft pages aren't built, so the visual editor has no page to preview — the content editor doesn't require a built page.
 - **Date formats.** Use ISO 8601 (`2022-04-04T05:00:00Z`). Astro's `z.coerce.date()` handles both Date objects and ISO strings, but CloudCannon expects consistent date formatting.
 - **Image paths.** Prefer absolute paths from the site root (`/images/banner.png`) for consistency. Relative paths work but are harder to manage across collections.
 
@@ -67,7 +67,7 @@ No content file changes are needed for this pattern.
 
 Check for:
 
-- **MDX components and shortcodes** -- auto-imported components or explicit `import` statements in `.mdx` files. CloudCannon's content editor can't render these but can parse and re-serialize them if snippet configs are defined. Document which files use them, note each component's props, and whether `client:load` is used. This inventory feeds directly into the snippet configuration in Phase 2. See [snippets.md](snippets.md) for the full workflow.
+- **MDX components and shortcodes** -- auto-imported components or explicit `import` statements in `.mdx` files. CloudCannon's editors can't render these but can parse and re-serialize them if snippet configs are defined. Document which files use them, note each component's props, and whether `client:load` is used. This inventory feeds directly into the snippet configuration in Phase 2. See [snippets.md](snippets.md) for the full workflow.
 - **Inline HTML that has no markdown equivalent** -- HTML blocks like `<figure>`, `<video>`, `<details>`, `<iframe>` can't be expressed in standard markdown syntax. These must become snippets so editors get a structured interface instead of raw HTML. For each pattern identified in the audit: (1) normalize all instances to a consistent format (same attributes, same whitespace), (2) document the normalized pattern in the project's migration notes. The snippet config itself is created in Phase 2 -- see [../snippets.md § Raw snippets for inline HTML](../snippets.md#raw-snippets-for-inline-html-in-md-files). Simple inline HTML that editors don't need to modify (e.g. `<sup>`, `<br>`) can be left as-is.
 - **Complex embedded HTML** with `set:html` directives in the rendering template may not round-trip cleanly. Usually not an issue for content bodies.
 - **Empty content bodies.** Index files and section data often have no body content (all data lives in frontmatter). This is normal and CloudCannon handles it fine.
@@ -97,7 +97,7 @@ The preferred fix is to flatten to flat files (`blog/my-post.md`). Astro auto-ge
 
 **Checklist before flattening:**
 
-1. **Check for sibling assets** — images or other files co-located in the post's directory. Move them to `public/` and update references from `./image.webp` to `/image.webp`.
+1. **Check for sibling assets** — images or other files co-located in the post's directory. Move images to `src/assets/images/` (preserving Astro's image optimization) and other static files to `public/`. Update references accordingly — imported images use the new `src/assets/images/` path, static files use absolute paths from `public/`.
 2. **Check for relative imports in MDX** — components imported with `./component.astro` paths. Move them to `src/components/` and set up `astro-auto-import` so they're available without explicit imports.
 3. **Rename files** — `dir/index.md` becomes `dir.md`. Remove the now-empty directories.
 4. **Remove `slug` frontmatter** — no longer needed since the filename provides the slug.
@@ -105,19 +105,23 @@ The preferred fix is to flatten to flat files (`blog/my-post.md`). Astro auto-ge
 
 **When NOT to flatten:**
 
-- Content directories contain many co-located assets that would clutter `public/`
 - The folder structure encodes meaningful grouping beyond just the slug
-- The site uses Astro's image optimization with relative import paths (`import img from './hero.png'`)
 
 In these cases, keep folder-per-post and use the `{slug}` workaround documented in [configuration-gotchas.md](configuration-gotchas.md#folder-per-post-content-and-cc-url-placeholders).
 
-### Data files (JSON/YAML config)
+### Data collections
 
-Site configuration stored in JSON or YAML files outside content collections (e.g. `src/config/` directory with navigation, social links, theme settings) is editable in CloudCannon as "data" collections. Verify:
+Data collections hold content that doesn't directly build its own page — it's consumed by other pages instead. They can live inside `src/content/` (as Astro content collections) or outside it (as standalone JSON/YAML files exposed via `data_config`). The deciding factor isn't location, it's purpose:
 
-- JSON is valid and well-formatted
+- **Builds its own page** (e.g. a blog post, a service page) — page collection, gets a URL.
+- **Used on one page only** (e.g. homepage hero) — belongs in that page's frontmatter, not a separate collection.
+- **Used across multiple pages** (e.g. navigation, social links, testimonials, tags) — data collection. Keeps shared data consistent and editable in one place.
+
+Data collections should have `disable_url: true` in the CC collections config since they don't produce pages. Verify the data files themselves:
+
+- JSON/YAML is valid and well-formatted
 - Nested structures aren't so deep that CloudCannon's editor becomes unwieldy (3+ levels of nesting is a flag)
-- Arrays of objects have consistent shapes across items
+- Arrays of objects either have consistent shapes or are backed by structures definitions for each shape
 
 ## Review checklist addendum
 

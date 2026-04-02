@@ -95,7 +95,7 @@ for (const [key, component] of Object.entries(componentMap)) {
 |---|---|
 | `@cloudcannon/editable-regions/astro-integration` | Astro integration for `astro.config.mjs` (build-time) |
 | `@cloudcannon/editable-regions/astro` | `registerAstroComponent()` for client-side component re-rendering |
-| `@cloudcannon/editable-regions/astro-react-renderer` | Side-effect import: registers React as a framework renderer for Astro's client-side SSR (needed when React components like `react-icons` are used inside registered Astro components) |
+| `@cloudcannon/editable-regions/astro-react-renderer` | Side-effect import: registers a catch-all React renderer for the editable-regions client-side re-rendering pipeline (needed when React components like `react-icons` are used inside registered Astro components) |
 | `@cloudcannon/editable-regions/react` | `registerReactComponent()` for standalone React component re-rendering |
 
 ## Adding editable regions
@@ -797,7 +797,7 @@ If a suitable container already exists in the markup (e.g. a `<section>` wrappin
 
 **Caveats:**
 - Astro components that use `astro:content` or `astro:assets` imports need the integration's Vite plugin (which shims these modules for client-side rendering)
-- React components inside registered Astro components (e.g. `react-icons`) need the React framework renderer. Add `import "@cloudcannon/editable-regions/astro-react-renderer"` to `registerComponents.ts` -- this is a side-effect import that registers a generic React renderer for Astro's client-side SSR. Without it, any React component encountered during re-rendering will fail with "NoMatchingRenderer"
+- React components inside registered Astro components (e.g. `react-icons`) need the React framework renderer. Add `import "@cloudcannon/editable-regions/astro-react-renderer"` to `registerComponents.ts` -- this is a side-effect import that registers a catch-all React renderer for the editable-regions client-side re-rendering pipeline (it mirrors Astro's SSR renderer interface but runs entirely within the editor). Without it, any React component encountered during re-rendering will fail with "NoMatchingRenderer". Because its `check` function unconditionally returns `true`, it acts as a fallback for all unmatched components -- import it after any other framework renderers
 - The React framework renderer only covers React -- there are no equivalent renderers for Vue, Svelte, or Solid. These frameworks will always error in editable regions and must be converted or given editing fallbacks
 - Components must be self-contained -- external data fetching won't work client-side
 

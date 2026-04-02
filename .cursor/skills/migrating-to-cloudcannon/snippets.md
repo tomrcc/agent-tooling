@@ -59,7 +59,7 @@ Every entry under `_snippets` supports these keys (shared by both approaches):
 | `params` | object | Parser configs for each placeholder (used with `snippet`) |
 | `inline` | boolean | Can this appear mid-sentence? Default `false` (block-level) |
 | `preview` | object | Card appearance in the editor |
-| `picker_preview` | object | Card appearance in the snippet picker (overrides `preview`) |
+| `picker_preview` | object | Appearance in the snippet picker modal — same options as `preview`. `key:` lookups are supported but often won't resolve in picker contexts, so literal values are typical. |
 | `view` | string | Rendering mode: `card` (default), `inline`, `gallery` |
 | `_inputs` | object | Input configurations scoped to this snippet's fields |
 | `_structures` | object | Structure definitions for array/object fields in this snippet |
@@ -149,9 +149,10 @@ _snippets:
       icon: image
     picker_preview:
       gallery:
-        image: false
-        icon: image
-      text: Figure
+        icon:
+          - image
+      text:
+        - Figure
     params:
       img_attrs:
         parser: key_values
@@ -238,9 +239,10 @@ preview:
   icon: image
 picker_preview:
   gallery:
-    image: false
-    icon: image
-  text: Snippet Name
+    icon:
+      - image
+  text:
+    - Snippet Name
 ```
 
 Apply this pattern to every snippet that has an image `editor_key` — not just `<figure>`. If the snippet has an image field, give it a gallery preview.
